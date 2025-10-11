@@ -53,14 +53,15 @@ git clone https://github.com/detandreas/SaveTheGoverment.git
 ```bash
 git branch          # λίστα των branch
 git branch 'branch-name'    # δημιουργια branch
-git checkout -b new-branch   # δημιουργία & μετάβαση σε νέο branch (παλαιότερος τρόπος)
+git checkout -b "new-branch"   # δημιουργία & μετάβαση σε νέο branch (παλαιότερος τρόπος)
 git switch main     # μετάβαση στο main (νεότερη εντολή)
 ```
 
 ## 8. Διαγραφη branch
 ``` bash
-git branch -d "branch-to-delete"    # διαγραφη branch που δεν εχει γινει merged
-git branch -d   # διαγραφη branch που εχει γινει fully merged
+git branch -d "branch-to-delete"    # διαγραφη branch που δεν εχει γινει merged.Για τοπικα branches
+git branch -d   # διαγραφη branch που εχει γινει fully merged.Για τοπικα branches
+git push origin --delete "branch-name" # διαγραφει απομακρυσμενα branches (στο github)
 ```
 
 ## 9. Αποστολή (push) αλλαγών στο remote
@@ -82,4 +83,12 @@ git show        # δείχνει τις αλλαγές του τελευταίο
 ## 12. Έλεγχος configured remotes
 ```bash
 git remote -v
+```
+
+## 13. Merge branch
+```bash
+git ckeckout main # αλλαγη στο branch στο οποιο θες να κανεις το merge
+git merge "branch-name" # εγινε merge το branch-name --> main
+git branch -d # διαγραφη του fully merged branch
+```
 
