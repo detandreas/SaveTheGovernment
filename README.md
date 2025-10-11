@@ -56,6 +56,11 @@ git checkout -b new-branch   # δημιουργία & μετάβαση σε νέ
 git switch main     # μετάβαση στο main (νεότερη εντολή)
 ```
 
+## 8. Διαγραφη branch
+``` bash
+git branch -d "branch-to-delete" #διαγραφη branch που δεν εχει γινει merged
+git branch -d #διαγραφη branch που εχει γινει fully merged
+
 ## 8. Αποστολή (push) αλλαγών στο remote
 Σύνταξη: git push <remote> <branch> (προεπιλογή remote: origin)
 ```bash
