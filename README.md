@@ -58,26 +58,27 @@ git switch main     # μετάβαση στο main (νεότερη εντολή)
 
 ## 8. Διαγραφη branch
 ``` bash
-git branch -d "branch-to-delete" #διαγραφη branch που δεν εχει γινει merged
-git branch -d #διαγραφη branch που εχει γινει fully merged
+git branch -d "branch-to-delete"    # διαγραφη branch που δεν εχει γινει merged
+git branch -d   # διαγραφη branch που εχει γινει fully merged
+```
 
-## 8. Αποστολή (push) αλλαγών στο remote
+## 9. Αποστολή (push) αλλαγών στο remote
 Σύνταξη: git push <remote> <branch> (προεπιλογή remote: origin)
 ```bash
 git push origin main
 ```
 
-## 9. Λήψη (pull) ενημερώσεων από το remote
+## 10. Λήψη (pull) ενημερώσεων από το remote
 ```bash
 git pull
 ```
 
-## 10. Προβολή ιστορικού / αλλαγών
+## 11. Προβολή ιστορικού / αλλαγών
 ```bash
 git show        # δείχνει τις αλλαγές του τελευταίου commit στο τρέχον branch
 ```
 
-## 11. Έλεγχος configured remotes
+## 12. Έλεγχος configured remotes
 ```bash
 git remote -v
 
