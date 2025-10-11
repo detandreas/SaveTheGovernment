@@ -52,6 +52,7 @@ git clone https://github.com/detandreas/SaveTheGoverment.git
 ## 7. Branching
 ```bash
 git branch          # λίστα των branch
+git branch 'branch-name'    # δημιουργια branch
 git checkout -b new-branch   # δημιουργία & μετάβαση σε νέο branch (παλαιότερος τρόπος)
 git switch main     # μετάβαση στο main (νεότερη εντολή)
 ```
