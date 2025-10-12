@@ -10,8 +10,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>25</maven.compiler.release>
-    <javafx.version>25</javafx.version>
+    <maven.compiler.release>21</maven.compiler.release>
+    <javafx.version>21</javafx.version>
   </properties>
 
   <dependencies>
@@ -47,7 +47,7 @@
             <goals><goal>enforce</goal></goals>
             <configuration>
               <rules>
-                <requireJavaVersion><version>[25,26)</version></requireJavaVersion>
+                <requireJavaVersion><version>[21,22)</version></requireJavaVersion>
                 <requireMavenVersion><version>[3.9.6,)</version></requireMavenVersion>
               </rules>
               <fail>true</fail>
