@@ -44,6 +44,7 @@ git merge main  # εναλλακτικα αν δεν θελετε rebase
 git checkout -b feature/ui-sidebar  # υποδηλώνουμε οτι στο branch προσθέτουμε νεα λειτουργια --> ui-sidebar
 git checkout -b bugfix/ui-overlap   # υποδηλώνουμε οτι στο branch διορθώνουμε ενα συγκεκριμένο bug --> ui-overlap
 ```
+
 ## 4. Μικρά και Καθαρά Commits
 Κάνε commit ανά λογικό βήμα:πχ Ολοκλήρωσες ενα feature,διόρθωσες ενα bug,βελτίωσες υπάρχον κωδικα κτλπα
 ```bash
