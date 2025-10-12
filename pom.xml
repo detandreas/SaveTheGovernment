@@ -10,12 +10,11 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>21</maven.compiler.release>
-    <javafx.version>21.0.5</javafx.version>
+    <maven.compiler.release>25</maven.compiler.release>
+    <javafx.version>25</javafx.version>
   </properties>
 
   <dependencies>
-    <!-- Χωρίς classifiers για να παίζουν Mac/Windows αυτόματα -->
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
@@ -30,7 +29,6 @@
 
   <build>
     <plugins>
-      <!-- Κλείδωμα σε JDK 21 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -40,7 +38,6 @@
         </configuration>
       </plugin>
 
-      <!-- Αποτυγχάνει αν δεν υπάρχει σωστή Maven/Java -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -50,12 +47,8 @@
             <goals><goal>enforce</goal></goals>
             <configuration>
               <rules>
-                <requireJavaVersion>
-                  <version>21</version>
-                </requireJavaVersion>
-                <requireMavenVersion>
-                  <version>3.9.6</version>
-                </requireMavenVersion>
+                <requireJavaVersion><version>[25,26)</version></requireJavaVersion>
+                <requireMavenVersion><version>[3.9.6,)</version></requireMavenVersion>
               </rules>
               <fail>true</fail>
             </configuration>
@@ -63,24 +56,18 @@
         </executions>
       </plugin>
 
-      <!-- Τρέξιμο JavaFX χωρίς module-path κόμπλες στα tests -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
-        <configuration>
-          <useModulePath>false</useModulePath>
-        </configuration>
+        <configuration><useModulePath>false</useModulePath></configuration>
       </plugin>
 
-      <!-- Run με: mvn javafx:run -->
       <plugin>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-maven-plugin</artifactId>
         <version>0.0.8</version>
-        <configuration>
-          <mainClass>com.example.App</mainClass>
-        </configuration>
+        <configuration><mainClass>com.example.App</mainClass></configuration>
       </plugin>
     </plugins>
   </build>
