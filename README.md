@@ -20,6 +20,16 @@ mvn javafx:run      # Αν έχετε εγκαταστήσει στον υπολ
 
 ---
 
+## SpotBugs Usage
+```bash
+mvn spotbugs:check  # τρεχει και τσεκαρει για bugs στον κωδικα και σου εμφανιζει το αποτελεσμα στο terminal
+mvn spotbugs:gui    # Για αναλυτικότερο report --> ανοιγει παράθυρο και σου υποδεικνύει το bug που βρηκε
+```
+Το αποτέλεσμα των παραπάνω εντολών δημιουργείται σε μορφή xml στον φάκελο:
+- target/spotbugsXml.xml
+
+---
+
 # Team git Workflow - SaveTheGovernmet
 ## Στόχος : Αποφυγή conflicts και χαοτικού κώδικα 
 
