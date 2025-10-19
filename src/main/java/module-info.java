@@ -1,7 +1,4 @@
-module com.example {
-    requires javafx.controls;
-    requires javafx.fxml;
-
-    opens com.example to javafx.fxml;
-    exports com.example;
+module budget {
+    requires com.google.gson;
+    exports budget;
 }

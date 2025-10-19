@@ -3,3 +3,5 @@ target/
 
 # IDE
 .vscode
+dependency-reduced-pom.xml
+Budget-Architect.md
