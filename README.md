@@ -1,4 +1,4 @@
-# SaveTheGoverment
+# SaveTheGovernment
 Εδώ θα αναπτυξουμε την εργασια μας στο μαθημα ΠΡΟΓΡΑΜΜΑΤΙΣΜΟΣ ΙΙ
 
 ## Συντονισμός
@@ -14,8 +14,8 @@
 
 ## Usage
 ```bash
-mvn javafx:run      # Αν έχετε εγκαταστήσει στον υπολογιστή σας το maven
-./mvnw javafx:run   # wrapper του maven το εχετε στον υπολογιστη σας κανοντας clone το repository μας
+mvn compile exec:java      # Αν έχετε εγκαταστήσει στον υπολογιστή σας το maven
+./mvnw compile exec:java    # wrapper του maven το εχετε στον υπολογιστη σας κανοντας clone το repository μας
 ```
 
 ---
@@ -30,7 +30,7 @@ mvn spotbugs:gui    # Για αναλυτικότερο report --> ανοιγε�
 
 ---
 
-# Team git Workflow - SaveTheGovernmet
+# Team git Workflow - SaveTheGovernnmet
 ## Στόχος : Αποφυγή conflicts και χαοτικού κώδικα 
 
 ## 1. Προστατευμένο `main` Branch
@@ -75,11 +75,11 @@ prefix examples:
     * καθαρότητα/αναγνωσιμότητα κώδικα
     * αποδοτικότητα κωδικα
 
-## 6. Ανόηση Περιττών Αρχείων
+## 6. Αγνόηση Περιττών Αρχείων
 Φτιαξτε .gitignore αρχειο στο οποιο συμπεριλάβετε τα αρχεια που δεν θέλετε να γινονται push στο remote repository
 ```bash
 target/
-.class
+*.class
 .vscode/
 ```
 
@@ -138,8 +138,8 @@ git switch main     # μετάβαση στο main (νεότερη εντολή)
 
 ## 8. Διαγραφη branch
 ``` bash
-git branch -d "branch-to-delete"    # διαγραφη branch που δεν εχει γινει merged.Για τοπικα branches
-git branch -d   # διαγραφη branch που εχει γινει fully merged.Για τοπικα branches
+git branch -d "branch-to-delete"    # διαγραφη branch που εχει γινει merged.Για τοπικα branches
+git branch -D "branch-to-delete"  # διαγραφη branch που  δεν εχει γινει fully merged.Για τοπικα branches
 git push origin --delete "branch-name" # διαγραφει απομακρυσμενα branches (στο github)
 ```
 
@@ -156,18 +156,79 @@ git pull
 
 ## 11. Προβολή ιστορικού / αλλαγών
 ```bash
-git show        # δείχνει τις αλλαγές του τελευταίου commit στο τρέχον branch
+git show        # προβολή αλλαγών του τελευταίου commit στο τρέχον branch
+git log     # προβολή ιστορίας των commits: commit_id,author,date,message ...
+git show <commit_id>    # προβολή  αλλαγων,μηνυματος,metadata
+git diff    #προβολή αλλαγών σε σχέση με το τελευταίο commit στο wd
+git diff <commit1> <commit2>    #  προβολη αλλαγών ανάμεσα σε 2 commits 
 ```
 
 ## 12. Έλεγχος configured remotes
 ```bash
-git remote -v
+git remote -v   # πχ origin
 ```
 
 ## 13. Merge branch
 ```bash
-git ckeckout main # αλλαγη στο branch στο οποιο θες να κανεις το merge
+git checkout main # αλλαγη στο branch στο οποιο θες να κανεις το merge
 git merge "branch-name" # εγινε merge το branch-name --> main
 git branch -d # διαγραφη του fully merged branch
 ```
+
+## 13. Προσωρινή αποθήκευση
+```bash  
+git stash   # αποθήκευση αλλαγών,χωρις να τις κάνει commit
+git stash pop   # επαναφορά --> έτοιμες για commit
+git stash list  # λιστα  όλων των stashes
+git stash show -p stash@{0} #   προβολή αλλαγών του πιο πρόσφατου stash
+git stash pop   # επαναφορά του τελευταίου stash στο working directory και διαγραφή απο την λιστα
+git stash apply    # επαναφορά του τελευταίου stash και διατήρηση στην λίστα
+git stash drop      # διαγραφή συγκεκριμένου stash χωρις να το επαναφέρει
+git stash clear     #διαγραφή όλων των stashes    
+```
+
+## 14. Αναίρεση
+```bash 
+git restore filename    # αναίρεση αλλαγων που δεν ειναι commited
+git commit --amend      # αναιρεί την τελευταία καταχώριση
+git revert <commit_id>  # αναιρεί παλιά καταχώριση
+```
+
+---
+
+# Maven Βασικές Εντολές
+
+## Ανάπτυξη (Development)
+```bash
+mvn compile                    # Μόνο compile
+mvn compile exec:java          # Compile + Run
+mvn test                       # Τρέξε tests
+mvn clean                      # Καθάρισμα target/
+```
+
+## Build & Package
+```bash
+mvn package                    # Compile + Test + Package JAR
+mvn clean package              # Full clean build
+mvn package -DskipTests        # Package χωρίς tests (πιο γρήγορο)
+```
+
+## Εκτέλεση
+```bash
+# Μέθοδος 1: Με Maven
+mvn exec:java
+
+# Μέθοδος 2: Με JAR
+java -jar target/savethegovernment-1.0-SNAPSHOT-cli.jar
+```
+
+## Debugging & Analysis
+```bash
+mvn dependency:tree            # Δες dependencies
+mvn spotbugs:check             # Έλεγχος για bugs
+mvn spotbugs:gui               # Spotbugs με GUI
+mvn versions:display-dependency-updates  # Έλεγχος για updates
+```
+
+
 
