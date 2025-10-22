@@ -54,9 +54,15 @@ git merge main  # εναλλακτικα αν δεν θελετε rebase
 git checkout -b feature/ui-sidebar  # υποδηλώνουμε οτι στο branch προσθέτουμε νεα λειτουργια --> ui-sidebar
 git checkout -b bugfix/ui-overlap   # υποδηλώνουμε οτι στο branch διορθώνουμε ενα συγκεκριμένο bug --> ui-overlap
 ```
+## 4. Διασφάλιση ποιοτικού κώδικα
+```bash
+mvn clean verify    # compile + tests + checkstyle + spotbugs + package
+```
+Αν υπάρχουν σφάλματα διορθωσέ τα και επανέλαβε αυτό το βήμα 
 
-## 4. Μικρά και Καθαρά Commits
+## 5. Μικρά και Καθαρά Commits
 Κάνε commit ανά λογικό βήμα:πχ Ολοκλήρωσες ενα feature,διόρθωσες ενα bug,βελτίωσες υπάρχον κωδικα κτλπα
+Δειτε σημειώσεις του μαθήματος για να γράφετε σωστά commit messages 
 ```bash
 git add .
 git commit -m "feat: add budget summary table"
@@ -67,7 +73,7 @@ prefix examples:
 - **refactor** --> βελτίωση κώδικα χωρίς αλλαγή λειτουργίας
 - **docs** --> αλλαγή σε documentation
 
-## 5. Code Review & Pull Requests
+## 6. Code Review & Pull Requests
 - Κάθε PR εγκρίνεται τουλάχστιον από ένα άτομο.
 - Έλεγχος για:
     * Λειτουργικότητα
@@ -75,7 +81,7 @@ prefix examples:
     * καθαρότητα/αναγνωσιμότητα κώδικα
     * αποδοτικότητα κωδικα
 
-## 6. Αγνόηση Περιττών Αρχείων
+## 7. Αγνόηση Περιττών Αρχείων
 Φτιαξτε .gitignore αρχειο στο οποιο συμπεριλάβετε τα αρχεια που δεν θέλετε να γινονται push στο remote repository
 ```bash
 target/
@@ -83,7 +89,7 @@ target/
 .vscode/
 ```
 
-## 7. Ενιαίο περιβάλλον Ανάπτυξης
+## 8. Ενιαίο περιβάλλον Ανάπτυξης
 - Ίδιες εκδόσεις Java/Maven
 - Κοινό pom.xml με όλες τις εξαρτήσεις
 
@@ -228,6 +234,8 @@ mvn dependency:tree            # Δες dependencies
 mvn spotbugs:check             # Έλεγχος για bugs
 mvn spotbugs:gui               # Spotbugs με GUI
 mvn versions:display-dependency-updates  # Έλεγχος για updates
+mvn checkstyle:check            # Ενεργοποιηση ελεγχων checkstyle χωρις build 
+mvn verify                      #compile + test + package + verify(έλεγχοι checkstyle)
 ```
 
 
