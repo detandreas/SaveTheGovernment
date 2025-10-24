@@ -85,20 +85,21 @@ public  abstract class User {
         this.fullName = fullName;
     }
     /**
-     * returns user password.
-     *
-     * @return user password
-     */
-    public String getPassword() {
-        return password;
-    }
-    /**
-     * sets user password.
+     * sets user password (will be hashed by service layer).
      *
      * @param password user password
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+    /**
+     * Gets the stored password hash
+     * This method should only be used by authentication services.
+     *
+     * @return the stored has password
+     */
+    public String getHashPassword() {
+        return password;
     }
     /**
      * returns the role of the user.
