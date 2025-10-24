@@ -5,4 +5,6 @@
 <suppressions>
     <suppress files=".*" checks="JavadocPackage"/>
     <suppress files=".*" checks="JavadocVariable"/>
+    <suppress files=".*" checks="HiddenField"/>
+    <suppress files=".*" checks="FinalParameters"/>
 </suppressions>
