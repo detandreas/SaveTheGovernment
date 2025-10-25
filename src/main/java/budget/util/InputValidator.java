@@ -17,7 +17,7 @@ public final class InputValidator {
     /**
      * Validates if user id is a positive number.
      * @param id user unique identifier
-     * @return True/False based on if user id is posiitve
+     * @return True/False based on if user id is positive
      */
     public static boolean isIdPositive(int id) {
         return id > 0;
