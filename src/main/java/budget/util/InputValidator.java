@@ -10,7 +10,7 @@ public final class InputValidator {
     private static final int MIN_PASSWORD_LENGTH = 8;
 
     /**
-     * Unaccesible constructor.
+     * Unaccessible constructor.
      * Prevents instances for this class
      */
     private InputValidator() { };
