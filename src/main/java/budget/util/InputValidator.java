@@ -2,7 +2,7 @@ package budget.util;
 
 import java.util.UUID;
 /**
- * Provides classes for validating user input.
+ * Provides methods for validating user input.
  */
 public final class InputValidator {
 
