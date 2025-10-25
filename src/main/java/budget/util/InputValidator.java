@@ -26,7 +26,6 @@ public final class InputValidator {
      * Checks if a string is a valid UUID.
      * @param s represents a UUID
      * @return True if a string matches UUID toString
-     * @throws IllegalArgumentException
      */
     public static boolean isUUID(String s)
     throws IllegalArgumentException {
