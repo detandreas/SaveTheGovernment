@@ -124,11 +124,11 @@ public  abstract class User {
      * @return if user is authorized to change budgetItem
      *
      */
-    public abstract Boolean canEdit(BudgetItem budgetItem);
+    public abstract boolean canEdit(BudgetItem budgetItem);
     /**
      * checks if user can approve a proposed change.
      *
      * @return  if user is authorized to approve a budget change
      */
-    public abstract Boolean canApprove();
+    public abstract boolean canApprove();
 }

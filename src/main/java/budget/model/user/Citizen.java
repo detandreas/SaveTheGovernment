@@ -25,7 +25,7 @@ public class Citizen extends User {
      * @return false for citizen
      */
     @Override
-    public Boolean canEdit(BudgetItem budgetItem) {
+    public boolean canEdit(BudgetItem budgetItem) {
         return false;
     }
     /**
@@ -33,7 +33,7 @@ public class Citizen extends User {
      * @return false for citizen
      */
     @Override
-    public Boolean canApprove() {
+    public boolean canApprove() {
         return false;
     }
 }
