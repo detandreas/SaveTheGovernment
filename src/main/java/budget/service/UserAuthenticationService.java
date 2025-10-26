@@ -61,6 +61,25 @@ public class UserAuthenticationService {
     public boolean isAuthenticated() {
         return this.currentUser != null;
     }
+     /**
+     * Encryption of password with SHA-256.
+     */
+    public String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+
+            for (byte b : hash) {
+                hexString.append(String.format("%02x", b));
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error during hashing of password.", e);
+        }
+    }
+}
 
 
     /**
