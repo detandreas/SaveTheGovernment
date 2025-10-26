@@ -1,6 +1,10 @@
 package budget.util;
 
 import java.util.UUID;
+
+import budget.model.UserRole;
+
+
 /**
  * Provides methods for validating user input.
  */
@@ -14,14 +18,6 @@ public final class InputValidator {
      * Prevents instances for this class
      */
     private InputValidator() { };
-    /**
-     * Validates if user id is a positive number.
-     * @param id user unique identifier
-     * @return True/False based on if user id is positive
-     */
-    public static boolean isIdPositive(int id) {
-        return id > 0;
-    }
     /**
      * Checks if a string is a valid UUID.
      * @param s represents a UUID
@@ -90,5 +86,25 @@ public final class InputValidator {
         }
         return pw.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)"
         + "(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
+    }
+    /**
+     * Checks if provided object is valid.
+     * A valid object is a non null object
+     * @param o the object to validate
+     * @return true if object is not null
+     */
+    public static boolean isNonNull(Object o) {
+        return o != null;
+    }
+    /**
+     * Checks if the provided UserRole is valid.
+     * A valid UserRole is a non-null enum value that exists
+     * in the UserRole enumeration.
+     *
+     * @param role the UserRole to validate
+     * @return true if role is a valid UserRole enum value, false otherwise
+     */
+    public static boolean isValidUserRole(UserRole role) {
+        return role != null;
     }
 }
