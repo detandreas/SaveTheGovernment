@@ -48,6 +48,7 @@ public final class InputValidationService {
      * checks username, fullname, userrole, hashed password
      * user id stays the same
      * @param u user object to validate
+     * @throws ValidationException if any validation checks fails
      */
     public void validateUserUpdate(User u)
         throws ValidationException {
