@@ -2,6 +2,7 @@ package budget.model.user;
 
 import budget.model.BudgetItem;
 import java.util.UUID;
+import budget.model.UserRole;
 
 /**
  * Represents a user of the budget system.
@@ -13,7 +14,7 @@ public  abstract class User {
     private String userName;
     private String fullName;
     private String password;
-    private String userRole;
+    private UserRole userRole;
 
     /**
      *
@@ -26,7 +27,7 @@ public  abstract class User {
     String userName,
     String fullName,
     String password,
-    String userRole
+    UserRole userRole
     ) {
         this.id = UUID.randomUUID();
         this.userName = userName;
@@ -105,7 +106,7 @@ public  abstract class User {
      *
      * @return user Role inside budget system
      */
-    public String getUserRole() {
+    public UserRole getUserRole() {
         return userRole;
     }
     /**
@@ -113,7 +114,7 @@ public  abstract class User {
      *
      * @param userRole user Role inside the budget system
      */
-    public void setUserRole(String userRole) {
+    public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
     }
     /**
