@@ -24,6 +24,9 @@ public final class InputValidationService {
      */
     public void validateNewUser(User u)
         throws ValidationException {
+        if (!InputValidator.isNonNull(u)) {
+            fail("User is null");
+        }
         if (!InputValidator.isUserName(u.getUserName())) {
             fail("invalid username");
         }
@@ -32,9 +35,6 @@ public final class InputValidationService {
         }
         if (!InputValidator.isValidUserRole(u.getUserRole())) {
             fail("invalid user role");
-        }
-        if (!InputValidator.isNonNull(u)) {
-            fail("User is null");
         }
         if (!InputValidator.isNonNull(u.getHashPassword())) {
             fail("invalid hashed password");
@@ -45,8 +45,8 @@ public final class InputValidationService {
     }
     /**
      * Validates a user object for updating info.
-     * checks username, fullname, userrole, hashed password
-     * user id stays the same
+     * Checks username, full name, user role, hashed password.
+     * User id stays the same.
      * @param u user object to validate
      * @throws ValidationException if any validation checks fails
      */
@@ -70,11 +70,13 @@ public final class InputValidationService {
     }
     /**
      * Validates a role change.
-     * checks if old/new role is not null
+     * checks if old/new role is null
      * @param from  old user role
      * @param to new user role
+     * @throws ValidationException if any role is null
      */
-    public void validateRoleChange(UserRole from, UserRole to) {
+    public void validateRoleChange(UserRole from, UserRole to)
+        throws ValidationException {
         if (from == null || to == null) {
             fail("user roles cannot be null");
         }
