@@ -37,7 +37,7 @@ public class UserAuthenticationService {
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            if (user.getPassword().equals(hashPassword(password))) {
+            if (user.getHashPassword().equals(hashPassword(password))) {
                 this.currentUser = user;
                 return true;
             }
