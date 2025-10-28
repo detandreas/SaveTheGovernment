@@ -1,7 +1,7 @@
 package budget.model;
 
 /**
- * Represent a budget line item of the state budget.
+ * Represents a budget line item of the state budget.
  */
 public class BudgetItem {
 
