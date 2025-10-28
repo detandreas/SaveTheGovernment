@@ -1,68 +1,84 @@
-public class Menu {
+package budget.util.constants;
 
-    //Role Selection Menu
-    public static final String[] ROLE_SELECTION_MENU = {
+import java.util.List;
+
+public final class Menu { // changed to final
+
+    private Menu() { } // Prevent instantiation
+
+    //Login Menu
+    public static final List<String> LOGIN_MENU = List.of(
+        "Login Menu:",
+        "1. Log In",
+        "2. Create New Account",
+        "3. Exit Application"
+    );
+    // Role Selection Menu
+    public static final List<String> ROLE_SELECTION_MENU = List.of(
         "Please select your Role:",
         "1. Citizen",
         "2. Government Member",
         "3. Prime Minister"
-    };
-
-    //Citizen Main Menu
-    public static final String[] CITIZEN_MAIN_MENU = {
+    );
+    // Citizen Main Menu
+    public static final List<String> CITIZEN_MAIN_MENU = List.of(
         "Please select an option: ",
         "1. View total budget",
         "2. View change history",
         "3. View statistics",
         "4. Logout."
-    };
-
-    //Government Member Main Menu
-    public static final String[] GOVERNMENT_MEMBER_MAIN_MENU = {
+    );
+    // Government Member Main Menu
+    public static final List<String> GOVERNMENT_MEMBER_MAIN_MENU = List.of(
         "Please select an option: ",
         "1. View total budget",
         "2. View change history",
         "3. View statistics",
-        "4. Submit change request for a budget item",
+        "4. Manage budget items (only edit)",
         "5. View your request history",
         "6. Logout"
-    };
-
-    //Ministry of Finance Member Main Menu
-    public static final String[] FINANCE_MEMBER_MAIN_MENU = {
+    );
+    // Ministry of Finance Member Main Menu
+    public static final List<String> FINANCE_MEMBER_MAIN_MENU = List.of(
         "Please select an option: ",
         "1. View total budget",
         "2. View change history",
         "3. View statistics",
-        "4. Submit change request for a budget item",
+        "4. Manage budget items (add, delete, edit)",
         "5. Manage pending change requests",
         "6. View your request history",
         "7. Logout"
-    };
-
-    //Prime Minister Main Menu
-    public static final String[] PRIME_MINISTER_MAIN_MENU = {
+    );
+    // Prime Minister Main Menu
+    public static final List<String> PRIME_MINISTER_MAIN_MENU = List.of(
         "Please select an option: ",
         "1. View total budget",
         "2. View change history",
         "3. View statistics",
         "4. Manage pending change requests",
         "5. Logout"
-    };
-
-    //Pending Requests Submenu - Prime Minister
-    public static final String[] PENDING_REQUESTS_SUBMENU = {
+    );
+    // Pending Requests Submenu - Prime Minister
+    public static final List<String> PENDING_REQUESTS_SUBMENU = List.of(
         "Please select an option: ",
         "1. Approve request",
         "2. Reject request",
         "3. Return to main menu"
-    };
-
-    //Confirmation Submenu for Change Requests
-    public static final String[] CONFIRMATION_SUBMENU = {
-        "Are you sure you want to submit the request for Prime Minister approval?",
+    );
+    // Confirmation Submenu for Change Requests
+    public static final List<String> CONFIRMATION_SUBMENU = List.of(
+        "Are you sure you want to submit the "
+        + "request for Prime Minister approval?",
         "1. YES",
         "2. NO"
-    };
- 
+    );
+    // Submenu for managing budget items
+    public static final List<String> MANAGE_BUDGET_ITEMS_SUBMENU = List.of(
+        "Please select an option: ",
+        "1. Add budget item",
+        "2. Delete budget item",
+        "3. Edit budget item",
+        "4. Return to main menu"
+    );
+
 }
