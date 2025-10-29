@@ -2,9 +2,9 @@ package budget.util.constants;
 
 import java.util.List;
 
-public final class Menu { // changed to final
+public final class Menu { 
 
-    private Menu() { } // Prevent instantiation
+    private Menu() { } 
 
     //Login Menu
     public static final List<String> LOGIN_MENU = List.of(
@@ -79,6 +79,17 @@ public final class Menu { // changed to final
         "2. Delete budget item",
         "3. Edit budget item",
         "4. Return to main menu"
+    );
+    // Password Requirements
+    public static final List<String> PASSWORD_REQUIREMENTS = List.of(
+        "Password Requirements:",
+        "- At least 8 characters and at most 32 characters.",
+        "- At least one uppercase letter (A-Z).",
+        "- At least one lowercase letter (a-z).",
+        "- At least one digit (0-9).",
+        "- At least one special character from @#$%^&+=!.",
+        "- Only contain allowed characters (letters, digits,"
+        + "and specified special characters)"
     );
 
 }
