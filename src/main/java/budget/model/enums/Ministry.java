@@ -1,4 +1,4 @@
-package budget.model;
+package budget.model.enums;
 
 public enum Ministry {
     HEALTH("Health"),

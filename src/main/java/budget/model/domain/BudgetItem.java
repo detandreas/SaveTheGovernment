@@ -1,4 +1,4 @@
-package budget.model;
+package budget.model.domain;
 
 /**
  * Represents a budget line item of the state budget.
