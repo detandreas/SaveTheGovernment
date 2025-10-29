@@ -80,4 +80,17 @@ public class BudgetItem {
     public boolean getIsRevenue() {
         return isRevenue;
     }
+    /**
+     * Return  a string represantation of a budget item.
+     * @return a formatted String containing
+     * information for a budget item
+     */
+    @Override
+    public String toString() {
+        return String.format(
+            "BudgetItem{id=%d, year=%d, name=%s, "
+            + "value=%.2f, isRevenue=%b}",
+            id, year, name, value, isRevenue
+            );
+    }
 }
