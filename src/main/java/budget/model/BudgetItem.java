@@ -1,7 +1,7 @@
 package budget.model;
 
 /**
- * Represent a budget line item of the state budget.
+ * Represents a budget line item of the state budget.
  */
 public class BudgetItem {
 
@@ -68,7 +68,7 @@ public class BudgetItem {
     }
     /**
      * Set value of a budget item.
-     * @param value value of a snigle budget item
+     * @param value value of a single budget item
      */
     public void setValue(double value) {
         this.value = value;
