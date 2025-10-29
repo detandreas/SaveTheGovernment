@@ -2,9 +2,9 @@ package budget.util.constants;
 
 import java.util.List;
 
-public final class Menu { 
+public final class Menu {
 
-    private Menu() { } 
+    private Menu() { }
 
     //Login Menu
     public static final List<String> LOGIN_MENU = List.of(

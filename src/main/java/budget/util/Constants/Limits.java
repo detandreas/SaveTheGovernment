@@ -1,7 +1,7 @@
 package budget.util.constants;
 
 public final class Limits {
-    
+
     private Limits() { }
 
     // Username and Password Length Limits

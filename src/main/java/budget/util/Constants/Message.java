@@ -53,10 +53,12 @@ public final class Message {
         "Invalid role selected. Please choose from the list.";
     // Success Message for Create Account
     public static final String CREATE_ACCOUNT_SUCCESS =
-        "Account created successfully! You can now log in using your credentials.";
+        "Account created successfully! "
+        + "You can now log in using your credentials.";
     // Prime Minister Existence Error Message
-    public static final String PRIME_MINISTER_EXISTS = 
-        "A Prime Minister already exists. Creating a second one is not allowed.";
+    public static final String PRIME_MINISTER_EXISTS =
+        "A Prime Minister already exists."
+        + " Creating a second one is not allowed.";
     // Logout Message
     public static final String LOGOUT_SUCCESS =
         "You have been logged out successfully.";
@@ -81,7 +83,8 @@ public final class Message {
         "There are no pending change requests.";
     // Budget Item Deletion Not Allowed Message
     public static final String DELETE_NOT_ALLOWED_MESSAGE =
-        "Deletion of this budget item is prohibited by administrative protocols.";
+        "Deletion of this budget item is prohibited "
+        + "by administrative protocols.";
     // Duplicate Budget Item Error Message
     public static final String DUPLICATE_BUDGET_ITEM_ERROR =
         "Duplicate budget items with the same ID or title are not allowed. "
