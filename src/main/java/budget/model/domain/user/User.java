@@ -1,7 +1,7 @@
 package budget.model.domain.user;
 
 import java.util.UUID;
-import budget.model.enums.UserRole; 
+import budget.model.enums.UserRole;
 import budget.model.domain.BudgetItem;
 
 /**

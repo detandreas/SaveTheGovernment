@@ -1,1 +1,1 @@
-package budget.model.user;
+package budget.model.domain.user;
