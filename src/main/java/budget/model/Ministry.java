@@ -7,6 +7,9 @@ public enum Ministry {
     FINANCE("Finance"),
     INFRASTRUCTURE("Infrastructure"),
     FOREIGN_AFFAIRS("Foreign Affairs"),
+    INTERIOR("Interior"),
+    DEVELOPMENT("Development"),
+    LABOUR("Labour"),
     JUSTICE("Justice"),
     AGRICULTURE("Agriculture");
 
