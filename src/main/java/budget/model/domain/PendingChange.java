@@ -1,10 +1,8 @@
 package budget.model.domain;
 
-import budget.model.domain.user.User;
 import budget.model.enums.Status;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -20,7 +18,8 @@ public class PendingChange {
 
     private final int id;
     private final int budgetItemId;
-    private final User requestBy;
+    private final String requestByName;
+    private final int requestById;
     private final double oldValue;
     private final double newValue;
     private Status status;
@@ -31,20 +30,22 @@ public class PendingChange {
      * PENDING status.
      *
      * @param budgetItemId the ID of the budget item to be modified
-     * @param requestBy the user requesting the change
+     * @param requestByName the user name requesting the change
+     * @param requestById the user id requesting the change
      * @param oldValue the current value of the budget item
      * @param newValue the proposed new value for the budget item
      */
-    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public PendingChange(
         int budgetItemId,
-        User requestBy,
+        String requestByName,
+        int requestById,
         double oldValue,
         double newValue
     ) {
         this.id = NEXT_ID.getAndIncrement();
         this.budgetItemId = budgetItemId;
-        this.requestBy = requestBy;
+        this.requestByName = requestByName;
+        this.requestById = requestById;
         this.oldValue = oldValue;
         this.newValue = newValue;
         this.status = Status.PENDING;
@@ -67,12 +68,18 @@ public class PendingChange {
         return budgetItemId;
     }
     /**
-     * Return the user that requested the change.
-     * @return a User instance
+     * Return the name of the user that requested the change.
+     * @return a String representing UserName
      */
-    @SuppressFBWarnings("EI_EXPOSE_REP")
-    public User getRequestBy() {
-        return requestBy;
+    public String getRequestByName() {
+        return requestByName;
+    }
+    /**
+     * Return the ID of the user that requested the change.
+     * @return an int representing the ID of the user
+     */
+    public int getRequestById() {
+        return requestById;
     }
     /**
      * Return value of the item before the requested change.
@@ -130,9 +137,9 @@ public class PendingChange {
     @Override
     public String toString() {
         return String.format(
-            "PendingChange{id=%d, budgetItemId=%d, requestBy=%s, "
+            "PendingChange{id=%d, budgetItemId=%d, requestByName=%s, "
             + "oldValue=%.2f, newValue=%.2f, status=%s, submittedDate=%s}",
-            id, budgetItemId, requestBy, oldValue, newValue,
+            id, budgetItemId, requestByName, oldValue, newValue,
             status, submittedDate
         );
     }
