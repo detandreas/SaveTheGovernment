@@ -65,7 +65,7 @@ public class PendingChange {
         return budgetItemId;
     }
     /**
-     * Return the user that request the change.
+     * Return the user that requested the change.
      * @return a User instance
      */
     @SuppressFBWarnings("EI_EXPOSE_REP")
