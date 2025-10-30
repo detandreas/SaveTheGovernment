@@ -8,10 +8,11 @@ public final class Message {
     public static final String WELCOME_MESSAGE = "Welcome"
         + " to the Government Budget application!";
     // Login Messages
-    public static final String INVALID_OPTION = "Invalid"
-        + " option. Please try again.";
+    
     public static final String LOGIN_MESSAGE = "Please"
         + " enter your username and your password.";
+    public static final String INVALID_OPTION = "Invalid"
+        + " option. Please try again.";
     public static final String USERNAME_PROMPT = "Username: ";
     public static final String PASSWORD_PROMPT = "Password: ";
     public static final String LOGIN_SUCCESS = "Successful login! Welcome, %s ";
@@ -59,6 +60,10 @@ public final class Message {
     public static final String PRIME_MINISTER_EXISTS =
         "A Prime Minister already exists."
         + " Creating a second one is not allowed.";
+    // Pending Requests Limit Message
+    public static final String MAX_PENDING_REQUESTS_MESSAGE=
+    "You cannot submit more requests. You have reached the maximum limit of "
+    + Limits.MAX_PENDING_REQUESTS_PER_USER + " pending requests.";
     // Logout Message
     public static final String LOGOUT_SUCCESS =
         "You have been logged out successfully.";
