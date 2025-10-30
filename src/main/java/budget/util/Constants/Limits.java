@@ -23,5 +23,4 @@ public final class Limits {
     // Maximum number of pending requests per user
     public static final int MAX_PENDING_REQUESTS_PER_USER = 5;
 
-
 }

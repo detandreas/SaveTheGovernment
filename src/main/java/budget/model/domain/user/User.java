@@ -1,7 +1,8 @@
-package budget.model.user;
+package budget.model.domain.user;
 
-import budget.model.BudgetItem;
 import java.util.UUID;
+import budget.model.enums.UserRole;
+import budget.model.domain.BudgetItem;
 
 /**
  * Represents a user of the budget system.
@@ -9,11 +10,11 @@ import java.util.UUID;
  */
 public  abstract class User {
 
-    private UUID id;
+    private final UUID id;
     private String userName;
     private String fullName;
     private String password;
-    private String userRole;
+    private UserRole userRole;
 
     /**
      *
@@ -26,7 +27,7 @@ public  abstract class User {
     String userName,
     String fullName,
     String password,
-    String userRole
+    UserRole userRole
     ) {
         this.id = UUID.randomUUID();
         this.userName = userName;
@@ -42,14 +43,6 @@ public  abstract class User {
      */
     public UUID getId() {
         return id;
-    }
-    /**
-     * sets user id.
-     *
-     * @param id user unique identifier
-     */
-    public void setId(UUID id) {
-        this.id = id;
     }
     /**
      * returns userName.
@@ -105,7 +98,7 @@ public  abstract class User {
      *
      * @return user Role inside budget system
      */
-    public String getUserRole() {
+    public UserRole getUserRole() {
         return userRole;
     }
     /**
@@ -113,7 +106,7 @@ public  abstract class User {
      *
      * @param userRole user Role inside the budget system
      */
-    public void setUserRole(String userRole) {
+    public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
     }
     /**
@@ -123,11 +116,11 @@ public  abstract class User {
      * @return if user is authorized to change budgetItem
      *
      */
-    public abstract Boolean canEdit(BudgetItem budgetItem);
+    public abstract boolean canEdit(BudgetItem budgetItem);
     /**
      * checks if user can approve a proposed change.
      *
      * @return  if user is authorized to approve a budget change
      */
-    public abstract Boolean canApprove();
+    public abstract boolean canApprove();
 }
