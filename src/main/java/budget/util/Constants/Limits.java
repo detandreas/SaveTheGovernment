@@ -13,12 +13,11 @@ public final class Limits {
     public static final int MAX_PASSWORD_LENGTH = 32;
     public static final int MAX_FULL_NAME_LENGTH = 50;
     // Maximum allowed change percentage for budget edits
-    private static final double MAX_CHANGE_PERCENT = 0.10;
+    public static final double MAX_CHANGE_PERCENT = 0.10;
     // Maximum number of Prime Ministers allowed
     public static final int MAX_PRIME_MINISTERS = 1;
     // Minimum budget item amount
     public static final double MIN_BUDGET_ITEM_AMOUNT = 0.0;
-    // Maximum budget item amount
     // Maximum number of pending requests per user
     public static final int MAX_PENDING_REQUESTS_PER_USER = 5;
 
