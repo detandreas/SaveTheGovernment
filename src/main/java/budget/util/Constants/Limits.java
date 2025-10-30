@@ -19,7 +19,6 @@ public final class Limits {
     // Minimum budget item amount
     public static final double MIN_BUDGET_ITEM_AMOUNT = 0.0;
     // Maximum budget item amount
-    public static final double MAX_BUDGET_ITEM_AMOUNT = 1_000_000.0;
     // Maximum number of pending requests per user
     public static final int MAX_PENDING_REQUESTS_PER_USER = 5;
 
