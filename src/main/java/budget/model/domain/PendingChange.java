@@ -2,7 +2,8 @@ package budget.model.domain;
 
 import budget.model.domain.user.User;
 import budget.model.enums.Status;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -23,7 +24,7 @@ public class PendingChange {
     private final double oldValue;
     private final double newValue;
     private Status status;
-    private final LocalDate submittedDate;
+    private final String submittedDate;
     /**
      * Constructs a new pending change with the specified parameters.
      * The change is automatically assigned a unique ID and set to
@@ -47,7 +48,8 @@ public class PendingChange {
         this.oldValue = oldValue;
         this.newValue = newValue;
         this.status = Status.PENDING;
-        this.submittedDate = LocalDate.now();
+        this.submittedDate = LocalDateTime.now()
+                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
     /**
      * Return pending change unique id.
@@ -114,9 +116,9 @@ public class PendingChange {
     /**
      * Returns the date when this change was submitted.
      *
-     * @return a LocalDate representing the submission date
+     * @return a String representing the submission date
      */
-    public LocalDate getSubmittedDate() {
+    public String getSubmittedDate() {
         return submittedDate;
     }
 
