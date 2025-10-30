@@ -1,7 +1,10 @@
 package budget.util.constants;
 
 import java.util.List;
-
+/**
+ * Utility class containing menu options for various user roles
+ * and actions within the application.
+ */
 public final class Menu {
 
     private Menu() { }

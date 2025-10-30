@@ -1,5 +1,7 @@
 package budget.util.constants;
-
+/**
+ * Utility class containing constant messages used throughout the application.
+ */
 public final class Message {
 
     private Message() { }
@@ -8,7 +10,6 @@ public final class Message {
     public static final String WELCOME_MESSAGE = "Welcome"
         + " to the Government Budget application!";
     // Login Messages
-    
     public static final String LOGIN_MESSAGE = "Please"
         + " enter your username and your password.";
     public static final String INVALID_OPTION = "Invalid"
@@ -61,7 +62,7 @@ public final class Message {
         "A Prime Minister already exists."
         + " Creating a second one is not allowed.";
     // Pending Requests Limit Message
-    public static final String MAX_PENDING_REQUESTS_MESSAGE=
+    public static final String MAX_PENDING_REQUESTS_MESSAGE =
     "You cannot submit more requests. You have reached the maximum limit of "
     + Limits.MAX_PENDING_REQUESTS_PER_USER + " pending requests.";
     // Logout Message
