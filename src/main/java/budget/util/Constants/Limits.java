@@ -1,6 +1,6 @@
  package budget.util.constants;
 /**
- * Utility class containing limits  for various fields in the application.
+ * Utility class containing limits for various fields in the application.
  */
 public final class Limits {
 
