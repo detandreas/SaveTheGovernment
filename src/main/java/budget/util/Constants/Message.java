@@ -37,16 +37,16 @@ public final class Message {
         "Invalid input. Make sure all fields are filled correctly.";
     public static final String ERROR_EMPTY_FIELD =
         "This field cannot be empty.";
-    public static final String USERNAME_LENGTH_LIMITS =
+    public static final String USERNAME_LENGTH_LIMITS_MESSAGE=
         "Username must contain between 4 and 20 characters.";
-    public static final String USERNAME_INVALID_CHARS =
+    public static final String USERNAME_INVALID_CHARS_MESSAGE =
         "Username must only contain letters and digits and underscores.";
-    public static final String PASSWORD_LENGTH_LIMITS =
+    public static final String PASSWORD_LENGTH_LIMITS_MESSAGE=
         "Password must contain between 8 and 32 characters.";
-    public static final String PASSWORD_INVALID_CHARS =
+    public static final String PASSWORD_INVALID_CHARS_MESSAGE =
         "Password contains invalid characters."
         + " Allowed: A–Z, a–z, 0–9, and @#$%^&+=!";
-    public static final String PASSWORD_COMPLEXITY_FAIL =
+    public static final String PASSWORD_COMPLEXITY_FAIL_MESSAGE =
         "Password must contain at least one uppercase letter, "
         + "one lowercase letter, one digit, and one special character.";
     public static final String ERROR_INVALID_ROLE =
