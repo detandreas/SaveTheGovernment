@@ -112,10 +112,10 @@ public class PendingChange {
         this.status = Status.APPROVED;
     }
     /**
-    * Returns the date when this change was submitted.
-    *
-    * @return a LocalDate representing the submission date
-    */
+     * Returns the date when this change was submitted.
+     *
+     * @return a LocalDate representing the submission date
+     */
     public LocalDate getSubmittedDate() {
         return submittedDate;
     }
