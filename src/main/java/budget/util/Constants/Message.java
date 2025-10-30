@@ -28,7 +28,6 @@ public final class Message {
         "Confirm your password:";
     public static final String SIGNUP_ENTER_FULLNAME =
         "Enter your full name:";
-    public static final String SIGNUP_SELECT_ROLE =
     // Error Messages for Create Account
     public static final String ERROR_USERNAME_TAKEN =
         "Username is already taken. Please choose another.";
