@@ -1,11 +1,5 @@
 package budget.repository;
 
-import budget.model.user.User;
-import budget.model.user.UserRole;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -15,6 +9,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import budget.model.domain.user.User;
+import budget.model.enums.UserRole;
 
 /**
  * Repository class for managing user data. Handles loading, saving, and
@@ -40,7 +41,7 @@ public class UserRepository {
      *
      * @return list of users, or empty list if file not found or load fails
      */
-    public List<User> loadUsers() {
+    private List<User> loadUsers() {
         final File file = new File(USERS_FILE);
         if (!file.exists()) {
             return new ArrayList<>();
@@ -65,7 +66,7 @@ public class UserRepository {
      */
     public Optional<User> findByUsername(final String username) {
         return users.stream()
-                .filter(u -> u.getUsername().equalsIgnoreCase(username))
+                .filter(u -> u.getUserName().equalsIgnoreCase(username))
                 .findFirst();
     }
 
@@ -76,7 +77,7 @@ public class UserRepository {
      * @param user the user to save
      */
     public void saveUser(final User user) {
-        findByUsername(user.getUsername()).ifPresent(users::remove);
+        findByUsername(user.getUserName()).ifPresent(users::remove);
         users.add(user);
         saveToFile();
     }
@@ -112,7 +113,7 @@ public class UserRepository {
             return false;
         }
         return users.stream()
-                .anyMatch(u -> u.getUsername().equalsIgnoreCase(username));
+                .anyMatch(u -> u.getUserName().equalsIgnoreCase(username));
     }
 
     /**
