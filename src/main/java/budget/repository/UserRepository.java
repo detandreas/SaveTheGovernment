@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository class for managing user data.
- * Handles loading, saving, and validation of users from JSON storage.
+ * Repository class for managing user data. Handles loading, saving, and
+ * validation of users from JSON storage.
  */
 public class UserRepository {
 
@@ -28,14 +28,13 @@ public class UserRepository {
     private final List<User> users;
 
     /**
-     * Default constructor.
-     * Initializes the repository and loads existing users.
+     * Default constructor. Initializes the repository and loads existing users.
      */
     public UserRepository() {
         this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.users = loadUsers();
     }
-    
+
     /**
      * Loads all users from the JSON file.
      *
@@ -48,7 +47,8 @@ public class UserRepository {
         }
 
         try (FileReader reader = new FileReader(file)) {
-            final Type userListType = new TypeToken<List<User>>() {}.getType();
+            final Type userListType = new TypeToken<List<User>>() {
+            }.getType();
             final List<User> loadedUsers = gson.fromJson(reader, userListType);
             return loadedUsers != null ? loadedUsers : new ArrayList<>();
         } catch (IOException e) {
@@ -56,7 +56,7 @@ public class UserRepository {
             return new ArrayList<>();
         }
     }
-    
+
     /**
      * Finds a user by username.
      *
@@ -68,10 +68,10 @@ public class UserRepository {
                 .filter(u -> u.getUsername().equalsIgnoreCase(username))
                 .findFirst();
     }
-    
+
     /**
-     * Saves a user to the repository.
-     * If a user with the same username exists, it is updated.
+     * Saves a user to the repository. If a user with the same username exists,
+     * it is updated.
      *
      * @param user the user to save
      */
@@ -91,7 +91,7 @@ public class UserRepository {
             System.err.println("Error saving users: " + e.getMessage());
         }
     }
-    
+
     /**
      * Returns an unmodifiable list of all users.
      *
