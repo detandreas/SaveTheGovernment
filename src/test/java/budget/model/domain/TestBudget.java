@@ -2,7 +2,6 @@ package budget.model.domain;
 
 import budget.model.enums.Ministry;
 import org.junit.jupiter.api.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
