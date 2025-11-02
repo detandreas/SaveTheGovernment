@@ -7,11 +7,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
- * Represents a change proposed by a
- * government member for a budget item.
- * Each pending change has a unique ID
- * and tracks the modification request
- * from submission to approval or rejection.
+ * Represents a proposed update to a budget item.
+ *
+ * Records the target budget item id, requester (name/id), previous and
+ * proposed values, current review status and submission timestamp.
  */
 public class PendingChange {
     private static final AtomicInteger NEXT_ID = new AtomicInteger(1);
