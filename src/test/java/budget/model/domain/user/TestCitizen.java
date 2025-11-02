@@ -1,4 +1,4 @@
-package budget.model.domain;
+package budget.model.domain.user;
 
 import budget.model.domain.user.Citizen;
 
