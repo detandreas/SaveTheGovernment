@@ -76,7 +76,7 @@ public class TestBudget {
             assertNotEquals(items, b.getItems(), "Failure - equal items"); //we updated the items
             assertEquals(newItems, b.getItems(), "Failure - not equal items"); //content equality
             assertNotSame(newItems, b.getItems(), "Failure - same items"); //different reference
-            //assert we cant change internal field
+            //assert we can't change internal field
             newItems.clear();
             assertNotEquals(0, b.getItems().size(), "Failure - wrong size");
         }
