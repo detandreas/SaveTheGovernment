@@ -35,6 +35,7 @@ public class UserRepository {
         this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.users = loadUsers();
     }
+    
     /**
      * Loads all users from the JSON file.
      *
@@ -54,5 +55,17 @@ public class UserRepository {
             System.err.println("Error loading users: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+    
+    /**
+     * Finds a user by username.
+     *
+     * @param username the username to search for
+     * @return optional containing the user if found, otherwise empty
+     */
+    public Optional<User> findByUsername(final String username) {
+        return users.stream()
+                .filter(u -> u.getUsername().equalsIgnoreCase(username))
+                .findFirst();
     }
 }
