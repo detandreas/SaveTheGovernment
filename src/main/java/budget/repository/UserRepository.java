@@ -91,4 +91,37 @@ public class UserRepository {
             System.err.println("Error saving users: " + e.getMessage());
         }
     }
+    
+    /**
+     * Returns an unmodifiable list of all users.
+     *
+     * @return list of users
+     */
+    public List<User> getAllUsers() {
+        return Collections.unmodifiableList(users);
+    }
+
+    /**
+     * Checks if a username already exists in the repository.
+     *
+     * @param username the username to check
+     * @return true if the username exists, false otherwise
+     */
+    public boolean usernameExists(final String username) {
+        if (username == null || username.isBlank()) {
+            return false;
+        }
+        return users.stream()
+                .anyMatch(u -> u.getUsername().equalsIgnoreCase(username));
+    }
+
+    /**
+     * Checks if a Prime Minister user already exists.
+     *
+     * @return true if there is at least one user with role PRIME_MINISTER
+     */
+    public boolean primeMinisterExists() {
+        return users.stream()
+                .anyMatch(u -> u.getUserRole() == UserRole.PRIME_MINISTER);
+    }
 }
