@@ -21,3 +21,18 @@ import java.util.Optional;
  * Handles loading, saving, and validation of users from JSON storage.
  */
 public class UserRepository {
+
+    private static final String USERS_FILE = "src/main/resources/users.json";
+
+    private final Gson gson;
+    private final List<User> users;
+
+    /**
+     * Default constructor.
+     * Initializes the repository and loads existing users.
+     */
+    public UserRepository() {
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
+        this.users = loadUsers();
+    }
+}
