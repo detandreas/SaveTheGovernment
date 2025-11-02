@@ -1,4 +1,4 @@
-package budget.util.constants;
+package budget.util.Constants;
 /**
  * Utility class containing constant messages used throughout the application.
  */

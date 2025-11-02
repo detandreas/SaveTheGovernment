@@ -1,4 +1,4 @@
- package budget.util.constants;
+package budget.util.Constants;
 /**
  * Utility class containing limits for various fields in the application.
  */
