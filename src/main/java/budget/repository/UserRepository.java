@@ -68,4 +68,27 @@ public class UserRepository {
                 .filter(u -> u.getUsername().equalsIgnoreCase(username))
                 .findFirst();
     }
+    
+    /**
+     * Saves a user to the repository.
+     * If a user with the same username exists, it is updated.
+     *
+     * @param user the user to save
+     */
+    public void saveUser(final User user) {
+        findByUsername(user.getUsername()).ifPresent(users::remove);
+        users.add(user);
+        saveToFile();
+    }
+
+    /**
+     * Writes the user list to the JSON file.
+     */
+    private void saveToFile() {
+        try (FileWriter writer = new FileWriter(USERS_FILE)) {
+            gson.toJson(users, writer);
+        } catch (IOException e) {
+            System.err.println("Error saving users: " + e.getMessage());
+        }
+    }
 }
