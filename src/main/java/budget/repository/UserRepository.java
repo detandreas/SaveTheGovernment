@@ -35,4 +35,24 @@ public class UserRepository {
         this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.users = loadUsers();
     }
+    /**
+     * Loads all users from the JSON file.
+     *
+     * @return list of users, or empty list if file not found or load fails
+     */
+    public List<User> loadUsers() {
+        final File file = new File(USERS_FILE);
+        if (!file.exists()) {
+            return new ArrayList<>();
+        }
+
+        try (FileReader reader = new FileReader(file)) {
+            final Type userListType = new TypeToken<List<User>>() {}.getType();
+            final List<User> loadedUsers = gson.fromJson(reader, userListType);
+            return loadedUsers != null ? loadedUsers : new ArrayList<>();
+        } catch (IOException e) {
+            System.err.println("Error loading users: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
 }
