@@ -6,10 +6,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -70,11 +72,16 @@ public class UserRepository {
 
     /**
      * Saves a user to the repository. If a user with the same username exists,
-     * it is updated.
+     * it is updated. Null users or users with null/blank username are ignored.
      *
-     * @param user the user to save
+     * @param user the user to save; must not be null and must have a valid username
      */
     public void saveUser(final User user) {
+        if (user == null || user.getUserName() == null || user.getUserName().isBlank()) {
+            System.err.println("Cannot save user: null or invalid username.");
+            return;
+        }
+
         findByUsername(user.getUserName()).ifPresent(users::remove);
         users.add(user);
         saveToFile();
@@ -84,7 +91,7 @@ public class UserRepository {
      * Writes the user list to the JSON file.
      */
     private void saveToFile() {
-        try (FileWriter writer = new FileWriter(USERS_FILE)) {
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(USERS_FILE), StandardCharsets.UTF_8)) {
             gson.toJson(users, writer);
         } catch (IOException e) {
             System.err.println("Error saving users: " + e.getMessage());
