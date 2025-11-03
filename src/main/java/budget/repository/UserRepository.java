@@ -71,13 +71,16 @@ public class UserRepository {
     }
 
     /**
-     * Saves a user to the repository. If a user with the same username exists,
-     * it is updated. Null users or users with null/blank username are ignored.
-     *
-     * @param user the user to save; must not be null and must have a valid username
+     * Saves a user to the repository.
+     * If a user with the same username exists,
+     * it is updated.
+     * Null users or users with null/blank username are ignored.
+     * @param user the user to save;
+     * must not be null and must have a valid username
      */
     public void saveUser(final User user) {
-        if (user == null || user.getUserName() == null || user.getUserName().isBlank()) {
+        if (user == null || user.getUserName() == null
+                || user.getUserName().isBlank()) {
             System.err.println("Cannot save user: null or invalid username.");
             return;
         }
@@ -91,7 +94,8 @@ public class UserRepository {
      * Writes the user list to the JSON file.
      */
     private void saveToFile() {
-        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(USERS_FILE), StandardCharsets.UTF_8)) {
+        try (OutputStreamWriter writer = new OutputStreamWriter(
+            new FileOutputStream(USERS_FILE), StandardCharsets.UTF_8)) {
             gson.toJson(users, writer);
         } catch (IOException e) {
             System.err.println("Error saving users: " + e.getMessage());
