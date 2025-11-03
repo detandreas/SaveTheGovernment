@@ -1,5 +1,10 @@
 package budget.repository;
 
+import budget.model.domain.user.User;
+import budget.model.enums.UserRole;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -9,13 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import budget.model.domain.user.User;
-import budget.model.enums.UserRole;
 
 /**
  * Repository class for managing user data. Handles loading, saving, and
@@ -124,5 +122,30 @@ public class UserRepository {
     public boolean primeMinisterExists() {
         return users.stream()
                 .anyMatch(u -> u.getUserRole() == UserRole.PRIME_MINISTER);
+    }
+
+    /**
+     * Deletes a user by username.
+     *
+     * @param username the username of the user to delete
+     * @return true if the user was deleted, false if not found
+     */
+    public boolean deleteUser(final String username) {
+        Optional<User> userToDelete = findByUsername(username);
+        if (userToDelete.isPresent()) {
+            users.remove(userToDelete.get());
+            saveToFile();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Deletes all users from the repository.
+     * Clears the in-memory list and updates the JSON file.
+     */
+    public void deleteAllUsers() {
+        users.clear();
+        saveToFile();
     }
 }
