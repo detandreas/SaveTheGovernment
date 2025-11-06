@@ -8,7 +8,7 @@ import budget.model.domain.BudgetItem;
  * The Prime Minister can edit and approve all budget items
  * and pending changes in the system.
  */
-public class PrimeMinister extends User {
+public final class PrimeMinister extends User {
     
      /**
      * Creates a new Prime Minister.
