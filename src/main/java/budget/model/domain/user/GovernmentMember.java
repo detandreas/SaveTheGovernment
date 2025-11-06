@@ -1,6 +1,5 @@
 package budget.model.domain.user;
 import budget.model.domain.BudgetItem;
-import budget.model.domain.PendingChange;
 import budget.model.enums.Ministry;
 import budget.model.enums.UserRole;
 
