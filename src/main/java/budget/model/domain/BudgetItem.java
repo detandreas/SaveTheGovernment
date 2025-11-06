@@ -1,6 +1,7 @@
 package budget.model.domain;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import budget.model.enums.Ministry;
 
@@ -104,6 +105,7 @@ public class BudgetItem {
     @Override
     public String toString() {
         return String.format(
+            Locale.US,
             "BudgetItem{id=%d, year=%d, name=%s, "
             + "value=%.2f, isRevenue=%b}",
             id, year, name, value, isRevenue

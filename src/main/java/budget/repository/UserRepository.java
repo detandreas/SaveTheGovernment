@@ -47,7 +47,7 @@ public class UserRepository {
             return new ArrayList<>();
         }
 
-        try (FileReader reader = new FileReader(file)) {
+        try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
             final Type userListType = new TypeToken<List<User>>() {
             }.getType();
             final List<User> loadedUsers = gson.fromJson(reader, userListType);

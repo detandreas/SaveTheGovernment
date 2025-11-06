@@ -2,6 +2,7 @@ package budget.model.domain;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Locale;
 /**
  * Represent the state budget.
  */
@@ -113,6 +114,7 @@ public class Budget {
     @Override
     public String toString() {
         return String.format(
+            Locale.US,
             "Budget{year=%d, totalRevenue=%.2f, totalExpense=%.2f, "
             + "netResult=%.2f, itemsCount=%d}",
             year, totalRevenue, totalExpense, netResult, items.size()
