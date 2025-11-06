@@ -46,7 +46,7 @@ public class Citizen extends User {
         return false;
     }
     /**
-     * Returns a string representation Citizen.
+     * Returns a string representation of a Citizen.
      * @return a formatted string containing Citizen information
      */
     @Override

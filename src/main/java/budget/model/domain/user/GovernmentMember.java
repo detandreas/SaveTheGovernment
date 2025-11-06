@@ -57,11 +57,21 @@ public class GovernmentMember extends User {
     }
 
     /**
-     * Checks if this GovernmentMember can submit a change request.
+     * Checks if this GovernmentMember can submit a change request
      * for a budget item.
      */
-     @Override
+    @Override
     public boolean canSubmitChangeRequest() {
         return true;
+    }
+    /**
+     * Returns a string representation of a GovernmentMember.
+     * @return a formatted string containing GovernmentMember information
+     */
+    @Override
+    public String toString() {
+        String userString = super.toString();
+        return userString.substring(0, userString.length() - 1)
+           + String.format(", Ministry=%s}", ministry);
     }
 }
