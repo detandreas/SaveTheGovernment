@@ -1,5 +1,6 @@
 package budget.model.domain.user;
 
+import java.util.Locale;
 import java.util.UUID;
 import budget.model.enums.UserRole;
 import budget.model.domain.BudgetItem;
@@ -123,4 +124,22 @@ public  abstract class User {
      * @return  if user is authorized to approve a budget change
      */
     public abstract boolean canApprove();
+    /**
+     * Checks if user can sumbit a request
+     * to change a budget item.
+     * @return true if user is GovernmentMember else false
+     */
+    public abstract boolean canSubmitChangeRequest();
+    /**
+     * Returns a string representation of a User.
+     * @return a formatted string containing User information
+     */
+    @Override
+    public String toString() {
+        return String.format(
+            Locale.US,
+            "User{userName=%s, fullName=%s, userRole=%s}",
+            userName, fullName, userRole
+        );
+    }
 }

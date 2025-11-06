@@ -36,4 +36,21 @@ public class Citizen extends User {
     public boolean canApprove() {
         return false;
     }
+    /**
+     * Checks if Citizen can sumbit a request
+     * to change a budget item.
+     * @return always false
+     */
+    @Override
+    public boolean canSubmitChangeRequest() {
+        return false;
+    }
+    /**
+     * Returns a string representation Citizen.
+     * @return a formatted string containing Citizen information
+     */
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }
