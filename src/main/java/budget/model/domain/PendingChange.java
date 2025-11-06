@@ -4,6 +4,7 @@ import budget.model.enums.Status;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
 
 /**
@@ -18,7 +19,7 @@ public class PendingChange {
     private final int id;
     private final int budgetItemId;
     private final String requestByName;
-    private final int requestById;
+    private final UUID requestById;
     private final double oldValue;
     private final double newValue;
     private Status status;
@@ -37,7 +38,7 @@ public class PendingChange {
     public PendingChange(
         int budgetItemId,
         String requestByName,
-        int requestById,
+        UUID requestById,
         double oldValue,
         double newValue
     ) {
@@ -77,7 +78,7 @@ public class PendingChange {
      * Return the ID of the user that requested the change.
      * @return an int representing the ID of the user
      */
-    public int getRequestById() {
+    public UUID getRequestById() {
         return requestById;
     }
     /**
