@@ -10,8 +10,8 @@ import budget.model.domain.user.GovernmentMember;
 import budget.model.enums.Status;
 import budget.repository.ChangeRequestRepository;
 import budget.repository.BudgetItemRepository;
-import budget.util.Constants.Limits;
-import budget.util.Constants.Message;
+import budget.util.constants.Limits;
+import budget.util.constants.Message;
 
 public class ChangeRequestService {
     private final ChangeRequestRepository changeRequest;
@@ -44,7 +44,7 @@ public class ChangeRequestService {
             throw new IllegalStateException(Message.DELETE_NOT_ALLOWED_MESSAGE);
         }
         if (newValue == existingItem.getValue()) {
-            throw new IllegalArgumentException(Message.NO_AMOUNT_CHANGE);
+            throw new IllegalArgumentException(Message.NO_AMOUNT_CHANGE_MESSAGE);
         }
         
         PendingChange change = new PendingChange(
@@ -52,9 +52,7 @@ public class ChangeRequestService {
             user.getFullName(),
             user.getId(),
             existingItem.getValue(),
-            newValue,
-            Status.PENDING,
-            LocalDateTime.now()
+            newValue
         );
         changeRequest.addChangeRequest(change);
         System.out.println(Message.CHANGE_REQUEST_SUBMITTED);
@@ -108,7 +106,6 @@ public class ChangeRequestService {
             budgetRepository.save();
         }
         request.approve();
-        request.setSubmittedDate(LocalDateTime.now());
         changeRequestRepository.updateChangeStatus(requestId, Status.APPROVED);
         changeLogRepository.addLog(pm.getId(), pm.getFullName(), item.getId(),
                 request.getOldValue(), request.getNewValue(), LocalDateTime.now());
