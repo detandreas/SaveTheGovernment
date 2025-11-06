@@ -51,6 +51,6 @@ public class Citizen extends User {
      */
     @Override
     public String toString() {
-        return super.toString().replace("User{", "Citizen{");
+        return super.toString();
     }
 }
