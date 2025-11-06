@@ -123,4 +123,10 @@ public  abstract class User {
      * @return  if user is authorized to approve a budget change
      */
     public abstract boolean canApprove();
+    /**
+     * Checks if user can sumbit a request
+     * to change a budget item.
+     * @return true if user is GovernmentMember else false
+     */
+    public abstract boolean canSubmitChangeRequest();
 }
