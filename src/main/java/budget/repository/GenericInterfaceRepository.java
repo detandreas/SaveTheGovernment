@@ -1,5 +1,5 @@
 package budget.repository;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generic interface for basic CRUD operations.
