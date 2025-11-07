@@ -10,7 +10,7 @@ public interface GenericInterfaceRepository<T, ID> {
     /** Loads all data.
      * @return an {@link ArrayList} containing all entities.
     */
-    ArrayList<T> load();
+    List<T> load();
     /** Saves an entity.
      * @param entity the entity to be saved.
     */
