@@ -1,4 +1,4 @@
-package budget.util.constants;
+package budget.constants;
 
 import java.util.List;
 /**
