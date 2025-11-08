@@ -12,6 +12,8 @@ public final class Message {
     // Login Messages
     public static final String SELECT_CHOICE_MESSAGE =
         "Please select an option:";
+    public static final String SELECT_CHOICE_MESSAGE =
+        "Please select an option:";
     public static final String LOGIN_MESSAGE = "Please"
         + " enter your username and your password.";
     public static final String INVALID_OPTION = "Invalid"
@@ -33,6 +35,9 @@ public final class Message {
     // Department Selection for Government Members
     public static final String SIGNUP_SELECT_DEPARTMENT =
         "Select your department:";
+    // Department Selection for Government Members
+    public static final String SIGNUP_SELECT_DEPARTMENT =
+        "Select your department:";
     // Error Messages for Create Account
     public static final String ERROR_USERNAME_TAKEN =
         "Username is already taken. Please choose another.";
@@ -43,6 +48,7 @@ public final class Message {
     public static final String ERROR_EMPTY_FIELD =
         "This field cannot be empty.";
     public static final String USERNAME_LENGTH_LIMITS_MESSAGE =
+        "Invalid Username. Username must contain between 4 and 20 characters.";
         "Invalid Username. Username must contain between 4 and 20 characters.";
     public static final String USERNAME_INVALID_CHARS_MESSAGE =
         "Invalid Username. "
@@ -55,6 +61,8 @@ public final class Message {
     public static final String PASSWORD_COMPLEXITY_FAIL_MESSAGE =
         "Password must contain at least one uppercase letter, "
         + "one lowercase letter, one digit, and one special character.";
+    public static final String FULLNAME_LENGTH_LIMITS_MESSAGE =
+        "Full name must not exceed 50 characters.";
     public static final String FULLNAME_LENGTH_LIMITS_MESSAGE =
         "Full name must not exceed 50 characters.";
     public static final String ERROR_INVALID_ROLE =
@@ -109,6 +117,9 @@ public final class Message {
         "Change request approved successfully.";
     public static final String CHANGE_REQUEST_REJECTED =
         "Change request has been rejected.";
+    public static final String CHANGE_REQUEST_PERMISSION =
+        "You cannot submit change requests."
+        + " Only Government Members can submit change requests.";
     public static final String CHANGE_REQUEST_PERMISSION =
         "You cannot submit change requests."
         + " Only Government Members can submit change requests.";
