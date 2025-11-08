@@ -72,6 +72,6 @@ public class GovernmentMember extends User {
     public String toString() {
         String userString = super.toString();
         return userString.substring(0, userString.length() - 1)
-           + String.format(", Ministry=%s}", ministry);
+           + String.format(", ministry=%s}", ministry);
     }
 }
