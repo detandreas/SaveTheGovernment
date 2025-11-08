@@ -15,7 +15,7 @@ public  abstract class User {
     private String userName;
     private String fullName;
     private String password;
-    private UserRole userRole;
+    private final UserRole userRole;
 
     /**
      *
@@ -101,14 +101,6 @@ public  abstract class User {
      */
     public UserRole getUserRole() {
         return userRole;
-    }
-    /**
-     * sets user Role.
-     *
-     * @param userRole user Role inside the budget system
-     */
-    public void setUserRole(UserRole userRole) {
-        this.userRole = userRole;
     }
     /**
      * checks if user can edit budgetitem based on his role.
