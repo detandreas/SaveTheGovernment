@@ -145,4 +145,9 @@ public final class Message {
     public static final String REQUEST_AUTHORITY_MESSAGE =
         "Only the Prime Minister has the authority"
         + " to approve or reject change requests.";
+    // Submit Change Request Confirmation Message
+    public static final String SUBMIT_CHANGE_REQUEST_CONFIRMATION_MESSAGE =
+            "The old value was %.2f€."
+            + " After submitting your request, "
+            + "the budget item with ID %d will be %s by %.2f€.";
 }

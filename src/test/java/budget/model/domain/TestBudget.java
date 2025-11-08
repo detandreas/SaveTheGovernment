@@ -120,13 +120,12 @@ public class TestBudget {
         void toStringContains() {
             Budget b = new Budget(sampleBudgetItems(), 2022, 150.5, 100.25, 50.25);
             String s = b.toString();
-
+            System.out.println(s);
             assertTrue(s.contains("year=2022"), "Failure - wrong toString");
             assertTrue(s.contains("totalRevenue=150.50"), "Failure - wrong toString");
             assertTrue(s.contains("totalExpense=100.25"), "Failure - wrong toString");
             assertTrue(s.contains("netResult=50.25"), "Failure - wrong toString");
             assertTrue(s.contains("itemsCount=2"), "Failure - wrong toString");
-
         }
     }
 }
