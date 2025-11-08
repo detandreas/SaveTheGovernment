@@ -1,83 +1,120 @@
 package budget.model.domain.user;
-import budget.model.domain.PendingChange;
-import budget.model.enums.UserRole;
+
 import budget.model.domain.BudgetItem;
+import budget.model.enums.UserRole;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * Represents the Prime Minister user.
- * The Prime Minister can edit and approve all budget items
- * and pending changes in the system.
+ * Represents the single Prime Minister user in the system.
+ * Implemented as a thread-safe singleton.
  */
 public final class PrimeMinister extends User {
-    
-     /**
-     * Creates a new Prime Minister.
-     * This constructor is private because only one Prime Minister
-     * instance can exist (singleton pattern).
-     * @param id the unique ID of the Prime Minister
-     * @param userName the username of the Prime Minister
-     * @param fullName the full name of the Prime Minister
-     * @param password the password for login
-     */
-    private static PrimeMinister instance;
+    // visible accros multiple threads
+    private static volatile PrimeMinister instance;
 
-    private PrimeMinister(int id, String userName, String fullName, String password) {
+    /**
+     * Creates a Prime Minister user with the provided credentials.
+     * Constructor is private to enforce the singleton pattern.
+     *
+     * @param userName the username within the budget system
+     * @param fullName the full name of the Prime Minister
+     * @param password the password (already hashed by the service layer)
+     */
+    private PrimeMinister(String userName, String fullName, String password) {
         super(userName, fullName, password, UserRole.PRIME_MINISTER);
     }
 
-     /**
-     * Returns the single instance of the Prime Minister.
-     * If it doesn't exist, a new one is created.
-     * @param id the unique ID of the Prime Minister
-     * @param userName the username of the Prime Minister
-     * @param password the password for login
+    /**
+     * Returns the singleton instance, creating it on the first call.
+     * Subsequent calls return the existing instance.
+     *
+     * @param userName the username within the budget system
      * @param fullName the full name of the Prime Minister
-     * @return the single Prime Minister instance
+     * @param password the password (already hashed by the service layer)
+     * @return the Prime Minister instance
      */
-    public static synchronized PrimeMinister getInstance(int id, String userName, String password, String fullName){
+    @SuppressFBWarnings(
+      value = "MS_EXPOSE_REP",
+      justification = "Singleton instance must be globally accessible."
+    )
+    public static PrimeMinister getInstance(
+        String userName,
+        String fullName,
+        String password
+    ) {
+        //double checked locking pattern -> singleton with thread safety
         if (instance == null) {
-            instance = new PrimeMinister(id, userName, fullName, password);
+            /*
+            lock PrimeMinister instance so only one thread at a time
+            can access next blocks
+            */
+            synchronized (PrimeMinister.class) {
+                if (instance == null) {
+                    instance = new PrimeMinister(userName, fullName, password);
+                }
+            }
         }
         return instance;
     }
-    
-     /**
-     * Checks if the Prime Minister can edit the given budget item.
+
+    /**
+     * Returns the existing singleton instance.
      *
-     * @param budgetItem the budget item to check
-     * @return {@code true}, because the Prime Minister can edit all items
+     * @return the Prime Minister instance
+     * @throws IllegalStateException if the instance has
+     * not been initialized yet
+     */
+    @SuppressFBWarnings(
+      value = "MS_EXPOSE_REP",
+      justification = "Singleton instance must be globally accessible."
+    )
+    public static synchronized PrimeMinister getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException(
+                "PrimeMinister instance is not initialized yet."
+            );
+        }
+        return instance;
+    }
+
+    /**
+     * Indicates whether the Prime Minister can edit the provided budget item.
+     *
+     * @param budgetItem the budget item in question
+     * @return {@code false} because the Prime Minister can't edit any item
      */
     @Override
     public boolean canEdit(BudgetItem budgetItem) {
-        return true;  // Prime Minister can edit all items
+        return false;
     }
 
-     /**
-     * Checks if the Prime Minister can approve changes.
+    /**
+     * Indicates whether the Prime Minister can approve budget changes.
      *
-     * @return {@code true}, because the Prime Minister can approve all changes
+     * @return true because the Prime Minister can approve any change
      */
     @Override
     public boolean canApprove() {
-        return true;  // Prime Minister can approve changes
+        return true;
     }
 
-     /**
-     * Approves a pending change.
+    /**
+     * Indicates whether the Prime Minister can submit change requests.
      *
-     * @param change the pending change to approve
+     * @return false because the Prime Minister does not submit change requests
      */
-    public void approvePendingChange(PendingChange change) {
-        change.approve();
+    @Override
+    public boolean canSubmitChangeRequest() {
+        return false;
     }
 
-     /**
-     * Rejects a pending change.
+    /**
+     * Returns a string representation of the Prime Minister.
      *
-     * @param change the pending change to reject
+     * @return a formatted string containing user information
      */
-    public void rejectPendingChange(PendingChange change) {
-        change.reject();
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }
-
