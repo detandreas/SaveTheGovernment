@@ -1,6 +1,7 @@
 package budget.service;
 
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 import budget.model.domain.BudgetItem;
 import budget.model.domain.PendingChange;
@@ -82,8 +83,23 @@ public class ChangeRequestService {
             existingItem.getValue(),
             newValue
         );
-        changeRequestRepository.addChangeRequest(change);
-        System.out.println(Message.CHANGE_REQUEST_SUBMITTED);
+        
+        System.out.println(Menu.CONFIRMATION_SUBMENU);
+        Scanner scanner = new Scanner(System.in);
+        String choice = scanner.nextLine().trim();
+        
+        switch(choice) {
+            case "1":
+                changeRequestRepository.addChangeRequest(change);
+                System.out.println(Message.CHANGE_REQUEST_SUBMITTED);
+                break;
+            case "2":
+                System.out.println(Message.OPERATION_CANCELLED);
+                break;
+            default:
+                System.out.println(Message.INVALID_OPTION);
+                break;
+        }
     }
 
     /**
