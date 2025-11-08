@@ -13,7 +13,7 @@ public class TestGovernmentMember {
     private static GovernmentMember gm;
     private static final String USER_NAME = "TestUser";
     private static final String FULL_NAME = "Test Full Name";
-    // is aldready hashed from service
+    // is already hashed from service
     private static final String PASSWORD = "TestPassword";
     private static final Ministry MINISTRY = Ministry.FINANCE;
     private static BudgetItem budgetItem;
