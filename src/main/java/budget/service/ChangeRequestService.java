@@ -181,19 +181,44 @@ public class ChangeRequestService {
         if (request.getStatus() != Status.PENDING) {
             throw new IllegalStateException(Message.REQUEST_ALREADY_RESOLVED_MESSAGE);
         }
-        if (approve) {
-            BudgetItem item = budgetRepository.findById(request.getBudgetItemId());
-            if (item != null) {
-                item.setValue(request.getNewValue());
-                budgetRepository.save();
-            }
-            request.approve();
-            changeRequestRepository.updateChangeStatus(requestId, Status.APPROVED);
-            changeLogRepository.addLog(pm.getId(), pm.getFullName(), item.getId(),
-                    request.getOldValue(), request.getNewValue(), LocalDateTime.now());
-        } else {
-            request.reject();
-            changeRequestRepository.updateChangeStatus(requestId, Status.REJECTED);
+
+        System.out.println(String.format(Menu.PENDING_REQUESTS_SUBMENU.get(0), requestId));
+        for (int i = 1; i < Menu.PENDING_REQUESTS_SUBMENU.size(); i++) {
+            System.out.println(Menu.PENDING_REQUESTS_SUBMENU.get(i));
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        String choice = scanner.nextLine().trim();
+
+        switch (choice) {
+            case "1": // Approve
+                BudgetItem item = budgetRepository.findById(request.getBudgetItemId());
+                if (item != null) {
+                    item.setValue(request.getNewValue());
+                    budgetRepository.save();
+                }
+                request.approve();
+                changeRequestRepository.updateChangeStatus(requestId, Status.APPROVED);
+                if (item != null) {
+                    changeLogRepository.addLog(pm.getId(), pm.getFullName(), item.getId(),
+                            request.getOldValue(), request.getNewValue(), LocalDateTime.now());
+                } else {
+                    changeLogRepository.addLog(pm.getId(), pm.getFullName(), request.getBudgetItemId(),
+                            request.getOldValue(), request.getNewValue(), LocalDateTime.now());
+                }
+                System.out.println();
+                break;
+            case "2": // Reject
+                request.reject();
+                changeRequestRepository.updateChangeStatus(requestId, Status.REJECTED);
+                System.out.println();
+                break;
+            case "3": // Return to Main Menu
+                System.out.println(Message.RETURNING_TO_MAIN_MENU);
+                break;
+            default:
+                System.out.println(Message.INVALID_OPTION);
+                break;
         }
     }
 }
