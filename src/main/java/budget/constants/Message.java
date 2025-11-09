@@ -156,4 +156,11 @@ public final class Message {
     // Pending Requests Header
     public static final String PENDING_REQUESTS_HEADER =
         "Pending Change Requests:";
+    // Information Message for a Pending Request
+    public static final String PENDING_REQUEST_INFO_MESSAGE =
+        "Request ID: %d\n"
+        + "Budget Item ID: %d\n"
+        + "Old Amount: %.2f€\n"
+        + "New Amount: %.2f€\n"
+        + "Submitted by: %s";
 }
