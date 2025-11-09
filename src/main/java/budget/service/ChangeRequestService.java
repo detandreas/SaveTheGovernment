@@ -124,9 +124,9 @@ public class ChangeRequestService {
             throw new IllegalStateException(Message.REQUEST_ALREADY_RESOLVED_MESSAGE);
         }
 
-        System.out.println(String.format(Menu.REQUEST_DECISION_SUBMENU.get(0), requestId));
-        for (int i = 1; i < Menu.REQUEST_DECISION_SUBMENU.size(); i++) {
-            System.out.println(Menu.REQUEST_DECISION_SUBMENU.get(i));
+        System.out.println(String.format(Menu.PENDING_REQUESTS_SUBMENU.get(0), requestId));
+        for (int i = 1; i < Menu.PENDING_REQUESTS_SUBMENU.size(); i++) {
+            System.out.println(Menu.PENDING_REQUESTS_SUBMENU.get(i));
         }
 
         Scanner scanner = new Scanner(System.in);
