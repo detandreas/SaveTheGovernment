@@ -32,7 +32,7 @@ public final class Message {
         "Enter your full name:";
     // Department Selection for Government Members
     public static final String SIGNUP_SELECT_DEPARTMENT =
-        "Select your department:";
+        "Select your ministry:";
     // Error Messages for Create Account
     public static final String ERROR_USERNAME_TAKEN =
         "Username is already taken. Please choose another.";
@@ -59,6 +59,8 @@ public final class Message {
         "Full name must not exceed 50 characters.";
     public static final String ERROR_INVALID_ROLE =
         "Invalid role selected. Please choose from the list.";
+    public static final String ERROR_INVALID_MINISTRY =
+        "Invalid ministry selected. Please choose from the list.";
     // Success Message for Create Account
     public static final String CREATE_ACCOUNT_SUCCESS =
         "Account created successfully! "
