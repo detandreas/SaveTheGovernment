@@ -148,12 +148,12 @@ public class ChangeRequestService {
                     changeLogRepository.addLog(pm.getId(), pm.getFullName(), request.getBudgetItemId(),
                             request.getOldValue(), request.getNewValue(), LocalDateTime.now());
                 }
-                System.out.println();
+                System.out.println(Message.CHANGE_REQUEST_APPROVED);
                 break;
             case "2": // Reject
                 request.reject();
                 changeRequestRepository.updateChangeStatus(requestId, Status.REJECTED);
-                System.out.println();
+                System.out.println(Message.CHANGE_REQUEST_REJECTED);
                 break;
             case "3": // Return to Main Menu
                 System.out.println(Message.RETURNING_TO_MAIN_MENU);
