@@ -153,4 +153,7 @@ public final class Message {
     // Cancel Operation Message for Change Requests Submission
     public static final String OPERATION_CANCELLED =
         "Operation cancelled. Change request not submitted.";
+    // Pending Requests Header
+    public static final String PENDING_REQUESTS_HEADER =
+        "Pending Change Requests:";
 }
