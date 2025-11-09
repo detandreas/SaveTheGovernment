@@ -16,6 +16,12 @@ public final class Menu {
         "2. Create New Account",
         "3. Exit Application"
     );
+    // Exit Confirmation Menu
+    public static final List<String> EXIT_CONFIRMATION_MENU = List.of(
+        "Are you sure you want to exit the application?",
+        "1. YES",
+        "2. NO"
+    );
     // Role Selection Menu
     public static final List<String> ROLE_SELECTION_MENU = List.of(
         "Please select your Role:",
