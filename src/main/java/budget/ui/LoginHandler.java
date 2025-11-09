@@ -38,24 +38,37 @@ public class LoginHandler {
      * @return the logged-in User object
      */
     public User showLoginScreen() {
-        System.out.println(Message.WELCOME_MESSAGE);
-        System.out.println(Menu.LOGIN_MENU);
-        System.out.print(Message.SELECT_CHOICE_MESSAGE + " ");
-        String choice = scanner.nextLine().trim();
-        switch (choice) {
-            case "1":
-                return handleLogin();
-            case "2":
-                return handleAccountCreation();
-            case "3":
-                System.out.println(Message.EXIT_MESSAGE);
-                System.exit(0);
-            default:
-                System.out.println(Message.INVALID_OPTION);
-                return showLoginScreen();
+        while (true) {
+            System.out.println(Menu.LOGIN_MENU);
+            System.out.print(Message.SELECT_CHOICE_MESSAGE + " ");
+            String choice = scanner.nextLine().trim();
+            switch (choice) {
+                case "1":
+                    User user = handleLogin();
+                    if (user != null) return user;
+                    break;
+                case "2":
+                    user = handleAccountCreation();
+                    if (user != null) return user;
+                    break;
+                case "3":
+                    System.out.println(Menu.EXIT_CONFIRMATION_MENU);
+                    String exitChoice = scanner.nextLine().trim();
+                    if (exitChoice.equals("1")) {
+                        System.out.println(Message.EXIT_MESSAGE);
+                        System.exit(0);
+                    } else if (exitChoice.equals("2")) {
+                        break; // Return to main login menu
+                    } else {
+                        System.out.println(Message.INVALID_OPTION);
+                    }
+                default:
+                    System.out.println(Message.INVALID_OPTION);
             }
         }
+        
     }
+
     /**
      * Handles the login process.
      * @return the logged-in User object
@@ -69,6 +82,8 @@ public class LoginHandler {
         User user = authService.login(username, password);
         if (user != null) {
             System.out.printf(Message.LOGIN_SUCCESS, user.getFullName());
+            MenuHandler menuHandler = new MenuHandler(scanner, authService);
+            menuHandler.showMenu(user);
             return user;
         } else {
             System.out.println(Message.LOGIN_FAILED);
@@ -87,7 +102,10 @@ public class LoginHandler {
             System.out.println(Message.PRIME_MINISTER_EXISTS);
             return handleAccountCreation();
          }
-
+         Ministry ministry = null;
+        if (role == UserRole.GOVERNMENT_MEMBER) {
+            ministry = selectMinistry();
+        }
          User newUser;
          switch (role) {
              case PRIME_MINISTER:
@@ -98,6 +116,7 @@ public class LoginHandler {
                  break;
              case CITIZEN:
                  newUser = new Citizen(data.username, data.fullName, data.password);
+                 break;
              default:
                 throw new IllegalStateException(Message.ERROR_INVALID_ROLE);
          }
@@ -116,7 +135,7 @@ public class LoginHandler {
                 System.out.println(Message.USERNAME_LENGTH_LIMITS_MESSAGE);
                 continue;
             }
-            if (authService.isUsernameTaken(username)) {
+            if (authService.usernameExists(username)) {
                 System.out.println(Message.ERROR_USERNAME_TAKEN);
                 continue;
             }
@@ -136,21 +155,9 @@ public class LoginHandler {
                 System.out.println(Message.FULLNAME_LENGTH_LIMITS_MESSAGE);
                 continue;
             }
-
-            String ministry = null;
+            Ministry ministry = null;
             if (role == UserRole.GOVERNMENT_MEMBER) {
-                System.out.print(Message.SIGNUP_SELECT_DEPARTMENT + " ");
-                ministry = scanner.nextLine().trim();
-                if (ministry.isEmpty()) {
-                    System.out.println(Message.ERROR_EMPTY_FIELD);
-                    continue;
-                }
-                if (!isValidMinistry(ministry)) {
-                    System.out.println(Message.ERROR_INVALID_MINISTRY);
-                    continue;
-                }
-                // normalize to enum name (store consistent value)
-                ministry = normalizeMinistry(ministry);
+                ministry = selectMinistry();
             }
 
             return new UserRegistrationData(username, passwords[0], fullName, ministry);
@@ -200,12 +207,34 @@ public class LoginHandler {
             }
         }
     }
+    private Ministry selectMinistry() {
+        while (true) {
+            System.out.println(Message.SIGNUP_SELECT_DEPARTMENT);
+            Ministry[] ministries = Ministry.values();
+            for (int i = 0; i < ministries.length; i++) {
+                System.out.printf("%d. %s%n", i + 1, ministries[i].getDisplayName());
+            }
+            try {
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+                int choiceIndex = choice - 1;
+                if (choiceIndex >= 0 && choiceIndex < ministries.length) {
+                    return ministries[choiceIndex];
+                } else {
+                    System.out.println(Message.ERROR_INVALID_MINISTRY);
+                }
+            } catch (Exception e) {
+                scanner.nextLine();
+                System.out.println(Message.ERROR_INVALID_INPUT);
+            }
+        }
+    }
     // Helper class to hold user registration data
     private static class UserRegistrationData {
         final String username;
         final String password;
         final String fullName;
-        final String ministry;
+        final Ministry ministry;
         
         /**
          * Constructor for UserRegistrationData.
@@ -214,7 +243,7 @@ public class LoginHandler {
          * @param fullName the full name
          * @param ministry the ministry (may be null)
          */
-        UserRegistrationData(String username, String password, String fullName, String ministry) {
+        UserRegistrationData(String username, String password, String fullName, Ministry ministry) {
             this.username = username;
             this.password = password;
             this.fullName = fullName;
@@ -222,23 +251,5 @@ public class LoginHandler {
         }
     }
 
-    // Helper: checks if the ministry is valid
-    private boolean isValidMinistry(String ministry) {
-        for (Ministry m : Ministry.values()) {
-            if (m.name().equalsIgnoreCase(ministry) || m.toString().equalsIgnoreCase(ministry)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Helper: returns the normalized enum name (e.g., "FINANCE")
-    private String normalizeMinistry(String ministry) {
-        for (Ministry m : Ministry.values()) {
-            if (m.name().equalsIgnoreCase(ministry) || m.toString().equalsIgnoreCase(ministry)) {
-                return m.name();
-            }
-        }
-        return ministry;
-    }
+    
 }
