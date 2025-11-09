@@ -150,10 +150,4 @@ public final class Message {
             "The old value was %.2f€."
             + " After submitting your request, "
             + "the budget item with ID %d will be %s by %.2f€.";
-    // Cancel Operation Message for Change Requests Submission
-    public static final String OPERATION_CANCELLED =
-        "Operation cancelled. Change request not submitted.";
-    // Pending Requests Header
-    public static final String PENDING_REQUESTS_HEADER =
-        "Pending Change Requests:";
 }
