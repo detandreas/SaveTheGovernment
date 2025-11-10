@@ -32,7 +32,7 @@ public final class Message {
         "Enter your full name:";
     // Department Selection for Government Members
     public static final String SIGNUP_SELECT_DEPARTMENT =
-        "Select your department:";
+        "Select your ministry:";
     // Error Messages for Create Account
     public static final String ERROR_USERNAME_TAKEN =
         "Username is already taken. Please choose another.";
@@ -59,6 +59,8 @@ public final class Message {
         "Full name must not exceed 50 characters.";
     public static final String ERROR_INVALID_ROLE =
         "Invalid role selected. Please choose from the list.";
+    public static final String ERROR_INVALID_MINISTRY =
+        "Invalid ministry selected. Please choose from the list.";
     // Success Message for Create Account
     public static final String CREATE_ACCOUNT_SUCCESS =
         "Account created successfully! "
@@ -150,4 +152,17 @@ public final class Message {
             "The old value was %.2f€."
             + " After submitting your request, "
             + "the budget item with ID %d will be %s by %.2f€.";
+    // Cancel Operation Message for Change Requests Submission
+    public static final String OPERATION_CANCELLED =
+        "Operation cancelled. Change request not submitted.";
+    // Pending Requests Header
+    public static final String PENDING_REQUESTS_HEADER =
+        "Pending Change Requests:";
+    // Information Message for a Pending Request
+    public static final String PENDING_REQUEST_INFO_MESSAGE =
+        "Request ID: %d\n"
+        + "Budget Item ID: %d\n"
+        + "Old Amount: %.2f€\n"
+        + "New Amount: %.2f€\n"
+        + "Submitted by: %s";
 }
