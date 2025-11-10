@@ -36,7 +36,7 @@ public class TestStatus {
         }
     }
 
-    @Test 
+    @Test
     void testToString() {
         for (int i = 0; i < enums.size(); i++) {
             assertEquals(strings.get(i), enums.get(i).toString(),
