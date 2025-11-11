@@ -1,8 +1,8 @@
-package budget.model.user;
+package budget.model.domain.user;
 
-import budget.model.BudgetItem;
 import java.util.UUID;
-import budget.model.UserRole;
+import budget.model.enums.UserRole;
+import budget.model.domain.BudgetItem;
 
 /**
  * Represents a user of the budget system.
@@ -10,7 +10,7 @@ import budget.model.UserRole;
  */
 public  abstract class User {
 
-    private UUID id;
+    private final UUID id;
     private String userName;
     private String fullName;
     private String password;
@@ -43,14 +43,6 @@ public  abstract class User {
      */
     public UUID getId() {
         return id;
-    }
-    /**
-     * sets user id.
-     *
-     * @param id user unique identifier
-     */
-    public void setId(UUID id) {
-        this.id = id;
     }
     /**
      * returns userName.

@@ -1,4 +1,4 @@
-package budget.model;
+package budget.model.enums;
 
 public enum UserRole {
     CITIZEN("Citizen", "Regular citizen with view-only access"),

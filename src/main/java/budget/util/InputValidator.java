@@ -2,7 +2,7 @@ package budget.util;
 
 import java.util.UUID;
 
-import budget.model.UserRole;
+import budget.model.enums.UserRole;
 
 
 /**

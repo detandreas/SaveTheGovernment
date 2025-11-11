@@ -1,7 +1,7 @@
-package budget.model.user;
+package budget.model.domain.user;
 
-import budget.model.BudgetItem;
-import budget.model.UserRole;
+import budget.model.enums.UserRole;
+import budget.model.domain.BudgetItem;
 /**
  * Represents a Citizen user of the budget system.
  */

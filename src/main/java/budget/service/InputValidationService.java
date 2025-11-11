@@ -1,7 +1,7 @@
 package budget.service;
 
-import budget.model.user.User;
-import budget.model.UserRole;
+import budget.model.enums.UserRole;
+import budget.model.domain.user.User;
 import budget.util.InputValidator;
 import budget.exceptions.ValidationException;
 
