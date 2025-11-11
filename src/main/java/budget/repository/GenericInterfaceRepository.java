@@ -33,7 +33,8 @@ public interface GenericInterfaceRepository<T, ID> {
      /**
      * Finds an entity by its identifier.
      * @param id the unique identifier of the entity to search for.
-     * @return an Optional containing the entity if found, otherwise an empty Optional.
+     * @return an Optional containing the entity if found,
+     * otherwise an empty Optional.
      */
     Optional<T> findById(ID id);
 }
