@@ -19,7 +19,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.io.IOException;
 
 /**
@@ -34,12 +33,6 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
             new GsonBuilder().setPrettyPrinting().create();
     private static final Logger LOGGER =
             Logger.getLogger(ChangeRequestRepository.class.getName());
-    private static final Path PENDING_CHANGES_PATH = Paths.get(
-        System.getProperty(
-            "budget.pendingChanges.path",
-            "src/main/resources/pending-changes.json"
-        )
-    );
 
     /**
      * Loads every pending change request from the JSON resource.
@@ -200,8 +193,9 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
      * @param pendingChanges the collection of changes that should be persisted
      */
     private void saveToFile(List<PendingChange> pendingChanges) {
+        Path target = PathsUtil.getPendingChangesWritablePath();
         try (Writer writer = Files.newBufferedWriter(
-                            PENDING_CHANGES_PATH,
+                            target,
                             StandardCharsets.UTF_8)) {
             GSON.toJson(pendingChanges, writer);
 
