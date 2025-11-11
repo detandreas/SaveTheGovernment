@@ -1,95 +1,188 @@
 package budget.util;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
- * Utility class providing resource paths for application files.
- * All resources are loaded from the classpath and work both in development
- * and when packaged as a JAR file.
+ * Utility helper for locating JSON resources. Preferentially resolves writable
+ * files from an external data directory and transparently falls back to the
+ * classpath copy when no external file is available.
  */
 public final class PathsUtil {
+    private static final Logger LOGGER =
+                    Logger.getLogger(PathsUtil.class.getName());
+    private static final String DATA_DIR_PROPERTY = "budget.data.dir";
 
-    /**
-     * Classpath resource path for the budget JSON file.
-     */
-    public static final String BUDGET_RESOURCE = "/budget.json";
+    private static final String BUDGET_FILE = "budget.json";
+    private static final String BILL_MINISTRY_MAP_FILE =
+                                    "bill-ministry-map.json";
+    private static final String USERS_FILE = "users.json";
+    private static final String PENDING_CHANGES_FILE = "pending-changes.json";
+    private static final String BUDGET_CHANGES_FILE = "budget-changes.json";
 
-    /**
-     * Classpath resource path for the
-     * bill-ministry mapping JSON file.
-     */
+    // Classpath resource
+    public static final String BUDGET_RESOURCE = "/" + BUDGET_FILE;
     public static final String BILL_MINISTRY_MAP_RESOURCE =
-                                "/bill-ministry-map.json";
-    /**
-     * Classpath resource path for the users JSON file.
-     */
-    public static final String USERS_RESOURCE =
-                                "/users.json";
-    /**
-     * Classpath resource path for the pending-changes
-     * JSON file.
-     */
+                                    "/" + BILL_MINISTRY_MAP_FILE;
+    public static final String USERS_RESOURCE = "/" + USERS_FILE;
     public static final String PENDING_CHANGES_RESOURCE =
-                                "/pending-changes.json";
-    /**
-     * Classpath resource path for the budget-changes
-     * JSON file.
-     */
+                                    "/" + PENDING_CHANGES_FILE;
     public static final String BUDGET_CHANGES_RESOURCE =
-                                "/budget-changes.json";
+                                    "/" + BUDGET_CHANGES_FILE;
 
     private PathsUtil() {
         // Utility class - prevent instantiation
     }
+    /**
+     * Resolves the target {@link Path} for a data file. If the system property
+     * {@code budget.data.dir} is defined, it is used as the base directory;
+     * otherwise the method falls back to {@code src/main/resources}.
+     *
+     * @param fileName the file name to resolve
+     * @return the effective {@link Path} pointing to the file
+     */
+    public static Path resolveDataFile(final String fileName) {
+        String dataDir = System.getProperty(DATA_DIR_PROPERTY);
+        if (dataDir != null && !dataDir.isBlank()) {
+            Path base = Paths.get(dataDir);
+            return Files.isDirectory(base) ? base.resolve(fileName) : base;
+        }
+        return Paths.get("src", "main", "resources", fileName);
+    }
 
     /**
-     * Returns an InputStream for the budget.json resource file.
-     * Works in both development mode and when running from a JAR.
+     * Attempts to open an {@link InputStream} from the external data directory
+     * and falls back to the classpath resource if the file is missing or not
+     * readable.
      *
-     * @return InputStream for budget.json, or null if the resource is not found
+     * @param fileName     the file name in the data directory
+     * @param resourcePath the classpath resource path
+     * @return an {@link InputStream} for the external or classpath copy
+     */
+    public static InputStream openDataStream(
+        final String fileName,
+        final String resourcePath
+    ) {
+        Path externalFile = resolveDataFile(fileName);
+        if (Files.exists(externalFile) && Files.isReadable(externalFile)) {
+            try {
+                return Files.newInputStream(externalFile);
+            } catch (IOException e) {
+                LOGGER.log(
+                    Level.WARNING,
+                    "Failed to load external file " + fileName,
+                    e
+                );
+            }
+        }
+        return PathsUtil.class.getResourceAsStream(resourcePath);
+    }
+
+    /**
+     * Returns the writable {@link Path} for the budget JSON file.
+     *
+     * @return the path pointing to {@code budget.json}
+     */
+    public static Path getBudgetWritablePath() {
+        return resolveDataFile(BUDGET_FILE);
+    }
+
+    /**
+     * Returns the writable {@link Path} for the bill-ministry map JSON file.
+     *
+     * @return the path pointing to {@code bill-ministry-map.json}
+     */
+    public static Path getBillMinistryWritablePath() {
+        return resolveDataFile(BILL_MINISTRY_MAP_FILE);
+    }
+
+    /**
+     * Returns the writable {@link Path} for the users JSON file.
+     *
+     * @return the path pointing to {@code users.json}
+     */
+    public static Path getUsersWritablePath() {
+        return resolveDataFile(USERS_FILE);
+    }
+
+    /**
+     * Returns the writable {@link Path} for the pending changes JSON file.
+     *
+     * @return the path pointing to {@code pending-changes.json}
+     */
+    public static Path getPendingChangesWritablePath() {
+        return resolveDataFile(PENDING_CHANGES_FILE);
+    }
+
+    /**
+     * Returns the writable {@link Path} for the budget changes JSON file.
+     *
+     * @return the path pointing to {@code budget-changes.json}
+     */
+    public static Path getBudgetChangesWritablePath() {
+        return resolveDataFile(BUDGET_CHANGES_FILE);
+    }
+
+    /**
+     * Loads the budget JSON stream from the external data directory if present,
+     * otherwise from the classpath resource.
+     *
+     * @return an {@link InputStream} for {@code budget.json}, or {@code null}
+     *         when the resource cannot be found
      */
     public static InputStream getBudgetInputStream() {
-        return PathsUtil.class.getResourceAsStream(BUDGET_RESOURCE);
+        return openDataStream(BUDGET_FILE, BUDGET_RESOURCE);
     }
 
     /**
-     * Returns an InputStream for the bill-ministry-map.json resource file.
-     * Works in both development mode and when running from a JAR.
+     * Loads the bill-ministry map JSON stream from the external data directory
+     * if present, otherwise from the classpath resource.
      *
-     * @return InputStream for bill-ministry-map.json,
-     * or null if the resource is not found
+     * @return an {@link InputStream} for {@code bill-ministry-map.json}, or
+     *         {@code null} when the resource cannot be found
      */
     public static InputStream getBillMinistryMapInputStream() {
-        return PathsUtil.class.getResourceAsStream(BILL_MINISTRY_MAP_RESOURCE);
+        return openDataStream(
+            BILL_MINISTRY_MAP_FILE,
+            BILL_MINISTRY_MAP_RESOURCE
+            );
     }
+
     /**
-     * Returns an InputStream for the users.json resource file.
-     * Works in both development mode and when running from a JAR.
+     * Loads the users JSON stream from the external data directory if present,
+     * otherwise from the classpath resource.
      *
-     * @return InputStream for users.json,
-     * or null if the resource is not found
+     * @return an {@link InputStream} for {@code users.json}, or {@code null}
+     *         when the resource cannot be found
      */
     public static InputStream getUsersInputStream() {
-        return PathsUtil.class.getResourceAsStream(USERS_RESOURCE);
+        return openDataStream(USERS_FILE, USERS_RESOURCE);
     }
+
     /**
-     * Returns an InputStream for the pending-changes.json resource file.
-     * Works in both development mode and when running from a JAR.
+     * Loads the pending changes JSON stream from the external data directory if
+     * present, otherwise from the classpath resource.
      *
-     * @return InputStream for pending-changes.json,
-     * or null if the resource is not found
+     * @return an {@link InputStream} for {@code pending-changes.json}, or
+     *         {@code null} when the resource cannot be found
      */
     public static InputStream getPendingChangesInputStream() {
-        return PathsUtil.class.getResourceAsStream(PENDING_CHANGES_RESOURCE);
+        return openDataStream(PENDING_CHANGES_FILE, PENDING_CHANGES_RESOURCE);
     }
+
     /**
-     * Returns an InputStream for the budget-changes.json resource file.
-     * Works in both development mode and when running from a JAR.
+     * Loads the budget changes JSON stream from the external data directory if
+     * present, otherwise from the classpath resource.
      *
-     * @return InputStream for budget-changes.json,
-     * or null if the resource is not found
+     * @return an {@link InputStream} for {@code budget-changes.json}, or
+     *         {@code null} when the resource cannot be found
      */
     public static InputStream getBudgetChangesInputStream() {
-        return PathsUtil.class.getResourceAsStream(BUDGET_CHANGES_RESOURCE);
+        return openDataStream(BUDGET_CHANGES_FILE, BUDGET_CHANGES_RESOURCE);
     }
 }
