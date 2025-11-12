@@ -56,11 +56,8 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
                     new InputStreamReader(input, StandardCharsets.UTF_8)) {
                     PendingChange[] changes = GSON.fromJson(
                                             reader, PendingChange[].class);
-                    if (changes == null) {
-                        return Collections.emptyList();
-                    } else {
-                        return Arrays.asList(changes);
-                    }
+                    return changes == null ? Collections.emptyList()
+                                            : Arrays.asList(changes);
             }
         } catch (IOException io) {
             LOGGER.log(
