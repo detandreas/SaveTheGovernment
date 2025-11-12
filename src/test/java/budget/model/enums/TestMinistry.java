@@ -1,8 +1,8 @@
 package budget.model.enums;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -10,54 +10,59 @@ public class TestMinistry {
 
     @Nested
     class TestEnumValues {
-
         @Test
         void allMinistriesAreDefined() {
             Ministry[] ministries = Ministry.values();
-
-            assertNotNull(ministries, "Failure - values() returned null");
-            assertTrue(ministries.length > 0, "Failure - no ministries defined");
+            assertEquals(11, ministries.length, "Should have exactly 11 ministries");
         }
 
         @Test
-        void enumContainsExpectedMinistries() {
-            Ministry[] ministries = Ministry.values();
-
-            assertTrue(arrayContains(ministries, Ministry.HEALTH), "Failure - HEALTH not present");
-            assertTrue(arrayContains(ministries, Ministry.EDUCATION), "Failure - EDUCATION not present");
-            assertTrue(arrayContains(ministries, Ministry.DEFENSE), "Failure - DEFENSE not present");
-            assertTrue(arrayContains(ministries, Ministry.FINANCE), "Failure - FINANCE not present");
-        }
-
-        // Βοηθητική μέθοδος για έλεγχο ύπαρξης στοιχείου στο array
-        private boolean arrayContains(Ministry[] array, Ministry ministry) {
-            for (Ministry m : array) {
-                if (m == ministry) {
-                    return true;
-                }
-            }
-            return false;
+        void enumContainsAllExpectedMinistries() {
+            Set<Ministry> expectedMinistries = Set.of(
+                Ministry.HEALTH, Ministry.EDUCATION, Ministry.DEFENSE,
+                Ministry.FINANCE, Ministry.INFRASTRUCTURE, Ministry.FOREIGN_AFFAIRS,
+                Ministry.INTERIOR, Ministry.DEVELOPMENT, Ministry.LABOUR,
+                Ministry.JUSTICE, Ministry.AGRICULTURE
+            );
+            Set<Ministry> actualMinistries = Set.of(Ministry.values());
+            assertEquals(expectedMinistries, actualMinistries);
         }
     }
 
     @Nested
     class TestGetDisplayName {
-
         @Test
-        void displayNameMatchesExpected() {
-            assertEquals("Health", Ministry.HEALTH.getDisplayName(), "Failure - HEALTH displayName incorrect");
-            assertEquals("Education", Ministry.EDUCATION.getDisplayName(), "Failure - EDUCATION displayName incorrect");
-            assertEquals("Defense", Ministry.DEFENSE.getDisplayName(), "Failure - DEFENSE displayName incorrect");
+        void allDisplayNamesMatchExpected() {
+            Map<Ministry, String> expectedDisplayNames = Map.ofEntries(
+                Map.entry(Ministry.HEALTH, "Health"),
+                Map.entry(Ministry.EDUCATION, "Education"),
+                Map.entry(Ministry.DEFENSE, "Defense"),
+                Map.entry(Ministry.FINANCE, "Finance"),
+                Map.entry(Ministry.INFRASTRUCTURE, "Infrastructure"),
+                Map.entry(Ministry.FOREIGN_AFFAIRS, "Foreign Affairs"),
+                Map.entry(Ministry.INTERIOR, "Interior"),
+                Map.entry(Ministry.DEVELOPMENT, "Development"),
+                Map.entry(Ministry.LABOUR, "Labour"),
+                Map.entry(Ministry.JUSTICE, "Justice"),
+                Map.entry(Ministry.AGRICULTURE, "Agriculture")
+            );
+
+            for (Ministry ministry : Ministry.values()) {
+                assertEquals(expectedDisplayNames.get(ministry), 
+                            ministry.getDisplayName(),
+                            "Display name mismatch for " + ministry.name());
+            }
         }
     }
 
     @Nested
     class TestToString {
-
         @Test
-        void toStringReturnsDisplayName() {
-            assertEquals("Finance", Ministry.FINANCE.toString(), "Failure - toString() incorrect for FINANCE");
-            assertEquals("Infrastructure", Ministry.INFRASTRUCTURE.toString(), "Failure - toString() incorrect for INFRASTRUCTURE");
+        void toStringReturnsDisplayNameForAll() {
+            for (Ministry ministry : Ministry.values()) {
+                assertEquals(ministry.getDisplayName(), ministry.toString(),
+                            "toString() should return displayName for " + ministry.name());
+            }
         }
     }
 }
