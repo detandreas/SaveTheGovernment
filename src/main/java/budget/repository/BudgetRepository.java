@@ -52,4 +52,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
         }
         
     }
+    /**
+     * 
+     */
 }
