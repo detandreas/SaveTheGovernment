@@ -66,4 +66,24 @@ public class ChangeLogRepository {
         }
     }
 
+    /**
+     * Retrieves all ChangeLog records.
+     *
+     * @return a copy of the list of ChangeLog records
+     */
+    public List<ChangeLog> findAll() {
+        return new ArrayList<>(changeLogs);
+    }
+
+    /**
+     * Finds a ChangeLog record by its ID.
+     *
+     * @param id the unique ID of the ChangeLog
+     * @return an Optional containing the ChangeLog if found, otherwise empty
+     */
+    public Optional<ChangeLog> findById(final int id) {
+        return changeLogs.stream()
+                .filter(log -> log.id() == id)
+                .findFirst();
+    }
 }
