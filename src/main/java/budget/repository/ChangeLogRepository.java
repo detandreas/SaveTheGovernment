@@ -20,21 +20,28 @@ import java.util.logging.Logger;
 
 /**
  * Repository class for managing ChangeLog records.
- * This class provides basic create,read,update,delete operations for ChangeLog objects,
+ * This class provides basic create,read,
+ * update,delete operations for ChangeLog objects,
  * persisting them to a JSON file using Gson.
  */
-public class ChangeLogRepository implements GenericInterfaceRepository<ChangeLog, Integer>  {
+public class ChangeLogRepository implements
+GenericInterfaceRepository<ChangeLog, Integer>  {
 
-    private static final Logger LOGGER = Logger.getLogger(ChangeLogRepository.class.getName());
+    private static final Logger LOGGER =
+    Logger.getLogger(ChangeLogRepository.class.getName());
 
-    /** Gson instance used for JSON serialization and deserialization */
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    /** Gson instance used for JSON serialization and deserialization. */
+    private static final Gson GSON =
+     new GsonBuilder()
+     .setPrettyPrinting()
+     .create();
 
-    /** In-memory list of all ChangeLog records */
+    /** In-memory list of all ChangeLog records. */
     private List<ChangeLog> changeLogs;
 
     /**
-     * Constructor initializes the repository by loading existing ChangeLog records.
+     * Constructor initializes the repository
+     * by loading existing ChangeLog records.
      */
     public ChangeLogRepository() {
         this.changeLogs = load();
@@ -43,18 +50,21 @@ public class ChangeLogRepository implements GenericInterfaceRepository<ChangeLog
     /**
      * Loads all ChangeLog records from the JSON file.
      *
-     * @return a list of ChangeLog objects; returns an empty list if the file is missing or unreadable
+     * @return a list of ChangeLog objects;
+     * returns an empty list if the file is missing or unreadable
      */
     @Override
     public List<ChangeLog> load() {
         InputStream in = PathsUtil.getBudgetChangesInputStream();
         if (in == null) {
-            LOGGER.warning("budget-changes.json not found. Returning empty list.");
+            LOGGER
+            .warning("budget-changes.json not found. Returning empty list.");
             return new ArrayList<>();
         }
 
         try (InputStreamReader reader = new InputStreamReader(in)) {
-            Type listType = new TypeToken<List<ChangeLog>>() {}.getType();
+            Type listType = new TypeToken<List<ChangeLog>>() {
+            }.getType();
             List<ChangeLog> logs = GSON.fromJson(reader, listType);
             return logs != null ? logs : new ArrayList<>();
         } catch (IOException e) {
@@ -65,8 +75,8 @@ public class ChangeLogRepository implements GenericInterfaceRepository<ChangeLog
 
     /**
      * Saves or updates a ChangeLog record.
-     * If a record with the same ID exists, it is updated; otherwise, it is inserted.
-     *
+     * If a record with the same ID exists,
+     * it is updated; otherwise, it is inserted.
      * @param entity the ChangeLog record to save
      */
     @Override
