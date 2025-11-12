@@ -6,25 +6,29 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.FileReader;
+import java.io.InputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Repository class for managing ChangeLog records.
  * This class provides basic create,read,update,delete operations for ChangeLog objects,
  * persisting them to a JSON file using Gson.
  */
-public class ChangeLogRepository {
+public class ChangeLogRepository implements GenericInterfaceRepository<ChangeLog, Integer>  {
+
+    private static final Logger LOGGER = Logger.getLogger(ChangeLogRepository.class.getName());
+
     /** Gson instance used for JSON serialization and deserialization */
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
-    /** Path to the ChangeLog JSON file */
-    private static final String RESOURCE_PATH = PathsUtil.BUDGET_CHANGES_RESOURCE;
 
     /** In-memory list of all ChangeLog records */
     private List<ChangeLog> changeLogs;
@@ -41,30 +45,52 @@ public class ChangeLogRepository {
      *
      * @return a list of ChangeLog objects; returns an empty list if the file is missing or unreadable
      */
+    @Override
     public List<ChangeLog> load() {
-        try (FileReader reader = PathsUtil.getBudgetChangesFileReader()) {
-            if (reader == null) {
-                System.err.println("[WARN] budget-changes.json not found. Returning empty list.");
-                return new ArrayList<>();
-            }
+        InputStream in = PathsUtil.getBudgetChangesInputStream();
+        if (in == null) {
+            LOGGER.warning("budget-changes.json not found. Returning empty list.");
+            return new ArrayList<>();
+        }
+
+        try (InputStreamReader reader = new InputStreamReader(in)) {
             Type listType = new TypeToken<List<ChangeLog>>() {}.getType();
-            return GSON.fromJson(reader, listType);
+            List<ChangeLog> logs = GSON.fromJson(reader, listType);
+            return logs != null ? logs : new ArrayList<>();
         } catch (IOException e) {
-            System.err.println("[ERROR] Failed to load ChangeLog data: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Failed to load ChangeLog data", e);
             return new ArrayList<>();
         }
     }
 
     /**
-     * Saves the current in-memory list of ChangeLog records to the JSON file.
+     * Saves or updates a ChangeLog record.
+     * If a record with the same ID exists, it is updated; otherwise, it is inserted.
+     *
+     * @param entity the ChangeLog record to save
      */
-    public void save() {
-        try (FileWriter writer = new FileWriter("src/main/resources" + RESOURCE_PATH)) {
-            GSON.toJson(changeLogs, writer);
-        } catch (IOException e) {
-            System.err.println("[ERROR] Failed to save ChangeLog data: " + e.getMessage());
+    @Override
+    public void save(final ChangeLog entity) {
+        Optional<ChangeLog> existing = findById(entity.id());
+        if (existing.isPresent()) {
+            update(entity);
+        } else {
+            insert(entity);
         }
+        saveListToFile();
     }
+
+    /**
+     * Checks if a ChangeLog record with the given ID exists.
+     *
+     * @param id the ID to check
+     * @return true if exists, false otherwise
+     */
+    @Override
+    public boolean existsById(final Integer id) {
+        return changeLogs.stream().anyMatch(log -> log.id() == id);
+    }
+
 
     /**
      * Retrieves all ChangeLog records.
@@ -81,7 +107,8 @@ public class ChangeLogRepository {
      * @param id the unique ID of the ChangeLog
      * @return an Optional containing the ChangeLog if found, otherwise empty
      */
-    public Optional<ChangeLog> findById(final int id) {
+    @Override
+    public Optional<ChangeLog> findById(final Integer id) {
         return changeLogs.stream()
                 .filter(log -> log.id() == id)
                 .findFirst();
@@ -89,11 +116,7 @@ public class ChangeLogRepository {
 
     /**
      * Inserts a new ChangeLog record.
-     * <p>
-     * Generates a new unique ID and adds the record to the in-memory list,
-     * then persists the changes to the JSON file.
-     * </p>
-     *
+     * Generates a new unique ID and adds the record to the in-memory list.
      * @param changeLog the ChangeLog object to insert
      */
     public void insert(final ChangeLog changeLog) {
@@ -108,32 +131,43 @@ public class ChangeLogRepository {
                 changeLog.actorId()
         );
         changeLogs.add(newLog);
-        save();
     }
 
     /**
      * Updates an existing ChangeLog record.
      *
-     * @param updatedLog the updated ChangeLog object
+     * @param updatedLog the ChangeLog record with updated values
      */
     public void update(final ChangeLog updatedLog) {
         for (int i = 0; i < changeLogs.size(); i++) {
             if (changeLogs.get(i).id() == updatedLog.id()) {
                 changeLogs.set(i, updatedLog);
-                save();
                 return;
             }
         }
     }
 
     /**
-     * Deletes a ChangeLog record by its ID.
+     * Deletes a ChangeLog record.
      *
-     * @param id the ID of the ChangeLog record to remove
+     * @param entity the ChangeLog record to delete
      */
-    public void delete(final int id) {
-        changeLogs.removeIf(log -> log.id() == id);
-        save();
+    @Override
+    public void delete(final ChangeLog entity) {
+        changeLogs.removeIf(log -> log.id() == entity.id());
+        saveListToFile();
+    }
+
+    /**
+     * Saves the entire list of ChangeLog records to the JSON file.
+     */
+    private void saveListToFile() {
+        Path output = PathsUtil.getBudgetChangesWritablePath();
+        try (FileWriter writer = new FileWriter(output.toFile())) {
+            GSON.toJson(changeLogs, writer);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Failed to save ChangeLog data", e);
+        }
     }
 
     /**
