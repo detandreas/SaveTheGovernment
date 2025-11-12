@@ -22,7 +22,7 @@ public class TestCitizen {
     @BeforeAll
     public static void setUp() {    
         citizen = new Citizen(USER_NAME, FULL_NAME, PASSWORD);
-        citizen = new Citizen(USER_NAME, FULL_NAME, PASSWORD);
+        citizen2 = new Citizen(USER_NAME, FULL_NAME, PASSWORD);
     }
 
     @Test
