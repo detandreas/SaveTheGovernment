@@ -35,4 +35,35 @@ public class ChangeLogRepository {
     public ChangeLogRepository() {
         this.changeLogs = load();
     }
+
+    /**
+     * Loads all ChangeLog records from the JSON file.
+     *
+     * @return a list of ChangeLog objects; returns an empty list if the file is missing or unreadable
+     */
+    public List<ChangeLog> load() {
+        try (FileReader reader = PathsUtil.getBudgetChangesFileReader()) {
+            if (reader == null) {
+                System.err.println("[WARN] budget-changes.json not found. Returning empty list.");
+                return new ArrayList<>();
+            }
+            Type listType = new TypeToken<List<ChangeLog>>() {}.getType();
+            return GSON.fromJson(reader, listType);
+        } catch (IOException e) {
+            System.err.println("[ERROR] Failed to load ChangeLog data: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Saves the current in-memory list of ChangeLog records to the JSON file.
+     */
+    public void save() {
+        try (FileWriter writer = new FileWriter("src/main/resources" + RESOURCE_PATH)) {
+            GSON.toJson(changeLogs, writer);
+        } catch (IOException e) {
+            System.err.println("[ERROR] Failed to save ChangeLog data: " + e.getMessage());
+        }
+    }
+
 }
