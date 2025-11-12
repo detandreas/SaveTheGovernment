@@ -136,4 +136,15 @@ public class ChangeLogRepository {
         save();
     }
 
+    /**
+     * Generates a new unique ID based on the highest current ID in the list.
+     *
+     * @return a new unique integer ID
+     */
+    private int generateId() {
+        return changeLogs.stream()
+                .mapToInt(ChangeLog::id)
+                .max()
+                .orElse(0) + 1;
+    }
 }
