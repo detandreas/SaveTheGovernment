@@ -20,5 +20,19 @@ import java.util.Optional;
  * persisting them to a JSON file using Gson.
  */
 public class ChangeLogRepository {
+    /** Gson instance used for JSON serialization and deserialization */
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    /** Path to the ChangeLog JSON file */
+    private static final String RESOURCE_PATH = PathsUtil.BUDGET_CHANGES_RESOURCE;
+
+    /** In-memory list of all ChangeLog records */
+    private List<ChangeLog> changeLogs;
+
+    /**
+     * Constructor initializes the repository by loading existing ChangeLog records.
+     */
+    public ChangeLogRepository() {
+        this.changeLogs = load();
+    }
 }
