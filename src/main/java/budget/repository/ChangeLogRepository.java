@@ -86,4 +86,54 @@ public class ChangeLogRepository {
                 .filter(log -> log.id() == id)
                 .findFirst();
     }
+
+    /**
+     * Inserts a new ChangeLog record.
+     * <p>
+     * Generates a new unique ID and adds the record to the in-memory list,
+     * then persists the changes to the JSON file.
+     * </p>
+     *
+     * @param changeLog the ChangeLog object to insert
+     */
+    public void insert(final ChangeLog changeLog) {
+        int newId = generateId();
+        ChangeLog newLog = new ChangeLog(
+                newId,
+                changeLog.budgetItemId(),
+                changeLog.oldValue(),
+                changeLog.newValue(),
+                changeLog.submittedDate(),
+                changeLog.actorUserName(),
+                changeLog.actorId()
+        );
+        changeLogs.add(newLog);
+        save();
+    }
+
+    /**
+     * Updates an existing ChangeLog record.
+     *
+     * @param updatedLog the updated ChangeLog object
+     */
+    public void update(final ChangeLog updatedLog) {
+        for (int i = 0; i < changeLogs.size(); i++) {
+            if (changeLogs.get(i).id() == updatedLog.id()) {
+                changeLogs.set(i, updatedLog);
+                save();
+                return;
+            }
+        }
+    }
+
+    /**
+     * Deletes a ChangeLog record by its ID.
+     *
+     * @param id the ID of the ChangeLog record to remove
+     */
+    public void delete(final int id) {
+        changeLogs.removeIf(log -> log.id() == id);
+        save();
+    }
+
 }
