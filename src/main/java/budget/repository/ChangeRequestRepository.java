@@ -129,10 +129,11 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
             LOGGER.warning("Cannot search with a null id");
             return false;
         }
-        List<PendingChange> pc = new ArrayList<>(load());
         /* το id τυπου Integer γινεται auto-unboxing σε int
         για αυτο ειναι εγκυρη η συγκριση*/
-        return pc.stream().anyMatch(change -> change.getId() == id);
+        return load()
+                .stream()
+                .anyMatch(change -> change.getId() == id);
     }
 
     /**
@@ -174,9 +175,8 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
             LOGGER.warning("Cannot search with a null id");
             return Optional.empty();
         }
-
-        List<PendingChange> pc = new ArrayList<>(load());
-        return pc.stream()
+        return load()
+                .stream()
                 .filter(change -> change.getId() == id)
                 .findFirst();
     }
