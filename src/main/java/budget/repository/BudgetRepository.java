@@ -51,7 +51,9 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
         
     }
     /**
-     * Saves the current budget list to the JSON file.
+     * Saves a Budget entity to the JSON file.
+     * Removes any existing budget with the same year to prevent duplicates.
+     * @param entity the Budget object to be saved; must not be null
      */
     @Override
     public void save(Budget entity) {
