@@ -77,4 +77,19 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
             System.err.println("Error saving budgets: " + e.getMessage());
         }
     }
+    /**
+     * Checks if a budget exists for the given year.
+     * If the provided year is null, the method returns false.
+     * @param year the year to check for existence; may be null
+     * @return true if a budget with the specified year exists, false otherwise
+     */
+    @Override
+    public boolean existsById(Integer year) {
+        if (year == null) {
+            return false;
+        }
+        List<Budget> budgets = load();
+        return budgets.stream()
+                .anyMatch(b -> b.getYear() == year);
+    }
 }
