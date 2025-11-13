@@ -28,7 +28,6 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
     private static final String  BUDGET_FILE = "src/main/resources/budget.json";
 
     private final Gson gson = new Gson();
-    private final List<Budget> budgets = new ArrayList<>();
 
     /**
      * Loads all budgets from the budget.json File
@@ -42,8 +41,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
         }
         
         try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
-            final Type budgetListType = new TypeToken<List<Budget>>() {
-            }.getType();
+            final Type budgetListType = new TypeToken<List<Budget>>() {}.getType();       // Solves Type erasure problem
             final List<Budget> loadBudgets = gson.fromJson(reader,budgetListType);
             return loadBudgets != null ? loadBudgets : new ArrayList<>();
         } catch (IOException e) {
@@ -53,6 +51,22 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
         
     }
     /**
-     * 
+     * Saves the current budget list to the JSON file.
      */
+    @Override
+    public void save(Budget entity) {
+        List<Budget> budgets = load();
+        for (Budget b : budgets) {
+            if (b.getYear() == entity.getYear()) {
+                budgets.remove(b);
+            }
+        }
+        budgets.add(entity);
+        try (OutputStreamWriter writer = new OutputStreamWriter(
+                new FileOutputStream(BUDGET_FILE), StandardCharsets.UTF_8)) {
+            gson.toJson(budgets, writer);
+        } catch (IOException e) {
+            System.err.println("Error saving budgets: " + e.getMessage());
+        }
+    }
 }
