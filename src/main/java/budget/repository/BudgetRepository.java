@@ -55,6 +55,11 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
      */
     @Override
     public void save(Budget entity) {
+        if (entity == null) {
+            System.err.println("Cannot save null budget");
+            return;
+        }
+
         List<Budget> budgets = load();
         for (Budget b : budgets) {
             if (b.getYear() == entity.getYear()) {
@@ -62,6 +67,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
             }
         }
         budgets.add(entity);
+
         try (OutputStreamWriter writer = new OutputStreamWriter(
                 new FileOutputStream(BUDGET_FILE), StandardCharsets.UTF_8)) {
             gson.toJson(budgets, writer);
