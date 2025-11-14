@@ -141,7 +141,7 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
      * When a matching entry is found it is removed and the updated collection
      * is persisted; otherwise no action is taken.
      *
-     * @param change the pending change to remove; ignored when {@code null}
+     * @param change the pending change to remove, ignored when {@code null}
      */
     @Override
     public void delete(PendingChange change) {
@@ -163,7 +163,7 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
     /**
      * Retrieves the pending change associated with the supplied identifier.
      *
-     * @param id the unique identifier of the pending change to look up;
+     * @param id the unique identifier of the pending change to look up
      *           must not be {@code null}
      * @return an {@link Optional} containing the matching
      * {@link PendingChange} or {@link Optional#empty()}
