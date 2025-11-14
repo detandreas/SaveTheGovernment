@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-
 public class TestChangeRequestRepository {
 
     private ChangeRequestRepository repository;
@@ -89,6 +88,18 @@ public class TestChangeRequestRepository {
                         .stream()
                         .anyMatch(change -> change.getId() == change2.getId()),
                         "Failure - data not loaded correctly");
+    }
+
+    @Test
+    void testLoadWithMalformedJson(@TempDir Path tempDir) throws IOException {
+        System.setProperty("budget.data.dir", tempDir.toString());
+        Path testFile = tempDir.resolve("pending-changes.json");
+        Files.writeString(testFile, "{ invalid json }");
+        
+        assertDoesNotThrow(() -> repository.load());
+        List<PendingChange> changes = repository.load();
+        assertTrue(changes.isEmpty(), 
+            "Failure - should return empty list on malformed JSON");
     }
 
     //Tests για save()
