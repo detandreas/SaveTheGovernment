@@ -1,10 +1,5 @@
 package budget.repository;
 
-import budget.model.domain.Budget;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -15,6 +10,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import budget.model.domain.Budget;
 
 
 /**
@@ -57,7 +57,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
      * @param entity the Budget object to be saved; must not be null
      */
     @Override
-    public void save(Budget entity) {
+    public void save(final Budget entity) {
         if (entity == null) {
             System.err.println("Cannot save null budget");
             return;
@@ -81,7 +81,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
      * @return true if a budget with the specified year exists, false otherwise
      */
     @Override
-    public boolean existsById(Integer year) {
+    public boolean existsById(final Integer year) {
         if (year == null) {
             return false;
         }
@@ -97,7 +97,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
     * @param entity the Budget object whose year is used to identify budgets to delete; may not be null
     */
     @Override
-    public void delete(Budget entity) {
+    public void delete(final Budget entity) {
         if (entity == null) {
             System.err.println("Cannot delete null budget");
             return;
@@ -122,7 +122,15 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
     /**
      * findById method
      */
-    public Optional<Budget> findById(Integer year) {
-        
+    @Override
+    public Optional<Budget> findById(final Integer year) {
+        if (year == null) {
+            System.err.println("Cannot find null budget");
+            return Optional.empty();
+        }
+        List<Budget> budgets = load();
+        return budgets.stream()
+                    .filter(b -> b.getYear() == year)
+                    .findFirst();
     }
 }
