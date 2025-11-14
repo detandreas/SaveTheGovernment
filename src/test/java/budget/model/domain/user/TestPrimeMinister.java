@@ -81,8 +81,8 @@ public class TestPrimeMinister {
     void testToString() {
         PrimeMinister pm1 = PrimeMinister.getInstance(USER_NAME1, FULL_NAME1, PASSWORD1);
         String s = pm1.toString();
-        assertTrue(s.contains("userName=USER_NAME1"), "Failure - wrong toString");
-        assertTrue(s.contains("fullName=FULL_NAME1"), "Failure - wrong toString");
-        assertTrue(s.contains("userRole=PRIME MINISTER"), "Failure - wrong toString");
+        assertTrue(s.contains("userName=TestUser1"), "Failure - wrong toString");
+        assertTrue(s.contains("fullName=Test Full Name1"), "Failure - wrong toString");
+        assertTrue(s.contains("userRole=Prime Minister"), "Failure - wrong toString");
     }
 }
