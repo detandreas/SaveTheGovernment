@@ -132,7 +132,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
         }
         List<Budget> budgets = load();
         return budgets.stream()
-                    .filter(b -> b.getYear() == year)
+                    .filter(b -> year.equals(b.getYear()))
                     .findFirst();
     }
 }
