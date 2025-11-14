@@ -76,4 +76,13 @@ public class TestPrimeMinister {
         // PrimeMinister cannot submit change requests
         assertFalse(pm.canSubmitChangeRequest(), "PrimeMinister should not submit change requests");
     }
+
+    @Test
+    void testToString() {
+        PrimeMinister pm1 = PrimeMinister.getInstance(USER_NAME1, FULL_NAME1, PASSWORD1);
+        String s = pm1.toString();
+        assertTrue(s.contains("userName=USER_NAME1"), "Failure - wrong toString");
+        assertTrue(s.contains("fullName=FULL_NAME1"), "Failure - wrong toString");
+        assertTrue(s.contains("userRole=PRIME MINISTER"), "Failure - wrong toString");
+    }
 }
