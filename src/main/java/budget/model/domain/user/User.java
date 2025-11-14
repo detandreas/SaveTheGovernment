@@ -1,5 +1,6 @@
 package budget.model.domain.user;
 
+import java.util.Locale;
 import java.util.UUID;
 import budget.model.enums.UserRole;
 import budget.model.domain.BudgetItem;
@@ -14,7 +15,7 @@ public  abstract class User {
     private String userName;
     private String fullName;
     private String password;
-    private UserRole userRole;
+    private final UserRole userRole;
 
     /**
      *
@@ -102,14 +103,6 @@ public  abstract class User {
         return userRole;
     }
     /**
-     * sets user Role.
-     *
-     * @param userRole user Role inside the budget system
-     */
-    public void setUserRole(UserRole userRole) {
-        this.userRole = userRole;
-    }
-    /**
      * checks if user can edit budgetitem based on his role.
      *
      * @param budgetItem specific fund inside the budget
@@ -123,4 +116,22 @@ public  abstract class User {
      * @return  if user is authorized to approve a budget change
      */
     public abstract boolean canApprove();
+    /**
+     * Checks if user can sumbit a request
+     * to change a budget item.
+     * @return true if user is GovernmentMember else false
+     */
+    public abstract boolean canSubmitChangeRequest();
+    /**
+     * Returns a string representation of a User.
+     * @return a formatted string containing User information
+     */
+    @Override
+    public String toString() {
+        return String.format(
+            Locale.US,
+            "User{userName=%s, fullName=%s, userRole=%s}",
+            userName, fullName, userRole
+        );
+    }
 }

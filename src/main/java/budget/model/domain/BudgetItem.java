@@ -1,4 +1,9 @@
 package budget.model.domain;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import budget.model.enums.Ministry;
 
 /**
  * Represents a budget line item of the state budget.
@@ -10,6 +15,7 @@ public class BudgetItem {
     private String name;
     private double value;
     private final boolean isRevenue;
+    private final List<Ministry> ministries;
     /**
      * Constructor for BudgetItem.
      * @param id unique budget item id
@@ -17,19 +23,23 @@ public class BudgetItem {
      * @param name name of the budget item e.g taxes
      * @param value budget item value
      * @param isRevenue checks if budget item is issued as revenue
+     * @param ministries the ministries that participate
+     * in the formation of the budget item
      */
     public BudgetItem(
         int id,
         int year,
         String name,
         double value,
-        boolean isRevenue
+        boolean isRevenue,
+        List<Ministry> ministries
     ) {
         this.id = id;
         this.year = year;
         this.name = name;
         this.value = value;
         this.isRevenue = isRevenue;
+        this.ministries = new ArrayList<>(ministries);
     }
     /**
      * Return budget item id.
@@ -81,6 +91,13 @@ public class BudgetItem {
         return isRevenue;
     }
     /**
+     * Return list of ministries.
+     * @return ministries list
+     */
+    public List<Ministry> getMinistries() {
+        return new ArrayList<>(ministries);
+    }
+    /**
      * Return  a string represantation of a budget item.
      * @return a formatted String containing
      * information for a budget item
@@ -88,6 +105,7 @@ public class BudgetItem {
     @Override
     public String toString() {
         return String.format(
+            Locale.US,
             "BudgetItem{id=%d, year=%d, name=%s, "
             + "value=%.2f, isRevenue=%b}",
             id, year, name, value, isRevenue

@@ -1,4 +1,4 @@
-package budget.util.constants;
+package budget.constants;
 
 import java.util.List;
 /**
@@ -15,6 +15,20 @@ public final class Menu {
         "1. Log In",
         "2. Create New Account",
         "3. Exit Application"
+    );
+    // Exit Confirmation Menu
+    public static final List<String> EXIT_CONFIRMATION_MENU = List.of(
+        "Are you sure you want to exit the application?",
+        "1. YES",
+        "2. NO"
+    );
+     // Update Credentials Menu
+    public static final List<String> UPDATE_CREDENTIALS_MENU = List.of(
+        "Update Credentials Menu:",
+        "1. Update Username",
+        "2. Update Password",
+        "3. Update Full Name",
+        "4. Return to Main Menu"
     );
     // Role Selection Menu
     public static final List<String> ROLE_SELECTION_MENU = List.of(
