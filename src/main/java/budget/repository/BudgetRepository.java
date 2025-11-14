@@ -63,11 +63,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
         }
 
         List<Budget> budgets = load();
-        for (Budget b : budgets) {
-            if (b.getYear() == entity.getYear()) {
-                budgets.remove(b);
-            }
-        }
+        budgets.removeIf(b -> b.getYear() == entity.getYear());
         budgets.add(entity);
 
         try (OutputStreamWriter writer = new OutputStreamWriter(
