@@ -120,7 +120,9 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
     }
     }
     /**
-     * findById method
+     * Finds a Budget by its year.
+     * @param year the year of the budget to find; if null, returns an empty Optional
+     * @return an Optional containing the Budget if found, or Optional.empty() if not found
      */
     @Override
     public Optional<Budget> findById(final Integer year) {
