@@ -89,8 +89,12 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
                 .anyMatch(b -> b.getYear() == year);
     }
     /**
-     * Delete a budget by the yar
-     */
+    * Deletes budgets that match the year of the provided Budget entity.
+    * If the provided entity is null, no deletion occurs and an error is logged.
+    * Prints a message indicating whether any budgets were deleted.
+    * Saves the updated list of budgets back to the JSON file.
+    * @param entity the Budget object whose year is used to identify budgets to delete; may not be null
+    */
     @Override
     public void delete(Budget entity) {
         if (entity == null) {
