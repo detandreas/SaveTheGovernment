@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 
 public class TestChangeRequestRepository {
@@ -25,7 +26,7 @@ public class TestChangeRequestRepository {
     private String originalDataDir;
 
     @BeforeEach
-    void setUp(@TempDir Path tempDir) throws IOException{
+    void setUp(@TempDir Path tempDir) throws IOException {
         //Το junit φτιαχνει temporary directory που διαγράφει 
         //μετα απο κάθε test
         originalDataDir = System.getProperty("budget.data.dir");
@@ -130,8 +131,8 @@ public class TestChangeRequestRepository {
         List<PendingChange> changes = repository.load();
         assertEquals(1, changes.size(),
         "Failure - save should update existing change");
-        PendingChange read_change = changes.get(0);
-        assertEquals(Status.APPROVED, read_change.getStatus(),
+        PendingChange readChange = changes.get(0);
+        assertEquals(Status.APPROVED, readChange.getStatus(),
         "Failure - status not updated correctly");
     }
 
@@ -193,5 +194,92 @@ public class TestChangeRequestRepository {
     void testDeleteNull() {
         assertDoesNotThrow(() -> repository.delete(null),
         "Failure - should not throw for deleting null");
+    }
+
+    //Tests για findsById()
+
+    @Test
+    void testFindByIdExisting() {
+        PendingChange change = createTestChange(1, "User", 100.0, 150.0);
+        repository.save(change);
+        Optional<PendingChange> found_change = repository.findById(change.getId());
+        assertTrue(found_change.isPresent(),
+        "Failure - should find existing change" );
+    }
+
+    @Test
+    void testFindByIdNonExisting() {
+        Optional<PendingChange> found_change = repository.findById(999);
+        assertFalse(found_change.isPresent(),
+        "Failure - should return empty for non-existing id");
+    }
+    
+    @Test
+    void testFindByIdNull() {
+        Optional<PendingChange> found_change = repository.findById(null);
+        assertFalse(found_change.isPresent(),
+        "Failure - should return empty for null id");
+    }
+
+    //Other Tests
+
+    @Test
+    void testFullCrudCycle() {
+        PendingChange change = createTestChange(1, "User", 100.0, 150.0);
+        //Create
+        repository.save(change);
+
+        assertTrue(repository.existsById(change.getId()),
+        "Failure - save() not working properly");
+
+        //Read
+        List<PendingChange> changes = repository.load();
+        assertEquals(1, changes.size(),
+        "Failure - load() not working properly");
+        Optional<PendingChange> read_change = repository.findById(change.getId());
+        assertTrue(read_change.isPresent(),
+        "Failure - findById() not working properly");
+        assertEquals(change.getRequestByName(), read_change.get().getRequestByName(),
+        "Failure - requestByName should be equal");
+        
+        //Update
+        read_change.get().approve();
+        repository.save(read_change.get());
+        Optional<PendingChange> afterUpdate = repository.findById(change.getId());
+        assertTrue(afterUpdate.isPresent(),
+        "Failure - findById() not working properly");
+        assertEquals(Status.APPROVED, afterUpdate.get().getStatus(),
+        "Failure - update() not working properly");
+
+        //Delete
+        repository.delete(afterUpdate.get());
+        assertFalse(repository.existsById(change.getId()),
+        "Failure - delete() not working properly");
+    }
+
+    @Test
+    void testMultipleChanges() {
+        PendingChange change1 = createTestChange(1, "User1", 100.0, 150.0);
+        PendingChange change2 = createTestChange(2, "User2", 200.0, 250.0);
+        PendingChange change3 = createTestChange(3, "User3", 300.0, 350.0);
+
+        repository.save(change1);
+        repository.save(change2);
+        repository.save(change3);
+
+        List<PendingChange> changes = repository.load();
+        assertEquals(3, changes.size(),
+        "Failure - multiple changes not handled correctly");
+
+        repository.delete(change1);
+        assertTrue(repository.existsById(change2.getId()),
+        "Failure - change2 should exist");
+        assertTrue(repository.existsById(change3.getId()),
+        "Failure - change3 should exist");
+        repository.delete(change2);
+        repository.delete(change3);
+        changes = repository.load();
+        assertEquals(0, changes.size(),
+        "Failure - multiple changes not deleted correctly");
     }
 }
