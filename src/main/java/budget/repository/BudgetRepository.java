@@ -88,4 +88,30 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
         return budgets.stream()
                 .anyMatch(b -> b.getYear() == year);
     }
+    /**
+     * Delete a budget by the yar
+     */
+    @Override
+    public void delete(Budget entity) {
+        if (entity == null) {
+            System.err.println("Cannot delete null budget");
+            return;
+        }
+
+        List<Budget> budgets = load();
+        boolean removed = budgets.removeIf(b -> b.getYear() == entity.getYear());
+
+        if(removed) {
+            System.out.println("Budget for year " + entity.getYear() + " was deleted");
+        } else {
+            System.out.println("No budget found for year " + entity.getYear());
+        }
+
+        try (OutputStreamWriter writer = new OutputStreamWriter(
+            new FileOutputStream(BUDGET_FILE), StandardCharsets.UTF_8)) {
+        gson.toJson(budgets, writer);
+    } catch (IOException e) {
+        System.err.println("Error saving budgets: " + e.getMessage());
+    }
+    }
 }
