@@ -1,19 +1,15 @@
 package budget.model.domain.user;
 
-import java.lang.reflect.Field;
-
 import budget.model.domain.BudgetItem;
-
+import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestPrimeMinister {
-    private static PrimeMinister pm;
     private static final String USER_NAME1 = "TestUser1";
     private static final String FULL_NAME1 = "Test Full Name1";
     private static final String PASSWORD1 = "TestPassword1";
@@ -24,34 +20,34 @@ public class TestPrimeMinister {
     private static final String PASSWORD2 = "TestPassword2";
 
     @BeforeEach
-        void resetSingleton() throws Exception {
-            Field instanceField = PrimeMinister.class.getDeclaredField("instance");
-            instanceField.setAccessible(true);
-            instanceField.set(null, null);
+    void resetSingleton() throws Exception {
+        Field instanceField = PrimeMinister.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, null);
     }
 
     @Test
     void testGetInstanceCreatesAndToStringContainsInfo() {
-    PrimeMinister pm1 = PrimeMinister.getInstance(USER_NAME1, FULL_NAME1, PASSWORD1);
-    PrimeMinister pm2 = PrimeMinister.getInstance();
-
-    assertSame(pm1, pm2, "getInstance should return the same instance");
-
-    String toString = pm1.toString();
-    assertTrue(toString.contains("Prime Minister"), "toString should contain class name");
+        PrimeMinister pm1 = PrimeMinister.getInstance(USER_NAME1, FULL_NAME1, PASSWORD1);
+        PrimeMinister pm2 = PrimeMinister.getInstance();
+        
+        assertSame(pm1, pm2, "getInstance should return the same instance");
+        
+        String toString = pm1.toString();
+        assertTrue(toString.contains("Prime Minister"), "toString should contain class name");
     }
 
     @Test
     void testGetInstanceNoArgsThrowsIfNotInitialized() {
         assertThrows(
-        IllegalStateException.class,
-        PrimeMinister::getInstance,
-        "Calling getInstance() without initialization should throw IllegalStateException"
+            IllegalStateException.class,
+            () -> PrimeMinister.getInstance(),
+            "Calling getInstance() without initialization should throw IllegalStateException"
         );
     }
 
     @Test
-        void testSingletonBehaviorKeepsFirstInitialization() {
+    void testSingletonBehaviorKeepsFirstInitialization() {
         PrimeMinister first = PrimeMinister.getInstance(USER_NAME1, FULL_NAME1, PASSWORD1);
         PrimeMinister second = PrimeMinister.getInstance(USER_NAME2, FULL_NAME2, PASSWORD2);
 
