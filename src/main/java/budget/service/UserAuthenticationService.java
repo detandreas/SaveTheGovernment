@@ -1,10 +1,11 @@
 package budget.service;
 
-import budget.model.user.User;
-import budget.repository.UserRepository;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+
+import budget.model.domain.user.User;
+import budget.repository.UserRepository;
 
 /**
  * Service responsible for user authentication operations.
