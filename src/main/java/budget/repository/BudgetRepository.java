@@ -119,4 +119,10 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
         System.err.println("Error saving budgets: " + e.getMessage());
     }
     }
+    /**
+     * findById method
+     */
+    public Optional<Budget> findById(Integer year) {
+        
+    }
 }
