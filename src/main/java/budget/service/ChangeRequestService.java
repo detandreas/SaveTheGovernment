@@ -2,6 +2,7 @@ package budget.service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import budget.model.domain.BudgetItem;
 import budget.model.domain.PendingChange;
@@ -23,6 +24,9 @@ import budget.constants.Limits;
  */
 
 public class ChangeRequestService {
+
+    private static final Logger LOGGER = Logger.getLogger(ChangeRequestService.class.getName());
+
     private final ChangeRequestRepository changeRequestRepository;
     private final BudgetService budgetService;
     private final BudgetRepository budgetRepository;
@@ -109,24 +113,7 @@ public class ChangeRequestService {
             throw new IllegalStateException(Message.REQUEST_ALREADY_RESOLVED_MESSAGE);
         }
 
-        BudgetItem item = budgetRepository.findById(request.getBudgetItemId());
-
-        if (item != null) {
-            item.setValue(request.getNewValue());
-            budgetRepository.save();
-        }
-
-        request.approve();
-        changeRequestRepository.save(request);
-
-        changeLogRepository.insert(
-            pm.getId(),
-            pm.getFullName(),
-            request.getBudgetItemId(),
-            request.getOldValue(),
-            request.getNewValue(),
-            LocalDateTime.now()
-        );
+        updateChangeStatus(pm, request.getId(), Status.APPROVED);
     }
     /**
      * Rejects a pending change request by the Prime Minister.
@@ -148,9 +135,66 @@ public class ChangeRequestService {
             throw new IllegalStateException(Message.REQUEST_ALREADY_RESOLVED_MESSAGE);
         }
 
-        request.reject();
-        changeRequestRepository.save(request);
+        updateChangeStatus(pm,request.getId(), Status.REJECTED);
+
     }
+    /**
+     * Updates the status of a change request using the model's built-in approve/reject methods.
+     *
+     * @param id the ID of the change request
+     * @param status the new status to set
+     */
+    public void updateChangeStatus(PrimeMinister pm, int id, Status status) {
+        if (id <= 0) {
+            LOGGER.warning("Cannot update change with invalid id: " + id);
+            return;
+        }
+        if (status == null) {
+            LOGGER.warning("Cannot update change with null status for id: " + id);
+            return;
+        }
+
+        PendingChange request = changeRequestRepository.findById(id).orElse(null);
+
+        if (request == null) {
+            LOGGER.warning("No pending change found with id: " + id);
+            return;
+        }
+
+        if (request.getStatus() != Status.PENDING) {
+            LOGGER.warning("Change request already resolved: id=" + id);
+            return;
+        }
+
+        if (status == Status.APPROVED) {
+            BudgetItem item = budgetRepository.findById(request.getBudgetItemId());
+            if (item != null) {
+                item.setValue(request.getNewValue());
+                budgetRepository.save();
+            }
+            request.approve();
+        } else if (status == Status.REJECTED) {
+            request.reject();
+        } else {
+            LOGGER.warning("Unsupported status: " + status);
+            return;
+        }
+
+        changeRequestRepository.save(request);
+
+        if (pm != null) {
+            changeLogRepository.insert(
+                    pm.getId(),
+                    pm.getFullName(),
+                    request.getBudgetItemId(),
+                    request.getOldValue(),
+                    request.getNewValue(),
+                    LocalDateTime.now()
+            );
+        }
+        
+    }
+
     /**
      * Counts the number of pending change requests submitted by a specific user.
      *
