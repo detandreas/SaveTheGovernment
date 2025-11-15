@@ -141,6 +141,7 @@ public class ChangeRequestService {
     /**
      * Updates the status of a change request using the model's built-in approve/reject methods.
      *
+     * @param pm the Prime Minister performing the update
      * @param id the ID of the change request
      * @param status the new status to set
      */
