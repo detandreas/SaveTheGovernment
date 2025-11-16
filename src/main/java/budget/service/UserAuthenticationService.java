@@ -1,6 +1,9 @@
 package budget.service;
 
-import budget.model.domain.user.*;
+import budget.model.domain.user.User;
+import budget.model.domain.user.Citizen;
+import budget.model.domain.user.GovernmentMember;
+import budget.model.domain.user.PrimeMinister;
 import budget.model.enums.Ministry;
 import budget.model.enums.UserRole;
 import budget.repository.UserRepository;
@@ -38,7 +41,8 @@ public class UserAuthenticationService {
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            if (user.getHashPassword().equals(PasswordUtils.hashPassword(password))) {
+            if (user.getHashPassword().equals(PasswordUtils
+            .hashPassword(password))) {
                 this.currentUser = user;
                 return true;
             }
@@ -86,6 +90,7 @@ public class UserAuthenticationService {
      * @param password the plain-text password of the new user
      * @param fullName the full name of the user
      * @param role     the role assigned to the user
+     * @param ministry the user's ministry
      * @return true if registration succeeds, false otherwise
      */
     public boolean signUp(String username,

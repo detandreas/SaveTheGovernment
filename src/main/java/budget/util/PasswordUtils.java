@@ -8,6 +8,11 @@ public class PasswordUtils {
      * @param password the plain text password
      * @return the hashed password string
      */
+
+    private PasswordUtils() {
+        // Utility class - prevent instantiation
+    }
+
     public static String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
