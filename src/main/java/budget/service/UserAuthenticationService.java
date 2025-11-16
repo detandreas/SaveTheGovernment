@@ -1,11 +1,12 @@
 package budget.service;
 
+import budget.model.domain.user.*;
+import budget.model.enums.Ministry;
+import budget.model.enums.UserRole;
+import budget.repository.UserRepository;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
-
-import budget.model.domain.user.User;
-import budget.repository.UserRepository;
 
 /**
  * Service responsible for user authentication operations.
@@ -91,5 +92,76 @@ public class UserAuthenticationService {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error during hashing of password.", e);
         }
+    }
+
+    /**
+     * Registers a new user in the system.
+     *
+     * <p>This method performs the following operations:
+     * <ul>
+     *   <li>Validates that the username is not already in use.</li>
+     *   <li>Hashes the plain-text password for secure storage.</li>
+     *   <li>Creates a specific User subclass based on the given role.</li>
+     *   <li>Saves the newly created user in the UserRepository.</li>
+     * </ul>
+     *
+     * @param username the desired username of the new user
+     * @param password the plain-text password of the new user
+     * @param fullName the full name of the user
+     * @param role     the role assigned to the user
+     * @return true if registration succeeds, false otherwise
+     */
+    public boolean signUp(String username,
+    String password, String fullName, UserRole role, Ministry ministry) {
+
+        // Validate that the username is not already taken.
+        Optional<User> existingUser = userRepository.findByUsername(username);
+        if (existingUser.isPresent()) {
+            return false; // Username already exists.
+        }
+
+        // Hash the password before storing it (security requirement).
+        String hashedPassword = hashPassword(password);
+
+        // Prime Minister must follow Singleton rules.
+        if (role == UserRole.PRIME_MINISTER) {
+
+            // If PM exists → reject.
+            if (userRepository.primeMinisterExists()) {
+                return false;
+            }
+
+            // First-time creation of Singleton PrimeMinister.
+            PrimeMinister pm = PrimeMinister.getInstance(
+                username,
+                fullName,
+                hashedPassword
+            );
+
+            userRepository.save(pm);
+            return true;
+        }
+
+        // Create a new User instance according to the provided role.
+        User newUser;
+        switch (role) {
+            case CITIZEN:
+                newUser = new Citizen(username, fullName, hashedPassword);
+                break;
+
+            case GOVERNMENT_MEMBER:
+                newUser =
+                new GovernmentMember(username, fullName,
+                hashedPassword, ministry);
+                break;
+
+            default:
+                return false; // Unknown or unsupported user role.
+        }
+
+        // Save the new user using the repository (data persistence).
+        userRepository.save(newUser);
+
+        return true;
     }
 }
