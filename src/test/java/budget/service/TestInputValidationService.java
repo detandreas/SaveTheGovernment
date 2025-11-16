@@ -1,73 +1,57 @@
 package budget.service;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 
 import budget.exceptions.ValidationException;
 import budget.model.domain.user.User;
 import budget.model.enums.UserRole;
-import java.util.UUID;
+import budget.model.domain.user.Citizen;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import budget.model.domain.user.TestUser;
 
 public class TestInputValidationService {
 
     private static InputValidationService service = new InputValidationService();
     
-    private static class TestUser extends User {
+    private static Citizen tUser = new Citizen(null, null, null);
 
-        public TestUser(String userName, String fullName, String password, UserRole role) {
-            super(userName, fullName, password, role);
-        }
-        @Override
-        public boolean canEdit(budget.model.domain.BudgetItem item) {
-            return false;
-        } 
-  
-        @Override
-        public boolean canApprove() {
-            return false;
-        }
-
-        @Override
-        public boolean canSubmitChangeRequest() {
-            return false;
-        }
-    }
 
     // TESTING NEW USER VALIDATION
 
 @Test
-void TestValidateNewUser(){
-    final User tUser = new TestUser("USER_NAME", "Giannis Papadopoulos ", "OASSWORD", UserRole.CITIZEN);
+void TestNewUser(){
+    final User tUser = new Citizen("USER_NAME", "Giannis Papadopoulos ", "OASSWORD");
 
     assertDoesNotThrow(() -> service.validateNewUser(tUser),"Failure - valid user shouldnt throw exception");
 }
 
 @Test 
-void TestValidateUserUpdate(){
-  final  User tUser = new TestUser("USER_NAME", "Giannis Papadopoulos", "OASSWORD",UserRole.PRIME_MINISTER);
+void TestUserUpdate(){
+  final  User tUser = new Citizen("USER_NAME", "Giannis Papadopoulos", "OASSWORD");
 
   assertDoesNotThrow(() -> service.validateUserUpdate(tUser),"Failure - valid update user shouldnt throw exception");
 }
 
 @Test
-void TestValidateRoleChange(){
+void TestRoleChange(){
     assertDoesNotThrow(() -> service.validateRoleChange(UserRole.CITIZEN,UserRole.GOVERNMENT_MEMBER),
     "Failure - valid role change shouldnt throw exception");
 }
 
 @Test
-void validateNewUser_NullUser(){
+void TestNullUser(){
     final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateNewUser(null));
 
     assertEquals("User is null", ex.getMessage());
 }
 
 @Test
-void validateNewUser_WrongUserName(){
-    final User tUser = new TestUser("WRONG USERNAME","Giannis Papadopoulos","PASSWORD",UserRole.CITIZEN);
+void TestWrongUserName(){
+    final User tUser = new Citizen("WRONG USERNAME","Giannis Papadopoulos","PASSWORD");
 
     final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateNewUser(tUser));
 
@@ -75,8 +59,8 @@ void validateNewUser_WrongUserName(){
 }
 
 @Test
-void validateNewUser_WrongFullName(){
-    final User tUser = new TestUser("USER_NAME", "WRONG FULLNAME", "PASSWORD", UserRole.CITIZEN);
+void TestWrongFullName(){
+    final User tUser = new Citizen("USER_NAME", "WRONG FULLNAME", "PASSWORD");
 
     final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateNewUser(tUser));
 
@@ -84,17 +68,8 @@ void validateNewUser_WrongFullName(){
 }
 
 @Test
-void validateNewUser_WrongUserRole(){
-    final User tUser = new TestUser("USER_NAME", "Giannis Papadopoulos", "PASSWORD", null);
-
-    final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateNewUser(tUser));
-
-    assertEquals("invalid user role",ex.getMessage());
-}
-
-@Test
-void validateNewUser_WrongPassword(){
-    final User tUser = new TestUser("USER_NAME", "Giannis Papadopoulos",null, UserRole.CITIZEN);
+void TestWrongPassword(){
+    final User tUser = new Citizen("USER_NAME", "Giannis Papadopoulos",null);
 
     final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateNewUser(tUser));
 
@@ -104,15 +79,15 @@ void validateNewUser_WrongPassword(){
  // TESTTING WRGONG USER UPDATE VALIDATION
 
 @Test
-void validateUserUpdate_NullUser(){
+void Test_NullUser(){
     final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateUserUpdate(null));
 
     assertEquals("User is null", ex.getMessage());
 }
 
 @Test
-void validateUserupdate_WrongUserName(){
-    final User tUser = new TestUser("WRONG USERNAME","Giannis Papadopoulos","PASSWORD",UserRole.CITIZEN);
+void Test_WrongUserName(){
+    final User tUser = new Citizen("WRONG USERNAME","Giannis Papadopoulos","PASSWORD");
 
     final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateUserUpdate(tUser));
 
@@ -120,8 +95,8 @@ void validateUserupdate_WrongUserName(){
 }
 
 @Test
-void validateUserUpdate_WrongFullName(){
-    final User tUser = new TestUser("USER_NAME", "WRONG_FULLNAME", "PASSWORD", UserRole.CITIZEN);
+void Test_WrongFullName(){
+    final User tUser = new Citizen("USER_NAME", "WRONG_FULLNAME", "PASSWORD");
 
     final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateUserUpdate(tUser));
 
@@ -129,17 +104,8 @@ void validateUserUpdate_WrongFullName(){
 }
 
 @Test
-void validateUserUpdate_WrongUserRole(){
-    final User tUser = new TestUser("USER_NAME", "Giannis Papadopoulos", "PASSWORD", null);
-
-    final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateUserUpdate(tUser));
-
-    assertEquals("invalid user role",ex.getMessage());
-}
-
-@Test
-void validateUserUpdate_WrongPassword(){
-    final User tUser = new TestUser("USER_NAME", "Giannis Papadopoulos",null, UserRole.CITIZEN);
+void Test_WrongPassword(){
+    final User tUser = new Citizen("USER_NAME", "Giannis Papadopoulos",null);
 
     final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateUserUpdate(tUser));
 
@@ -149,7 +115,7 @@ void validateUserUpdate_WrongPassword(){
 // TESTING WRONG ROLE CHANGE
 
 @Test
-void TestValidateRoleChange_FromNull(){
+void TestFromNull(){
     final ValidationException ex = assertThrows(ValidationException.class,()
      -> service.validateRoleChange(null, UserRole.CITIZEN));
 
@@ -157,7 +123,7 @@ void TestValidateRoleChange_FromNull(){
 }
 
 @Test
-void TestValidateRoleChange_TomNull(){
+void TestToNull(){
     final ValidationException ex = assertThrows(ValidationException.class,()
      -> service.validateRoleChange(UserRole.CITIZEN, null ));
 
