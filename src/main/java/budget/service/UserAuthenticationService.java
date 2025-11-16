@@ -4,8 +4,7 @@ import budget.model.domain.user.*;
 import budget.model.enums.Ministry;
 import budget.model.enums.UserRole;
 import budget.repository.UserRepository;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import budget.util.PasswordUtils;
 import java.util.Optional;
 
 /**
@@ -39,7 +38,7 @@ public class UserAuthenticationService {
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            if (user.getHashPassword().equals(hashPassword(password))) {
+            if (user.getHashPassword().equals(PasswordUtils.hashPassword(password))) {
                 this.currentUser = user;
                 return true;
             }
@@ -73,28 +72,6 @@ public class UserAuthenticationService {
     }
 
     /**
-     * Encrypts a password using SHA-256 hashing.
-     *
-     * @param password the plain text password
-     * @return the hashed password string
-     */
-    public String hashPassword(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(password.getBytes());
-            StringBuilder hexString = new StringBuilder();
-
-            for (byte b : hash) {
-                hexString.append(String.format("%02x", b));
-            }
-
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error during hashing of password.", e);
-        }
-    }
-
-    /**
      * Registers a new user in the system.
      *
      * <p>This method performs the following operations:
@@ -121,7 +98,7 @@ public class UserAuthenticationService {
         }
 
         // Hash the password before storing it (security requirement).
-        String hashedPassword = hashPassword(password);
+        String hashedPassword = PasswordUtils.hashPassword(password);
 
         // Prime Minister must follow Singleton rules.
         if (role == UserRole.PRIME_MINISTER) {
