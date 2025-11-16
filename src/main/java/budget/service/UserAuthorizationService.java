@@ -24,7 +24,7 @@ public class UserAuthorizationService {
      * @throws UserNotAuthorizedException if the user's ministry
      *                                    is not authorized for the budget item
      */
-    public void checkCanSubmitRequest(User user, BudgetItem item) {
+    public void checkUserCanSubmitRequest(User user, BudgetItem item) {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null.");
         }
@@ -61,9 +61,9 @@ public class UserAuthorizationService {
      * @param item the budget item in question
      * @return true if the user can submit the request, false otherwise
      */
-    public boolean canSubmitRequest(User user, BudgetItem item) {
+    public boolean canUserSubmitRequest(User user, BudgetItem item) {
         try {
-            checkCanSubmitRequest(user, item);
+            checkUserCanSubmitRequest(user, item);
             return true;
         } catch (IllegalArgumentException | UserNotAuthorizedException e) {
             return false;
@@ -77,7 +77,7 @@ public class UserAuthorizationService {
      * @throws IllegalArgumentException if the user is null
      * @throws UserNotAuthorizedException if the user is not the Prime Minister
      */
-    public void checkCanApproveRequests(User user) {
+    public void checkUserCanApproveRequests(User user) {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
@@ -95,18 +95,17 @@ public class UserAuthorizationService {
      * @param user the user attempting to approve requests
      * @return true if the user can approve requests, false otherwise
      */
-    public boolean canApproveRequests(User user) {
+    public boolean canUserApproveRequests(User user) {
         try {
-            checkCanApproveRequests(user);
+            checkUserCanApproveRequests(user);
             return true;
         } catch (IllegalArgumentException | UserNotAuthorizedException e) {
             return false;
-        }  
+        }
     }
     /**
      * Checks if a government member can directly edit a budget item
      * (only members of the Finance Ministry are allowed).
-     * 
      *
      * @param user the user attempting to edit the budget item
      * @param item the budget item in question
@@ -115,7 +114,7 @@ public class UserAuthorizationService {
      * @throws UserNotAuthorizedException if the user is not a Government Member
      * @throws UserNotAuthorizedException if the user's ministry is not Finance
      */
-    public void checkCanEditBudgetItem(User user, BudgetItem item) {
+    public void checkUserCanEditBudgetItem(User user, BudgetItem item) {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null.");
         }
@@ -143,12 +142,12 @@ public class UserAuthorizationService {
      * @param item the budget item in question
      * @return true if the user can edit the budget item, false otherwise
      */
-    public boolean canEditBudgetItem(User user, BudgetItem item) {
+    public boolean canUserEditBudgetItem(User user, BudgetItem item) {
         try {
-            checkCanEditBudgetItem(user, item);
+            checkUserCanEditBudgetItem(user, item);
             return true;
         } catch (IllegalArgumentException | UserNotAuthorizedException e) {
             return false;
-        }  
+        }
     }
 }
