@@ -1,22 +1,22 @@
 package budget.util;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-public class PasswordUtils {
-     /**
+public final  class PasswordUtils {
+    private PasswordUtils() {
+        // Utility class - prevent instantiation
+    }
+
+    /**
      * Encrypts a password using SHA-256 hashing.
      *
      * @param password the plain text password
      * @return the hashed password string
      */
-
-    private PasswordUtils() {
-        // Utility class - prevent instantiation
-    }
-
     public static String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(password.getBytes());
+            byte[] hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
             StringBuilder hexString = new StringBuilder();
 
             for (byte b : hash) {
