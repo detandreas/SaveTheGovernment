@@ -12,7 +12,8 @@ import budget.exceptions.UserNotAuthorizedException;
 public class UserAuthorizationService {
     /**
      * Checks if a user is authorized to submit
-     * change requests for a budget item.
+     * change requests for a budget item (only government members whose ministry
+     * is associated with the budget item are allowed).
      *
      * @param user the user attempting to submit the request
      * @param item the budget item in question
@@ -52,7 +53,25 @@ public class UserAuthorizationService {
         }
     }
     /**
-     * Checks if a user is authorized to approve change requests.
+     * Determines if a user can submit a change request
+     * for a budget item (only government members whose ministry
+     * is associated with the budget item are allowed).
+     *
+     * @param user the user attempting to submit the request
+     * @param item the budget item in question
+     * @return true if the user can submit the request, false otherwise
+     */
+    public boolean canSubmitRequest(User user, BudgetItem item) {
+        try {
+            checkCanSubmitRequest(user, item);
+            return true;
+        } catch (IllegalArgumentException | UserNotAuthorizedException e) {
+            return false;
+        }
+    }
+    /**
+     * Checks if a user is authorized to approve change requests
+     * (only the Prime Minister is allowed).
      *
      * @param user the user attempting to approve requests
      * @throws IllegalArgumentException if the user is null
@@ -70,8 +89,24 @@ public class UserAuthorizationService {
 
     }
     /**
-     * Checks if a government member from the Finance Ministry
-     * can directly edit a budget item.
+     * Determines if a user can approve change requests
+     * (only the Prime Minister is allowed).
+     *
+     * @param user the user attempting to approve requests
+     * @return true if the user can approve requests, false otherwise
+     */
+    public boolean canApproveRequests(User user) {
+        try {
+            checkCanApproveRequests(user);
+            return true;
+        } catch (IllegalArgumentException | UserNotAuthorizedException e) {
+            return false;
+        }  
+    }
+    /**
+     * Checks if a government member can directly edit a budget item
+     * (only members of the Finance Ministry are allowed).
+     * 
      *
      * @param user the user attempting to edit the budget item
      * @param item the budget item in question
@@ -99,5 +134,21 @@ public class UserAuthorizationService {
             );
         }
 
+    }
+    /**
+     * Determines if a government member can directly edit a budget item.
+     * (only members of the Finance Ministry are allowed).
+     *
+     * @param user the user attempting to edit the budget item
+     * @param item the budget item in question
+     * @return true if the user can edit the budget item, false otherwise
+     */
+    public boolean canUserEditBudgetItem(User user, BudgetItem item) {
+        try {
+            checkCanUserEditBudgetItem(user, item);
+            return true;
+        } catch (IllegalArgumentException | UserNotAuthorizedException e) {
+            return false;
+        }  
     }
 }
