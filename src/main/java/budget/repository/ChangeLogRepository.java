@@ -60,9 +60,9 @@ public class ChangeLogRepository
             }.getType();
             List<ChangeLog> logs = GSON.fromJson(reader, listType);
             return logs != null ? logs : Collections.emptyList();
-        } catch (IOException| RuntimeException e) {
+        } catch (IOException | RuntimeException e) {
             LOGGER.log(Level.SEVERE, "Failed to load ChangeLog data", e);
-            return Collections.emptyList() ;
+            return Collections.emptyList();
         }
     }
 
