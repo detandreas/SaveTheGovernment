@@ -37,7 +37,7 @@ public class ChangeLogRepository
      .setPrettyPrinting()
      .create();
 
-    private static final Object lock = new Object(); // for thread-safety
+    private static final Object LOCK = new Object(); // for thread-safety
 
     /**
      * Loads all ChangeLog records from the JSON file.
@@ -47,12 +47,13 @@ public class ChangeLogRepository
      */
     @Override
     public List<ChangeLog> load() {
-        synchronized (lock){
+        synchronized (LOCK) {
             InputStream in = PathsUtil.getBudgetChangesInputStream();
 
             if (in == null) {
                 LOGGER
-                .warning("budget-changes.json not found. Returning empty list.");
+                .warning("budget-changes.json not found. "
+                                + "Returning empty list.");
                 return Collections.emptyList();
             }
 
@@ -81,7 +82,7 @@ public class ChangeLogRepository
             LOGGER.warning("Cannot save a null ChangeLog");
             return;
         }
-        synchronized (lock) {
+        synchronized (LOCK) {
             List<ChangeLog> logs = load();
             OptionalInt index = findIndexById(logs, entity.id());
 
@@ -109,7 +110,7 @@ public class ChangeLogRepository
     * This is a utility method used internally by other repository operations
     * to locate existing changes for update or deletion purposes.
     *
-    * @param changes the list of change logs to search through
+    * @param logs the list of change logs to search through
     * @param id the ID of the change log to locate
     * @return an OptionalInt containing the index if found, or empty if no
     *         change with the specified ID exists in the list
@@ -134,7 +135,7 @@ public class ChangeLogRepository
             LOGGER.warning("Cannot search with a null id");
             return false;
         }
-        synchronized (lock) {
+        synchronized (LOCK) {
             return load().stream().anyMatch(log -> log.id() == id);
         }
     }
@@ -160,11 +161,11 @@ public class ChangeLogRepository
             LOGGER.warning("Cannot search with a null id");
             return Optional.empty();
         }
-        synchronized (lock) {
+        synchronized (LOCK) {
             return load().stream()
                     .filter(log -> log.id() == id)
                     .findFirst();
-        }   
+        }
     }
 
     /**
@@ -178,7 +179,7 @@ public class ChangeLogRepository
             LOGGER.warning("Cannot delete a null ChangeLog");
             return;
         }
-        synchronized (lock) {
+        synchronized (LOCK) {
             List<ChangeLog> logs = load();
             boolean removed = logs.removeIf(log -> log.id() == entity.id());
             if (removed) {
