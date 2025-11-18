@@ -23,15 +23,21 @@ public class UserAuthenticationService {
     private User currentUser;
     private static final HexFormat HEX_FORMATTER = HexFormat.of();
     private static final byte[] DUMMY_SHA256
-                        = HEX_FORMATTER.parseHex(PasswordUtils.hashPassword("dummy"));
+                        = HEX_FORMATTER
+                            .parseHex(PasswordUtils.hashPassword("dummy"));
 
     /**
      * Constructs a new authentication service using a given UserRepository.
      *
      * @param userRepository repository containing user data
      */
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP",
+        justification
+        = "This allows testability and shared state across service instances."
+    )
     public UserAuthenticationService(UserRepository userRepository) {
-        this.userRepository = new UserRepository();
+        this.userRepository = userRepository;
         this.currentUser = null;
     }
 
@@ -50,28 +56,31 @@ public class UserAuthenticationService {
             return false;
         }
         String candidateHex = PasswordUtils.hashPassword(password);
-        Optional<User> userOpt = userRepository.findByUsername(normalizedUsername);
-        
+        Optional<User> userOpt = userRepository
+                                        .findByUsername(normalizedUsername);
         try {
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
                 String stored = user.getHashPassword();
-                
+
                 if (stored != null && !stored.isEmpty()) {
                     byte[] storedBytes = HEX_FORMATTER.parseHex(stored);
-                    byte[] candidateBytes = HEX_FORMATTER.parseHex(candidateHex);
-                    
+                    byte[] candidateBytes
+                                    = HEX_FORMATTER.parseHex(candidateHex);
+
                     if (MessageDigest.isEqual(storedBytes, candidateBytes)) {
                         this.currentUser = user;
                         return true;
                     }
                 }
                 // Dummy compare για σταθερό χρόνο
-                MessageDigest.isEqual(DUMMY_SHA256, HEX_FORMATTER.parseHex(candidateHex));
+                MessageDigest.isEqual(DUMMY_SHA256,
+                                    HEX_FORMATTER.parseHex(candidateHex));
                 return false;
             } else {
                 // Dummy compare για αποφυγή user enumeration
-                MessageDigest.isEqual(DUMMY_SHA256, HEX_FORMATTER.parseHex(candidateHex));
+                MessageDigest.isEqual(DUMMY_SHA256,
+                                    HEX_FORMATTER.parseHex(candidateHex));
                 return false;
             }
         } catch (IllegalArgumentException e) {
@@ -95,7 +104,7 @@ public class UserAuthenticationService {
      * @return the current User object, or null
      */
      @SuppressFBWarnings(
-      value = "MS_EXPOSE_REP",
+      value = "EI_EXPOSE_REP",
       justification = "currentUser instance should be accessible."
     )
     public User getCurrentUser() {
