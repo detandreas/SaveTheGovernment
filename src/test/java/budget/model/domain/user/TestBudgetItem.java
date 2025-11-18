@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import budget.model.domain.BudgetItem;
 import budget.model.enums.Ministry;
 
-class BudgetItemTest {
+class TestBudgetItem {
 
     private BudgetItem item;
     private List<Ministry> ministries;
