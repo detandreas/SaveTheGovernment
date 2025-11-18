@@ -44,37 +44,37 @@ implements GenericInterfaceRepository<User, UUID> {
      */
     @Override
     public List<User> load() {
-        InputStream input = PathsUtil.getUsersInputStream();
         synchronized (LOCK) {
-        if (input == null) {
-            LOGGER.log(
-                Level.WARNING,
-                "Resource {0} was not found returning empty list",
-                PathsUtil.USERS_RESOURCE
-            );
-            return Collections.emptyList();
-        }
-
-            try (input; InputStreamReader reader =
-                new InputStreamReader(input, StandardCharsets.UTF_8)) {
-                User[] users = GSON.fromJson(reader, User[].class);
-                return users == null ? Collections.emptyList()
-                                    : Arrays.asList(users);
-            } catch (IOException io) {
+            InputStream input = PathsUtil.getUsersInputStream();
+            if (input == null) {
                 LOGGER.log(
-                    Level.SEVERE,
-                    "Error reading " + PathsUtil.USERS_RESOURCE,
-                    io
-                );
-                return Collections.emptyList();
-            } catch (RuntimeException e) {
-                LOGGER.log(
-                    Level.SEVERE,
-                    "Malformed users.json",
-                    e
+                    Level.WARNING,
+                    "Resource {0} was not found returning empty list",
+                    PathsUtil.USERS_RESOURCE
                 );
                 return Collections.emptyList();
             }
+        
+                try (input; InputStreamReader reader =
+                    new InputStreamReader(input, StandardCharsets.UTF_8)) {
+                    User[] users = GSON.fromJson(reader, User[].class);
+                    return users == null ? Collections.emptyList()
+                                        : Arrays.asList(users);
+                } catch (IOException io) {
+                    LOGGER.log(
+                        Level.SEVERE,
+                        "Error reading " + PathsUtil.USERS_RESOURCE,
+                        io
+                    );
+                    return Collections.emptyList();
+                } catch (RuntimeException e) {
+                    LOGGER.log(
+                        Level.SEVERE,
+                        "Malformed users.json",
+                        e
+                    );
+                    return Collections.emptyList();
+                }
         }
     }
 
