@@ -9,6 +9,8 @@ import budget.model.enums.UserRole;
 import budget.repository.UserRepository;
 import budget.util.PasswordUtils;
 import java.util.Optional;
+import java.util.HexFormat;
+import java.security.MessageDigest;
 
 /**
  * Service responsible for user authentication operations.
@@ -18,6 +20,9 @@ public class UserAuthenticationService {
 
     private final UserRepository userRepository;
     private User currentUser;
+    private static final HexFormat HEX_FORMATTER = HexFormat.of();
+    private static final byte[] DUMMY_SHA256
+                        = HEX_FORMATTER.parseHex(PasswordUtils.hashPassword("dummy"));
 
     /**
      * Constructs a new authentication service using a given UserRepository.
@@ -37,17 +42,43 @@ public class UserAuthenticationService {
      * @return true if login succeeds, false otherwise
      */
     public boolean login(String username, String password) {
-        Optional<User> userOpt = userRepository.findByUsername(username);
-
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            if (user.getHashPassword().equals(PasswordUtils
-            .hashPassword(password))) {
-                this.currentUser = user;
-                return true;
-            }
+        String normalizedUsername = (username == null) ? "" : username.trim();
+        if (password == null || password.isEmpty()) {
+            // Dummy operation για σταθερό χρόνο
+            MessageDigest.isEqual(DUMMY_SHA256, DUMMY_SHA256);
+            return false;
         }
-        return false;
+        String candidateHex = PasswordUtils.hashPassword(password);
+        Optional<User> userOpt = userRepository.findByUsername(normalizedUsername);
+        
+        try {
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                String stored = user.getHashPassword();
+                
+                if (stored != null && !stored.isEmpty()) {
+                    byte[] storedBytes = HEX_FORMATTER.parseHex(stored);
+                    byte[] candidateBytes = HEX_FORMATTER.parseHex(candidateHex);
+                    
+                    if (MessageDigest.isEqual(storedBytes, candidateBytes)) {
+                        this.currentUser = user;
+                        return true;
+                    }
+                }
+                // Dummy compare για σταθερό χρόνο
+                MessageDigest.isEqual(DUMMY_SHA256, HEX_FORMATTER.parseHex(candidateHex));
+                return false;
+            } else {
+                // Dummy compare για αποφυγή user enumeration
+                MessageDigest.isEqual(DUMMY_SHA256, HEX_FORMATTER.parseHex(candidateHex));
+                return false;
+            }
+        } catch (IllegalArgumentException e) {
+            // Invalid hex format - treat as failed login
+            // Dummy operation για σταθερό χρόνο
+            MessageDigest.isEqual(DUMMY_SHA256, DUMMY_SHA256);
+            return false;
+        }
     }
 
     /**
@@ -78,13 +109,11 @@ public class UserAuthenticationService {
     /**
      * Registers a new user in the system.
      *
-     * <p>This method performs the following operations:
-     * <ul>
-     *   <li>Validates that the username is not already in use.</li>
-     *   <li>Hashes the plain-text password for secure storage.</li>
-     *   <li>Creates a specific User subclass based on the given role.</li>
-     *   <li>Saves the newly created user in the UserRepository.</li>
-     * </ul>
+     * This method performs the following operations:
+     *   Validates that the username is not already in use.
+     *   Hashes the plain-text password for secure storage.
+     *   Creates a specific User subclass based on the given role.
+     *   Saves the newly created user in the UserRepository.
      *
      * @param username the desired username of the new user
      * @param password the plain-text password of the new user
