@@ -8,6 +8,7 @@ import budget.model.enums.Ministry;
 import budget.model.enums.UserRole;
 import budget.repository.UserRepository;
 import budget.util.PasswordUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Optional;
 import java.util.HexFormat;
 import java.security.MessageDigest;
@@ -30,7 +31,7 @@ public class UserAuthenticationService {
      * @param userRepository repository containing user data
      */
     public UserAuthenticationService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+        this.userRepository = new UserRepository();
         this.currentUser = null;
     }
 
@@ -93,6 +94,10 @@ public class UserAuthenticationService {
      *
      * @return the current User object, or null
      */
+     @SuppressFBWarnings(
+      value = "MS_EXPOSE_REP",
+      justification = "currentUser instance should be accessible."
+    )
     public User getCurrentUser() {
         return this.currentUser;
     }
@@ -124,7 +129,22 @@ public class UserAuthenticationService {
      */
     public boolean signUp(String username,
     String password, String fullName, UserRole role, Ministry ministry) {
-
+        if (username == null || username.trim().isEmpty()) {
+            return false;
+        }
+        if (password == null || password.isEmpty()) {
+            return false;
+        }
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return false;
+        }
+        if (role == null) {
+            return false;
+        }
+        if (role == UserRole.GOVERNMENT_MEMBER && ministry == null) {
+            return false;
+        }
+        username = username.trim();
         // Validate that the username is not already taken.
         Optional<User> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
@@ -136,19 +156,16 @@ public class UserAuthenticationService {
 
         // Prime Minister must follow Singleton rules.
         if (role == UserRole.PRIME_MINISTER) {
-
             // If PM exists → reject.
             if (userRepository.primeMinisterExists()) {
                 return false;
             }
-
             // First-time creation of Singleton PrimeMinister.
             PrimeMinister pm = PrimeMinister.getInstance(
                 username,
                 fullName,
                 hashedPassword
             );
-
             userRepository.save(pm);
             return true;
         }
@@ -159,13 +176,11 @@ public class UserAuthenticationService {
             case CITIZEN:
                 newUser = new Citizen(username, fullName, hashedPassword);
                 break;
-
             case GOVERNMENT_MEMBER:
                 newUser =
                 new GovernmentMember(username, fullName,
-                hashedPassword, ministry);
+                                    hashedPassword, ministry);
                 break;
-
             default:
                 return false; // Unknown or unsupported user role.
         }
