@@ -43,37 +43,36 @@ implements GenericInterfaceRepository<User, UUID> {
      */
     @Override
     public List<User> load() {
-        try (InputStream input = PathsUtil.getUsersInputStream()) {
-            if (input == null) {
-                LOGGER.log(
-                    Level.WARNING,
-                    "Resource {0} was not found returning empty list",
-                    PathsUtil.USERS_RESOURCE
-                );
-                return Collections.emptyList();
-            }
+        InputStream input = PathsUtil.getUsersInputStream();
+        if (input == null) {
+            LOGGER.log(
+                Level.WARNING,
+                "Resource {0} was not found returning empty list",
+                PathsUtil.USERS_RESOURCE
+            );
+            return Collections.emptyList();
+        }
 
-            try (InputStreamReader reader =
+            try (input; InputStreamReader reader =
                 new InputStreamReader(input, StandardCharsets.UTF_8)) {
                 User[] users = GSON.fromJson(reader, User[].class);
                 return users == null ? Collections.emptyList()
                                     : Arrays.asList(users);
+            } catch (IOException io) {
+                LOGGER.log(
+                    Level.SEVERE,
+                    "Error reading " + PathsUtil.USERS_RESOURCE,
+                    io
+                );
+                return Collections.emptyList();
+            } catch (RuntimeException e) {
+                LOGGER.log(
+                    Level.SEVERE,
+                    "Malformed users.json",
+                    e
+                );
+                return Collections.emptyList();
             }
-        } catch (IOException io) {
-            LOGGER.log(
-                Level.SEVERE,
-                "Error reading " + PathsUtil.USERS_RESOURCE,
-                io
-            );
-            return Collections.emptyList();
-        } catch (RuntimeException e) {
-            LOGGER.log(
-                Level.SEVERE,
-                "Malformed users.json",
-                e
-            );
-            return Collections.emptyList();
-        }
     }
 
     /**
