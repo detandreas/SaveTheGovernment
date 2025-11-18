@@ -162,7 +162,8 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
                 pendingChanges.remove(index.getAsInt());
                 saveToFile(pendingChanges);
             } else {
-                LOGGER.warning("Can't delete PendingChange cause it doesn't exist");
+                LOGGER
+                .warning("Can't delete PendingChange cause it doesn't exist");
             }
         }
     }

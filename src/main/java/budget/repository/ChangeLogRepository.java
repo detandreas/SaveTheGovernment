@@ -4,12 +4,10 @@ import budget.model.domain.ChangeLog;
 import budget.util.PathsUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +18,7 @@ import java.util.OptionalInt;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
-
+import java.util.Arrays;
 /**
  * Repository for managing ChangeLog persistence.
  * Stateless implementation (load-on-demand).
@@ -59,10 +57,9 @@ public class ChangeLogRepository
 
             try (in; InputStreamReader reader =
                 new InputStreamReader(in, StandardCharsets.UTF_8)) {
-                Type listType = new TypeToken<List<ChangeLog>>() {
-                }.getType();
-                List<ChangeLog> logs = GSON.fromJson(reader, listType);
-                return logs != null ? logs : Collections.emptyList();
+                ChangeLog[] logs = GSON.fromJson(reader, ChangeLog[].class);
+                return logs != null ? Arrays.asList(logs)
+                                    : Collections.emptyList();
             } catch (IOException | RuntimeException e) {
                 LOGGER.log(Level.SEVERE, "Failed to load ChangeLog data", e);
                 return Collections.emptyList();
