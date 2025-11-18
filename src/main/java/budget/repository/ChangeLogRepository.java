@@ -1,7 +1,6 @@
 package budget.repository;
 
 import budget.model.domain.ChangeLog;
-import budget.model.domain.PendingChange;
 import budget.util.PathsUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -83,19 +82,11 @@ public class ChangeLogRepository
         }
         synchronized (lock) {
             List<ChangeLog> logs = load();
-            boolean updated = false;
+            OptionalInt index = findIndexById(logs, entity.id());
 
-            Optional<ChangeLog> log = findById(entity.id());
-
-            for (int i = 0; i < logs.size(); i++) {
-                if (logs.get(i).id() == entity.id()) {
-                    logs.set(i, entity); // in-place update
-                    updated = true;
-                    break;
-                }
-            }
-
-            if (!updated) {
+            if (index.isPresent()) {
+                logs.set(index.getAsInt(), entity);
+            } else {
                 int newId = generateId(logs);
                 ChangeLog newLog = new ChangeLog(
                         newId,
@@ -108,18 +99,17 @@ public class ChangeLogRepository
                 );
                 logs.add(newLog);
             }
-
             saveListToFile(logs);
         }
     }
 
     /**
-    * Helper method that finds the index of a PendingChange in a list by its ID.
+    * Helper method that finds the index of a ChangeLog in a list by its ID.
     * This is a utility method used internally by other repository operations
     * to locate existing changes for update or deletion purposes.
     *
-    * @param changes the list of pending changes to search through
-    * @param id the ID of the pending change to locate
+    * @param changes the list of change logs to search through
+    * @param id the ID of the change log to locate
     * @return an OptionalInt containing the index if found, or empty if no
     *         change with the specified ID exists in the list
     */
