@@ -130,8 +130,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
             System.err.println("Cannot find null budget");
             return Optional.empty();
         }
-        List<Budget> budgets = load();
-        return budgets.stream()
+        return load().stream()
                     .filter(b -> year.equals(b.getYear()))
                     .findFirst();
     }
