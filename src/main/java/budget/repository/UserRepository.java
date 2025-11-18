@@ -54,7 +54,6 @@ implements GenericInterfaceRepository<User, UUID> {
                 );
                 return Collections.emptyList();
             }
-        
                 try (input; InputStreamReader reader =
                     new InputStreamReader(input, StandardCharsets.UTF_8)) {
                     User[] users = GSON.fromJson(reader, User[].class);
