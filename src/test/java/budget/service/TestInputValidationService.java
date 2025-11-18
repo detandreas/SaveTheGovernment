@@ -1,18 +1,19 @@
 package budget.service;
 
-import budget.exceptions.ValidationException;
-import budget.model.domain.user.User;
-import budget.model.enums.UserRole;
-import budget.model.domain.user.Citizen;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import budget.exceptions.ValidationException;
+import budget.model.domain.user.Citizen;
+import budget.model.domain.user.User;
+import budget.model.enums.UserRole;
 
 public class TestInputValidationService {
 
     private final static InputValidationService service = new InputValidationService();
-
+    
     // TESTING NEW USER VALIDATION
 
     @Test

@@ -1,0 +1,187 @@
+package budget.service;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import budget.exceptions.UserNotAuthorizedException;
+import budget.model.domain.BudgetItem;
+import budget.model.domain.user.Citizen;
+import budget.model.domain.user.GovernmentMember;
+import budget.model.domain.user.PrimeMinister;
+import budget.model.domain.user.User;
+import budget.model.enums.Ministry;
+
+public class TestUserAuthorizationService {
+
+    private final UserAuthorizationService service = new UserAuthorizationService();
+
+    @BeforeAll
+    static void setupPM() {
+        PrimeMinister.getInstance("pm", "Prime Minister", "Pass123!");
+    }
+
+    // TESTING checkCanUserSubmitRequests
+    @Test
+    void TestNullUser(){
+     BudgetItem item = new BudgetItem(1, 2025, "Item", 1000, false, List.of(Ministry.FINANCE));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+          () -> service.checkCanUserSubmitRequest(null, item));
+
+        assertEquals("User cannot be null.",ex.getMessage());
+    }
+
+    @Test
+    void TestNullItem(){
+        User gm = new GovernmentMember("username", "Full Name", "Pass123!", Ministry.FINANCE);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+            () -> service.checkCanUserSubmitRequest(gm, null));
+
+        assertEquals("Budget item cannot be null.",ex.getMessage());
+    }
+
+    @Test
+    void TestNoMinistries(){
+        User gm = new GovernmentMember("u", "Full Name", "Pass123!", Ministry.FINANCE);
+        BudgetItem item = new BudgetItem(1, 2025, "Item", 1000, false,List.of());
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,() 
+            -> service.checkCanUserSubmitRequest(gm, item));
+
+        assertEquals("Budget item must be associated with at least one ministry.",ex.getMessage());
+    }
+
+    @Test
+    void TestNotGovernmentMember() {
+        User pm = PrimeMinister.getInstance("pm1", "Prime Minister", "Password1!");
+        BudgetItem item = new BudgetItem(1, 2025, "Item", 1000, false,
+                List.of(Ministry.HEALTH));
+
+        UserNotAuthorizedException ex = assertThrows(UserNotAuthorizedException.class,
+                () -> service.checkCanUserSubmitRequest(pm, item));
+
+        assertEquals("Only government members can submit change requests.", ex.getMessage());
+    }
+
+    @Test
+    void TestWrongMinistry() {
+        User gm = new GovernmentMember("u", "Full Name", "Pass123!", Ministry.HEALTH);
+
+        BudgetItem item = new BudgetItem(1, 2025, "Item", 1000, false,
+                List.of(Ministry.FINANCE));
+
+        UserNotAuthorizedException ex = assertThrows(UserNotAuthorizedException.class,
+                () -> service.checkCanUserSubmitRequest(gm, item));
+
+        assertTrue(ex.getMessage().contains("is not authorized to submit change requests"));
+    }
+
+    @Test 
+    void TestSubmitRequestValid(){
+        User gm = new GovernmentMember("username", "Full Name", "pass123!", Ministry.FINANCE);
+        BudgetItem item = new BudgetItem(1, 2025, "item", 10000, false, List.of(Ministry.FINANCE));
+
+        assertDoesNotThrow(() -> service.canUserSubmitRequest(gm, item));
+    }
+
+    // Testing CanUserApproveRequests
+
+    @Test
+    void TestApproveRequestsTrue(){
+        User pm = PrimeMinister.getInstance();
+
+        assertTrue(service.canUserApproveRequests(pm));
+    }
+
+    @Test
+    void TestApproveRequestsFlase(){
+        User gm = new GovernmentMember("username", "Full Name", "pass123!", Ministry.FINANCE);
+
+        assertFalse(service.canUserApproveRequests(gm));
+    }
+
+    // Testing checkCanUserEditBudgetItem
+
+    @Test
+    void TestUserNull(){
+        BudgetItem item = new BudgetItem(1, 2025, "Item", 1000, false,List.of(Ministry.FINANCE));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,() 
+            -> service.checkCanUserEditBudgetItem(null, item));
+
+        assertEquals("User cannot be null.",ex.getMessage());
+    }
+
+    @Test
+    void TestItemNull(){
+        User gm = new GovernmentMember("username", "Full Name", "pass123!", Ministry.FINANCE);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,() 
+            -> service.checkCanUserEditBudgetItem(gm,null));
+
+        assertEquals("Budget item cannot be null.",ex.getMessage());
+    }
+
+    @Test
+    void Test_NotGovernmentMember(){
+        User ct = new Citizen("userName", "Full Name", "Pass123!");
+        BudgetItem item = new BudgetItem(1, 2025, "Item", 1000, false,List.of(Ministry.FINANCE));
+
+        UserNotAuthorizedException ex = assertThrows(UserNotAuthorizedException.class,()
+             -> service.checkCanUserEditBudgetItem(ct,item));
+
+        assertEquals("Only government members can edit budget items.",ex.getMessage());
+    }
+
+    @Test
+    void TestNotMinistry(){
+        User gm = new GovernmentMember("u", "Full Name", "Pass123!", Ministry.HEALTH);
+
+        BudgetItem item = new BudgetItem(1, 2025, "Item", 1000, false,List.of(Ministry.FINANCE));
+
+        UserNotAuthorizedException ex = assertThrows(UserNotAuthorizedException.class,()
+             -> service.checkCanUserEditBudgetItem(gm,item));
+
+        assertEquals("Only members of the Finance Ministry can directly edit this budget item.",ex.getMessage());
+    }
+
+    @Test 
+    void TestEditBudgetValid(){
+        User gm = new GovernmentMember("u", "Full Name", "Pass123!", Ministry.FINANCE);
+
+        BudgetItem item = new BudgetItem(1, 2025, "Item", 1000, false,
+                List.of(Ministry.FINANCE));
+
+        assertDoesNotThrow(() -> service.checkCanUserEditBudgetItem(gm, item));
+    }
+
+    // Testing canUserEditBudgetItem
+
+    @Test
+    void TestCanditTrue(){
+        User gm = new GovernmentMember("u", "Full Name", "Pass123!", Ministry.FINANCE);
+
+        BudgetItem item = new BudgetItem(1, 2025, "Item", 1000, false,
+                List.of(Ministry.FINANCE));
+
+        assertTrue(service.canUserEditBudgetItem(gm, item));
+    }
+
+    @Test
+    void TestCanEditFalsse(){
+        User gm = new GovernmentMember("u", "Full Name", "Pass123!", Ministry.HEALTH);
+
+        BudgetItem item = new BudgetItem(1, 2025, "Item", 1000, false,
+                List.of(Ministry.FINANCE));
+
+        assertFalse(service.canUserEditBudgetItem(gm, item));
+    }
+
+}

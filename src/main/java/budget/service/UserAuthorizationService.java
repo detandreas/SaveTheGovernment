@@ -32,7 +32,7 @@ public class UserAuthorizationService {
         if (item == null) {
             throw new IllegalArgumentException("Budget item cannot be null.");
         }
-        if (item.getMinistries() == null || item.getMinistries().isEmpty()) {
+        if (item.getMinistries() == null || item.getMinistries().isEmpty()) {   
             throw new IllegalArgumentException(
                 "Budget item must be associated with at least one ministry."
             );
