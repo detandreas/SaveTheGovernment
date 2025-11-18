@@ -37,7 +37,7 @@ public class ChangeLogRepository
      .setPrettyPrinting()
      .create();
 
-    private final Object lock = new Object(); // for thread-safety
+    private static final Object lock = new Object(); // for thread-safety
 
     /**
      * Loads all ChangeLog records from the JSON file.
@@ -47,24 +47,25 @@ public class ChangeLogRepository
      */
     @Override
     public List<ChangeLog> load() {
+        synchronized (lock){
+            InputStream in = PathsUtil.getBudgetChangesInputStream();
 
-        InputStream in = PathsUtil.getBudgetChangesInputStream();
+            if (in == null) {
+                LOGGER
+                .warning("budget-changes.json not found. Returning empty list.");
+                return Collections.emptyList();
+            }
 
-        if (in == null) {
-            LOGGER
-            .warning("budget-changes.json not found. Returning empty list.");
-            return Collections.emptyList();
-        }
-
-        try (in; InputStreamReader reader =
-            new InputStreamReader(in, StandardCharsets.UTF_8)) {
-            Type listType = new TypeToken<List<ChangeLog>>() {
-            }.getType();
-            List<ChangeLog> logs = GSON.fromJson(reader, listType);
-            return logs != null ? logs : Collections.emptyList();
-        } catch (IOException | RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "Failed to load ChangeLog data", e);
-            return Collections.emptyList();
+            try (in; InputStreamReader reader =
+                new InputStreamReader(in, StandardCharsets.UTF_8)) {
+                Type listType = new TypeToken<List<ChangeLog>>() {
+                }.getType();
+                List<ChangeLog> logs = GSON.fromJson(reader, listType);
+                return logs != null ? logs : Collections.emptyList();
+            } catch (IOException | RuntimeException e) {
+                LOGGER.log(Level.SEVERE, "Failed to load ChangeLog data", e);
+                return Collections.emptyList();
+            }
         }
     }
 
@@ -117,9 +118,9 @@ public class ChangeLogRepository
         final List<ChangeLog> logs,
         final int id
     ) {
-        return IntStream.range(0, logs.size())
-                .filter(i -> logs.get(i).id() == id)
-                .findFirst();
+            return IntStream.range(0, logs.size())
+                    .filter(i -> logs.get(i).id() == id)
+                    .findFirst();
     }
     /**
      * Checks if a ChangeLog record with the given ID exists.
@@ -133,7 +134,9 @@ public class ChangeLogRepository
             LOGGER.warning("Cannot search with a null id");
             return false;
         }
-        return load().stream().anyMatch(log -> log.id() == id);
+        synchronized (lock) {
+            return load().stream().anyMatch(log -> log.id() == id);
+        }
     }
 
     /**
@@ -157,9 +160,11 @@ public class ChangeLogRepository
             LOGGER.warning("Cannot search with a null id");
             return Optional.empty();
         }
-        return load().stream()
-                .filter(log -> log.id() == id)
-                .findFirst();
+        synchronized (lock) {
+            return load().stream()
+                    .filter(log -> log.id() == id)
+                    .findFirst();
+        }   
     }
 
     /**
