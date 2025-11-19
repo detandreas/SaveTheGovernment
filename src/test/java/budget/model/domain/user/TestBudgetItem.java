@@ -24,9 +24,9 @@ class TestBudgetItem {
 
         item = new BudgetItem(
             1,
-            2025,
+            2024,
             "Taxes",
-            500.0,
+            100.0,
             true,
             ministries
         );
@@ -86,7 +86,7 @@ class TestBudgetItem {
         String expected = String.format(
             Locale.US,
             "BudgetItem{id=%d, year=%d, name=%s, value=%.2f, isRevenue=%b}",
-            1, 2025, "Taxes", 500.00, true
+            1, 2024, "Taxes", 100.00, true
         );
 
         assertEquals(expected, item.toString());
