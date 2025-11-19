@@ -33,6 +33,7 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
             new GsonBuilder().setPrettyPrinting().create();
     private static final Logger LOGGER =
             Logger.getLogger(ChangeRequestRepository.class.getName());
+    private static final Object LOCK = new Object();
 
     /**
      * Loads every pending change request from the JSON resource.
@@ -42,8 +43,9 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
      */
     @Override
     public List<PendingChange> load() {
-        // try with resources --> closes automatically reader, input
-        try (InputStream input = PathsUtil.getPendingChangesInputStream()) {
+        synchronized (LOCK) {
+            // try with resources --> closes automatically reader, input
+            InputStream input = PathsUtil.getPendingChangesInputStream();
             if (input == null) {
                 LOGGER.log(
                     Level.WARNING,
@@ -52,27 +54,27 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
                 );
                 return Collections.emptyList();
             }
-            try (InputStreamReader reader =
-                    new InputStreamReader(input, StandardCharsets.UTF_8)) {
-                    PendingChange[] changes = GSON.fromJson(
-                                            reader, PendingChange[].class);
-                    return changes == null ? Collections.emptyList()
-                                            : Arrays.asList(changes);
-            }
-        } catch (IOException io) {
-            LOGGER.log(
-                Level.SEVERE,
-                "Error reading " + PathsUtil.PENDING_CHANGES_RESOURCE,
-                io
-            );
-            return Collections.emptyList();
-        } catch (RuntimeException e) {
-            LOGGER.log(
-                Level.SEVERE,
-                "Malformed pending changes payload",
-                e
-            );
-            return Collections.emptyList();
+                try (input; InputStreamReader reader =
+                        new InputStreamReader(input, StandardCharsets.UTF_8)) {
+                        PendingChange[] changes = GSON.fromJson(
+                                                reader, PendingChange[].class);
+                        return changes == null ? Collections.emptyList()
+                                                : Arrays.asList(changes);
+                } catch (IOException io) {
+                    LOGGER.log(
+                        Level.SEVERE,
+                        "Error reading " + PathsUtil.PENDING_CHANGES_RESOURCE,
+                        io
+                    );
+                    return Collections.emptyList();
+                } catch (RuntimeException e) {
+                    LOGGER.log(
+                        Level.SEVERE,
+                        "Malformed pending changes payload",
+                        e
+                    );
+                    return Collections.emptyList();
+                }
         }
     }
 
@@ -85,20 +87,21 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
      */
     @Override
     public void save(final PendingChange change) {
-        if (change == null) {
-            LOGGER.warning("Cannot save a null PendingChange");
-            return;
-        }
+        synchronized (LOCK) {
+            if (change == null) {
+                LOGGER.warning("Cannot save a null PendingChange");
+                return;
+            }
 
-        List<PendingChange> pendingChanges = new ArrayList<>(load());
-        OptionalInt index = findIndexById(pendingChanges, change.getId());
-        if (index.isPresent()) {
-            pendingChanges.set(index.getAsInt(), change);
-        } else {
-            pendingChanges.add(change);
+            List<PendingChange> pendingChanges = new ArrayList<>(load());
+            OptionalInt index = findIndexById(pendingChanges, change.getId());
+            if (index.isPresent()) {
+                pendingChanges.set(index.getAsInt(), change);
+            } else {
+                pendingChanges.add(change);
+            }
+            saveToFile(pendingChanges);
         }
-        saveToFile(pendingChanges);
-
     }
     /**
     * Helper method that finds the index of a PendingChange in a list by its ID.
@@ -125,15 +128,17 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
      */
     @Override
     public boolean existsById(Integer id) {
-        if (id == null) {
-            LOGGER.warning("Cannot search with a null id");
-            return false;
+        synchronized (LOCK) {
+            if (id == null) {
+                LOGGER.warning("Cannot search with a null id");
+                return false;
+            }
+            /* το id τυπου Integer γινεται auto-unboxing σε int
+            για αυτο ειναι εγκυρη η συγκριση*/
+            return load()
+                    .stream()
+                    .anyMatch(change -> change.getId() == id);
         }
-        /* το id τυπου Integer γινεται auto-unboxing σε int
-        για αυτο ειναι εγκυρη η συγκριση*/
-        return load()
-                .stream()
-                .anyMatch(change -> change.getId() == id);
     }
 
     /**
@@ -145,18 +150,21 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
      */
     @Override
     public void delete(PendingChange change) {
-        if (change == null) {
-            LOGGER.warning("Cannot delete a null PendingChange");
-            return;
-        }
+        synchronized (LOCK) {
+            if (change == null) {
+                LOGGER.warning("Cannot delete a null PendingChange");
+                return;
+            }
 
-        List<PendingChange> pendingChanges = new ArrayList<>(load());
-        OptionalInt index = findIndexById(pendingChanges, change.getId());
-        if (index.isPresent()) {
-            pendingChanges.remove(index.getAsInt());
-            saveToFile(pendingChanges);
-        } else {
-            LOGGER.warning("Can't delete PendingChange cause it doesn't exist");
+            List<PendingChange> pendingChanges = new ArrayList<>(load());
+            OptionalInt index = findIndexById(pendingChanges, change.getId());
+            if (index.isPresent()) {
+                pendingChanges.remove(index.getAsInt());
+                saveToFile(pendingChanges);
+            } else {
+                LOGGER
+                .warning("Can't delete PendingChange cause it doesn't exist");
+            }
         }
     }
 
@@ -171,14 +179,16 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
      */
     @Override
     public Optional<PendingChange> findById(Integer id) {
-        if (id == null) {
-            LOGGER.warning("Cannot search with a null id");
-            return Optional.empty();
+        synchronized (LOCK) {
+            if (id == null) {
+                LOGGER.warning("Cannot search with a null id");
+                return Optional.empty();
+            }
+            return load()
+                    .stream()
+                    .filter(change -> change.getId() == id)
+                    .findFirst();
         }
-        return load()
-                .stream()
-                .filter(change -> change.getId() == id)
-                .findFirst();
     }
 
     /**

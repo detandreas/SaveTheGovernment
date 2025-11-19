@@ -34,6 +34,7 @@ implements GenericInterfaceRepository<User, UUID> {
                     new GsonBuilder().setPrettyPrinting().create();
     private static final Logger LOGGER =
                     Logger.getLogger(UserRepository.class.getName());
+    private static final Object LOCK = new Object();
 
     /**
      * Loads all users from the JSON resource.
@@ -43,7 +44,8 @@ implements GenericInterfaceRepository<User, UUID> {
      */
     @Override
     public List<User> load() {
-        try (InputStream input = PathsUtil.getUsersInputStream()) {
+        synchronized (LOCK) {
+            InputStream input = PathsUtil.getUsersInputStream();
             if (input == null) {
                 LOGGER.log(
                     Level.WARNING,
@@ -52,27 +54,26 @@ implements GenericInterfaceRepository<User, UUID> {
                 );
                 return Collections.emptyList();
             }
-
-            try (InputStreamReader reader =
-                new InputStreamReader(input, StandardCharsets.UTF_8)) {
-                User[] users = GSON.fromJson(reader, User[].class);
-                return users == null ? Collections.emptyList()
-                                    : Arrays.asList(users);
-            }
-        } catch (IOException io) {
-            LOGGER.log(
-                Level.SEVERE,
-                "Error reading " + PathsUtil.USERS_RESOURCE,
-                io
-            );
-            return Collections.emptyList();
-        } catch (RuntimeException e) {
-            LOGGER.log(
-                Level.SEVERE,
-                "Malformed users.json",
-                e
-            );
-            return Collections.emptyList();
+                try (input; InputStreamReader reader =
+                    new InputStreamReader(input, StandardCharsets.UTF_8)) {
+                    User[] users = GSON.fromJson(reader, User[].class);
+                    return users == null ? Collections.emptyList()
+                                        : Arrays.asList(users);
+                } catch (IOException io) {
+                    LOGGER.log(
+                        Level.SEVERE,
+                        "Error reading " + PathsUtil.USERS_RESOURCE,
+                        io
+                    );
+                    return Collections.emptyList();
+                } catch (RuntimeException e) {
+                    LOGGER.log(
+                        Level.SEVERE,
+                        "Malformed users.json",
+                        e
+                    );
+                    return Collections.emptyList();
+                }
         }
     }
 
@@ -87,14 +88,16 @@ implements GenericInterfaceRepository<User, UUID> {
      */
     @Override
     public Optional<User> findById(UUID id) {
-        if (id == null) {
-            LOGGER.warning("Cannot search with a null id");
-            return Optional.empty();
+        synchronized (LOCK) {
+            if (id == null) {
+                LOGGER.warning("Cannot search with a null id");
+                return Optional.empty();
+            }
+            return load()
+                    .stream()
+                    .filter(user -> user.getId().equals(id))
+                    .findFirst();
         }
-        return load()
-                .stream()
-                .filter(user -> user.getId().equals(id))
-                .findFirst();
     }
 
     /**
@@ -106,14 +109,16 @@ implements GenericInterfaceRepository<User, UUID> {
      * when the userName is null or no entry exists
      */
     public Optional<User> findByUsername(final String username) {
-        if (username == null || username.isBlank()) {
-            LOGGER.warning("Cannot search with a null or blank userName");
-            return Optional.empty();
+        synchronized (LOCK) {
+            if (username == null || username.isBlank()) {
+                LOGGER.warning("Cannot search with a null or blank userName");
+                return Optional.empty();
+            }
+            return load()
+                    .stream()
+                    .filter(u -> u.getUserName().equalsIgnoreCase(username))
+                    .findFirst();
         }
-        return load()
-                .stream()
-                .filter(u -> u.getUserName().equalsIgnoreCase(username))
-                .findFirst();
     }
 
     /**
@@ -126,19 +131,21 @@ implements GenericInterfaceRepository<User, UUID> {
      */
     @Override
     public void save(final User user) {
-        if (user == null || user.getUserName() == null
-                || user.getUserName().isBlank()) {
-            LOGGER.warning("Cannot save user: null or invalid username.");
-            return;
+        synchronized (LOCK) {
+            if (user == null || user.getUserName() == null
+                    || user.getUserName().isBlank()) {
+                LOGGER.warning("Cannot save user: null or invalid username.");
+                return;
+            }
+            List<User> users = new ArrayList<>(load());
+            OptionalInt index = findIndexById(users, user.getId());
+            if (index.isPresent()) {
+                users.set(index.getAsInt(), user);
+            } else {
+                users.add(user);
+            }
+            saveToFile(users);
         }
-        List<User> users = new ArrayList<>(load());
-        OptionalInt index = findIndexById(users, user.getId());
-        if (index.isPresent()) {
-            users.set(index.getAsInt(), user);
-        } else {
-            users.add(user);
-        }
-        saveToFile(users);
     }
 
     /**
@@ -168,13 +175,15 @@ implements GenericInterfaceRepository<User, UUID> {
      */
     @Override
     public boolean existsById(UUID id) {
-        if (id == null) {
-            LOGGER.warning("Cannot search with a null id");
-            return false;
+        synchronized (LOCK) {
+            if (id == null) {
+                LOGGER.warning("Cannot search with a null id");
+                return false;
+            }
+            return load()
+                    .stream()
+                    .anyMatch(user -> user.getId().equals(id));
         }
-        return load()
-                .stream()
-                .anyMatch(user -> user.getId().equals(id));
     }
 
     /**
@@ -184,12 +193,14 @@ implements GenericInterfaceRepository<User, UUID> {
      * @return true if the username exists, false otherwise
      */
     public boolean usernameExists(final String username) {
-        if (username == null || username.isBlank()) {
-            return false;
+        synchronized (LOCK) {
+            if (username == null || username.isBlank()) {
+                return false;
+            }
+            return load()
+                    .stream()
+                    .anyMatch(u -> u.getUserName().equalsIgnoreCase(username));
         }
-        return load()
-                .stream()
-                .anyMatch(u -> u.getUserName().equalsIgnoreCase(username));
     }
 
     /**
@@ -198,9 +209,11 @@ implements GenericInterfaceRepository<User, UUID> {
      * @return true if there is at least one user with role PRIME_MINISTER
      */
     public boolean primeMinisterExists() {
-        return load()
-                .stream()
-                .anyMatch(u -> u.getUserRole() == UserRole.PRIME_MINISTER);
+        synchronized (LOCK) {
+            return load()
+                    .stream()
+                    .anyMatch(u -> u.getUserRole() == UserRole.PRIME_MINISTER);
+        }
     }
 
     /**
@@ -212,18 +225,20 @@ implements GenericInterfaceRepository<User, UUID> {
      */
     @Override
     public void delete(User user) {
-        if (user == null) {
-            LOGGER.warning("Cannot delete a null user");
-            return;
-        }
+        synchronized (LOCK) {
+            if (user == null) {
+                LOGGER.warning("Cannot delete a null user");
+                return;
+            }
 
-        List<User> users = new ArrayList<>(load());
-        OptionalInt index = findIndexById(users, user.getId());
-        if (index.isPresent()) {
-            users.remove(index.getAsInt());
-            saveToFile(users);
-        } else {
-            LOGGER.warning("Can't delete User cause it doesn't exist");
+            List<User> users = new ArrayList<>(load());
+            OptionalInt index = findIndexById(users, user.getId());
+            if (index.isPresent()) {
+                users.remove(index.getAsInt());
+                saveToFile(users);
+            } else {
+                LOGGER.warning("Can't delete User cause it doesn't exist");
+            }
         }
     }
 
@@ -232,9 +247,11 @@ implements GenericInterfaceRepository<User, UUID> {
      * Clears list and updates the JSON file.
      */
     public void deleteAllUsers() {
-        List<User> users = new ArrayList<>(load());
-        users.clear();
-        saveToFile(users);
+        synchronized (LOCK) {
+            List<User> users = new ArrayList<>(load());
+            users.clear();
+            saveToFile(users);
+        }
     }
 
     /**
