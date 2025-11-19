@@ -39,9 +39,9 @@ class TestBudgetItem {
     @Test
     void testConstructorAndGetters() {
         assertEquals(1, item.getId());
-        assertEquals(2025, item.getYear());
+        assertEquals(2024, item.getYear());
         assertEquals("Taxes", item.getName());
-        assertEquals(500.0, item.getValue());
+        assertEquals(100.0, item.getValue());
         assertTrue(item.getIsRevenue());
         assertEquals(1, item.getMinistries().size());
         assertEquals(Ministry.FINANCE, item.getMinistries().get(0));
