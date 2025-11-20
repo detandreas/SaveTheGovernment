@@ -7,17 +7,28 @@ import budget.model.domain.PendingChange;
 import budget.model.domain.Budget;
 import budget.model.domain.BudgetItem;
 
-public class DisplayFormatter {
+public final class DisplayFormatter {
+
+    private static final int PIPE_AND_SPACES_WIDTH = 3;
+    private static final int DEFAULT_COLUMN_WIDTH = 20;
+
+    /** Private constructor to prevent instantiation. */
+    private DisplayFormatter() { }
     /**
-     * Formats a list of ChangeLog entries into a table-like string representation.
+     * Formats a list of ChangeLog entries
+     * into a table-like string representation.
      *
-     * @param changeLogs the list of ChangeLog entries to format
-     * @return a formatted string representing the ChangeLog entries in tabular form
+     * @param changeLogs the list of ChangeLog
+     *                   entries to format
+     * @return a formatted string representing
+     *         the ChangeLog entries in tabular form
      * @throws IllegalArgumentException if the changeLogs list is null or empty
      */
     public static String formatChangeLog(List<ChangeLog> changeLogs) {
         if (changeLogs == null || changeLogs.isEmpty()) {
-            throw new IllegalArgumentException("ChangeLog list cannot be null or empty");
+            throw new IllegalArgumentException(
+                "ChangeLog list cannot be null or empty"
+            );
         }
         String[] headers = {
             "Change Log ID",
@@ -29,7 +40,8 @@ public class DisplayFormatter {
         };
         StringBuilder sb = new StringBuilder();
         sb.append(createRowString(headers)).append("\n");
-        sb.append(createSeparator(headers.length, 20)).append("\n");
+        sb.append(createSeparator(headers.length, DEFAULT_COLUMN_WIDTH))
+          .append("\n");
         for (ChangeLog log : changeLogs) {
             String[] rowData = {
                 String.valueOf(log.id()),
@@ -44,15 +56,21 @@ public class DisplayFormatter {
         return sb.toString();
     }
     /**
-     * Formats a list of PendingChange entries into a table-like string representation.
+     * Formats a list of PendingChange entries
+     * into a table-like string representation.
      *
      * @param pendingChanges the list of PendingChange entries to format
-     * @return a formatted string representing the PendingChange entries in tabular form
-     * @throws IllegalArgumentException if the pendingChanges list is null or empty
+     * @return a formatted string representing
+     *         the PendingChange entries in tabular form
+     * @throws IllegalArgumentException if the pendingChanges list
+     *                                  is null or empty
      */
-    public static String formatPendingChange(List<PendingChange> pendingChanges) {
+    public static String formatPendingChange(
+        List<PendingChange> pendingChanges) {
         if (pendingChanges == null || pendingChanges.isEmpty()) {
-            throw new IllegalArgumentException("PendingChange list cannot be null or empty");
+            throw new IllegalArgumentException(
+                "PendingChange list cannot be null or empty"
+            );
         }
         String[] headers = {
             "Pending Change ID",
@@ -66,7 +84,8 @@ public class DisplayFormatter {
         };
         StringBuilder sb = new StringBuilder();
         sb.append(createRowString(headers)).append("\n");
-        sb.append(createSeparator(headers.length, 20)).append("\n");
+        sb.append(createSeparator(headers.length, DEFAULT_COLUMN_WIDTH))
+          .append("\n");
         for (PendingChange change : pendingChanges) {
             String[] rowData = {
                 String.valueOf(change.getId()),
@@ -101,7 +120,8 @@ public class DisplayFormatter {
         };
         StringBuilder sb = new StringBuilder();
         sb.append(createRowString(headers)).append("\n");
-        sb.append(createSeparator(headers.length, 20)).append("\n");
+        sb.append(createSeparator(headers.length, DEFAULT_COLUMN_WIDTH))
+          .append("\n");
         String[] rowData = {
             String.valueOf(budget.getYear()),
             String.format("%.2f", budget.getTotalRevenue()),
@@ -112,15 +132,19 @@ public class DisplayFormatter {
         return sb.toString();
     }
     /**
-     * Formats a list of BudgetItem entries into a table-like string representation.
+     * Formats a list of BudgetItem entries
+     * into a table-like string representation.
      *
      * @param items the list of BudgetItem entries to format
-     * @return a formatted string representing the BudgetItem entries in tabular form
+     * @return a formatted string representing
+     *         the BudgetItem entries in tabular form
      * @throws IllegalArgumentException if the items list is null or empty
      */
     public static String formatBudgetItems(List<BudgetItem> items) {
         if (items == null || items.isEmpty()) {
-            throw new IllegalArgumentException("BudgetItem list cannot be null or empty");
+            throw new IllegalArgumentException(
+                "BudgetItem list cannot be null or empty"
+            );
         }
         String[] headers = {
             "Budget Item ID",
@@ -131,7 +155,8 @@ public class DisplayFormatter {
         };
         StringBuilder sb = new StringBuilder();
         sb.append(createRowString(headers)).append("\n");
-        sb.append(createSeparator(headers.length, 20)).append("\n");
+        sb.append(createSeparator(headers.length, DEFAULT_COLUMN_WIDTH))
+          .append("\n");
         for (BudgetItem item : items) {
             String[] rowData = {
                 String.valueOf(item.getId()),
@@ -161,7 +186,8 @@ public class DisplayFormatter {
      * @return a string representing the separator line
      */
     private static String createSeparator(int numColumns, int columnWidth) {
-        int totalLength = numColumns * columnWidth + numColumns * 3; 
+        int totalLength = numColumns * columnWidth
+            + numColumns * PIPE_AND_SPACES_WIDTH;
         return new String(new char[totalLength]).replace('\0', '-');
     }
 }
