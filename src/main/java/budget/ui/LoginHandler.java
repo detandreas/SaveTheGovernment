@@ -5,6 +5,7 @@ import budget.model.domain.user.Citizen;
 import budget.model.domain.user.GovernmentMember;
 import budget.model.domain.user.PrimeMinister;
 import budget.model.enums.UserRole;
+import budget.repository.UserRepository;
 import budget.service.UserAuthenticationService;
 import budget.service.InputValidationService;
 import budget.util.InputValidator;
@@ -17,7 +18,7 @@ import java.util.Scanner;
  * related to logging in and account creation.
  */
 public class LoginHandler {
-    
+    private final UserRepository userRepository;
     private final UserAuthenticationService authService;
     private final InputValidationService validationService;
     private final Scanner scanner;
@@ -25,9 +26,9 @@ public class LoginHandler {
      * Constructor for LoginHandler.
      * @param authService the authentication service
      */
-    public LoginHandler(UserAuthenticationService authService, 
+    public LoginHandler(UserRepository userRepository, UserAuthenticationService authService, 
     InputValidationService validationService) {
-        
+        this.userRepository = userRepository;
         this.authService = authService;
         this.validationService = validationService;
         this.scanner = new Scanner(System.in);
@@ -79,7 +80,8 @@ public class LoginHandler {
         String username = scanner.nextLine().trim();
         System.out.print(Message.PASSWORD_PROMPT);
         String password = scanner.nextLine().trim();
-        User user = authService.login(username, password);
+        boolean isLoggedIn = authService.login(username, password);
+        User user = isLoggedIn ? authService.getCurrentUser() : null;
         if (user != null) {
             System.out.printf(Message.LOGIN_SUCCESS, user.getFullName());
             MenuHandler menuHandler = new MenuHandler(scanner, authService);
@@ -98,7 +100,7 @@ public class LoginHandler {
         UserRole role = selectUserRole();
         UserRegistrationData data = collectUserData(role);
         
-         if (role == UserRole.PRIME_MINISTER && authService.primeMinisterExists()) {
+         if (role == UserRole.PRIME_MINISTER && userRepository.primeMinisterExists()) {
             System.out.println(Message.PRIME_MINISTER_EXISTS);
             return handleAccountCreation();
          }
@@ -135,7 +137,7 @@ public class LoginHandler {
                 System.out.println(Message.USERNAME_LENGTH_LIMITS_MESSAGE);
                 continue;
             }
-            if (authService.usernameExists(username)) {
+            if (userRepository.usernameExists(username)) {
                 System.out.println(Message.ERROR_USERNAME_TAKEN);
                 continue;
             }
