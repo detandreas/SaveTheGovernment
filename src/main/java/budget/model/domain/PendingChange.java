@@ -4,6 +4,7 @@ import budget.model.enums.Status;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Locale;
 import java.util.UUID;
 
 
@@ -137,6 +138,7 @@ public class PendingChange {
     @Override
     public String toString() {
         return String.format(
+            Locale.US,
             "PendingChange{id=%d, budgetItemId=%d, requestByName=%s, "
             + "oldValue=%.2f, newValue=%.2f, status=%s, submittedDate=%s}",
             id, budgetItemId, requestByName, oldValue, newValue,
