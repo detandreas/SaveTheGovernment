@@ -14,9 +14,9 @@ public final class Limits {
     public static final int MAX_PASSWORD_LENGTH = 32;
     public static final int MAX_FULL_NAME_LENGTH = 50;
     // Maximum allowed change percentage for budget edits
-    public static final double EDIT_CHANGE_LIMIT_PRECENT = 0.25;
+    public static final double EDIT_CHANGE_LIMIT_PERCENT = 0.25;
     // Maximum allowed change impact for budget balance
-    public static final double BALANCE_CHANGE_LIMIT_PRECENT = 0.10;
+    public static final double BALANCE_CHANGE_LIMIT_PERCENT = 0.10;
     // Maximum number of Prime Ministers allowed
     public static final int MAX_PRIME_MINISTERS = 1;
     // Minimum budget item amount
