@@ -4,6 +4,8 @@ import java.util.List;
 
 import budget.model.domain.ChangeLog;
 import budget.model.domain.PendingChange;
+import budget.model.domain.Budget;
+import budget.model.domain.BudgetItem;
 
 public class DisplayFormatter {
     /**
@@ -61,7 +63,6 @@ public class DisplayFormatter {
             "New Value",
             "Status",
             "Submitted Date",
-            
         };
         StringBuilder sb = new StringBuilder();
         sb.append(createRowString(headers)).append("\n");
@@ -76,6 +77,68 @@ public class DisplayFormatter {
                 String.format("%.2f", change.getNewValue()),
                 change.getStatus().name(),
                 String.valueOf(change.getRequestById()),
+            };
+            sb.append(createRowString(rowData)).append("\n");
+        }
+        return sb.toString();
+    }
+    /**
+     * Formats a Budget object into a table-like string representation.
+     *
+     * @param budget the Budget object to format
+     * @return a formatted string representing the Budget in tabular form
+     * @throws IllegalArgumentException if the budget is null
+     */
+    public static String formatBudget(Budget budget) {
+        if (budget == null) {
+            throw new IllegalArgumentException("Budget cannot be null");
+        }
+        String[] headers = {
+            "Year",
+            "Total Revenue",
+            "Total Expense",
+            "Net Result",
+        };
+        StringBuilder sb = new StringBuilder();
+        sb.append(createRowString(headers)).append("\n");
+        sb.append(createSeparator(headers.length, 20)).append("\n");
+        String[] rowData = {
+            String.valueOf(budget.getYear()),
+            String.format("%.2f", budget.getTotalRevenue()),
+            String.format("%.2f", budget.getTotalExpense()),
+            String.format("%.2f", budget.getNetResult()),
+        };
+        sb.append(createRowString(rowData)).append("\n");
+        return sb.toString();
+    }
+    /**
+     * Formats a list of BudgetItem entries into a table-like string representation.
+     *
+     * @param items the list of BudgetItem entries to format
+     * @return a formatted string representing the BudgetItem entries in tabular form
+     * @throws IllegalArgumentException if the items list is null or empty
+     */
+    public static String formatBudgetItems(List<BudgetItem> items) {
+        if (items == null || items.isEmpty()) {
+            throw new IllegalArgumentException("BudgetItem list cannot be null or empty");
+        }
+        String[] headers = {
+            "Budget Item ID",
+            "Name of Budget Item",
+            "Issued Year",
+            "Value",
+            "Category",
+        };
+        StringBuilder sb = new StringBuilder();
+        sb.append(createRowString(headers)).append("\n");
+        sb.append(createSeparator(headers.length, 20)).append("\n");
+        for (BudgetItem item : items) {
+            String[] rowData = {
+                String.valueOf(item.getId()),
+                item.getName(),
+                String.valueOf(item.getYear()),
+                String.format("%.2f", item.getValue()),
+                item.getIsRevenue() ? "Revenue" : "Expense",
             };
             sb.append(createRowString(rowData)).append("\n");
         }
