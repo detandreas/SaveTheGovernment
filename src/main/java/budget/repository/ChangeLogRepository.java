@@ -138,15 +138,6 @@ public class ChangeLogRepository
     }
 
     /**
-     * Retrieves all ChangeLog records.
-     *
-     * @return a list of ChangeLog records.
-     */
-    public List<ChangeLog> findAll() {
-        return load();
-    }
-
-    /**
      * Finds a ChangeLog record by its ID.
      *
      * @param id the unique ID of the ChangeLog
