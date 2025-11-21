@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestPendingChange {
+public class TestPendingChange2 {
 
     private static final int BUDGET_ITEM_ID = 10;
     private static final String REQUESTER_NAME = "USERNAME";
