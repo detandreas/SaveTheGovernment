@@ -1,14 +1,13 @@
 package budget.model.domain;
 
 import budget.model.enums.Status;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-
+import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestPendingChange {
@@ -23,10 +22,10 @@ public class TestPendingChange {
     void resetIdCounter() throws Exception {
         Field idField = PendingChange.class.getDeclaredField("NEXT_ID");
         idField.setAccessible(true);
-
-        // Replace the AtomicInteger value with a new AtomicInteger(1)
-        AtomicInteger newCounter = new AtomicInteger(1);
-        idField.set(null, newCounter);
+        
+        // Παίρνουμε το υπάρχον AtomicInteger και θέτουμε την τιμή του σε 1
+        AtomicInteger currentCounter = (AtomicInteger) idField.get(null);
+        currentCounter.set(1);
     }
 
     @Test
@@ -39,18 +38,18 @@ public class TestPendingChange {
                 NEW_VALUE
         );
 
-        assertEquals(1, pc.getId(), "First ID should be 1");
-        assertEquals(BUDGET_ITEM_ID, pc.getBudgetItemId());
-        assertEquals(REQUESTER_NAME, pc.getRequestByName());
-        assertEquals(REQUESTER_ID, pc.getRequestById());
-        assertEquals(OLD_VALUE, pc.getOldValue());
-        assertEquals(NEW_VALUE, pc.getNewValue());
-        assertEquals(Status.PENDING, pc.getStatus(), "Initial status must be PENDING");
+        assertEquals(1, pc.getId(), "Failure - wrong id");
+        assertEquals(BUDGET_ITEM_ID, pc.getBudgetItemId(), "Failure - wrong budgetItemId");
+        assertEquals(REQUESTER_NAME, pc.getRequestByName(), "Failure - wrong requestByName");
+        assertEquals(REQUESTER_ID, pc.getRequestById(), "Failure - wrong requestById");
+        assertEquals(OLD_VALUE, pc.getOldValue(), "Failure - wrong oldValue");
+        assertEquals(NEW_VALUE, pc.getNewValue(), "Failure - wrong newValue");
+        assertEquals(Status.PENDING, pc.getStatus(), "Failure - wrong status");
 
         // Test submittedDate format
         assertDoesNotThrow(() ->
                 LocalDateTime.parse(pc.getSubmittedDate(), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                "submittedDate must be a valid ISO_LOCAL_DATE_TIME string"
+                "Failure - submittedDate must be a valid ISO_LOCAL_DATE_TIME string"
         );
     }
 
@@ -59,8 +58,8 @@ public class TestPendingChange {
         PendingChange pc1 = new PendingChange(BUDGET_ITEM_ID, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
         PendingChange pc2 = new PendingChange(BUDGET_ITEM_ID, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
 
-        assertEquals(1, pc1.getId(), "First ID should be 1");
-        assertEquals(2, pc2.getId(), "Second ID should be 2");
+        assertEquals(1, pc1.getId(), "Failure - wrong first id");
+        assertEquals(2, pc2.getId(), "Failure - wrong second id");
     }
 
     @Test
@@ -68,7 +67,7 @@ public class TestPendingChange {
         PendingChange pc = new PendingChange(BUDGET_ITEM_ID, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
 
         pc.approve();
-        assertEquals(Status.APPROVED, pc.getStatus(), "Status should become APPROVED");
+        assertEquals(Status.APPROVED, pc.getStatus(), "Failure - wrong status after approve");
     }
 
     @Test
@@ -76,7 +75,7 @@ public class TestPendingChange {
         PendingChange pc = new PendingChange(BUDGET_ITEM_ID, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
 
         pc.reject();
-        assertEquals(Status.REJECTED, pc.getStatus(), "Status should become REJECTED");
+        assertEquals(Status.REJECTED, pc.getStatus(), "Failure - wrong status after reject");
     }
 
     @Test
@@ -84,12 +83,12 @@ public class TestPendingChange {
         PendingChange pc = new PendingChange(BUDGET_ITEM_ID, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
         String out = pc.toString();
 
-        assertTrue(out.contains("id=1"));
-        assertTrue(out.contains("budgetItemId=" + BUDGET_ITEM_ID));
-        assertTrue(out.contains("requestByName=" + REQUESTER_NAME));
-        assertTrue(out.contains(String.format("oldValue=%.2f", OLD_VALUE)));
-        assertTrue(out.contains(String.format("newValue=%.2f", NEW_VALUE)));
-        assertTrue(out.contains("status=PENDING"));
-        assertTrue(out.contains(pc.getSubmittedDate()));
+        assertTrue(out.contains("id=1"), "Failure - wrong toString");
+        assertTrue(out.contains("budgetItemId=10"), "Failure - wrong toString");
+        assertTrue(out.contains("requestByName=USERNAME"), "Failure - wrong toString");
+        assertTrue(out.contains(String.format("oldValue=500.00")), "Failure - wrong toString");
+        assertTrue(out.contains(String.format("newValue=1000.00")), "Failure - wrong toString");
+        assertTrue(out.contains("status=Change approval is still pending"), "Failure - wrong toString");
+        assertTrue(out.contains(pc.getSubmittedDate()), "Failure - wrong toString");
     }
 }
