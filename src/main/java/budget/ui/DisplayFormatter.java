@@ -170,6 +170,54 @@ public final class DisplayFormatter {
         return sb.toString();
     }
     /**
+     * Formats a list of BudgetItem entries
+     * for a specific ministry into a table-like string representation.
+     *
+     * @param items the list of BudgetItem entries to format
+     * @param ministryName the name of the ministry
+     * @return a formatted string representing
+     *         the BudgetItem entries in tabular form
+     * @throws IllegalArgumentException if the items list is null or empty
+     */
+    public static String formatBudgetItemsPerMinistry(
+        List<BudgetItem> items,
+        String ministryName) {
+        if (items == null || items.isEmpty()) {
+            throw new IllegalArgumentException(
+                "BudgetItem list cannot be null or empty"
+            );
+        }
+        String[] headers = {
+            "Budget Item ID",
+            "Name of Budget Item",
+            "Issued Year",
+            "Value",
+            "Category",
+        };
+        StringBuilder sb = new StringBuilder();
+        sb.append("Ministry: ").append(ministryName).append("\n");
+        sb.append(createRowString(headers)).append("\n");
+        sb.append(createSeparator(headers.length, DEFAULT_COLUMN_WIDTH))
+          .append("\n");
+        for (BudgetItem item : items) {
+            boolean belongsToMinistry = item.getMinistries().stream()
+                .anyMatch(ministry -> ministry.getDisplayName().equals(ministryName));
+
+            if (!belongsToMinistry) {
+                continue; // Skip items not belonging to the specified ministry
+            }
+            String[] rowData = {
+                String.valueOf(item.getId()),
+                item.getName(),
+                String.valueOf(item.getYear()),
+                String.format("%.2f", item.getValue()),
+                item.getIsRevenue() ? "Revenue" : "Expense",
+            };
+            sb.append(createRowString(rowData)).append("\n");
+        }
+        return sb.toString();
+    }
+    /**
      * Helper method to create a formatted row string.
      *
      * @param columns the array of column values
