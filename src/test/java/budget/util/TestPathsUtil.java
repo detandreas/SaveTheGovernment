@@ -53,7 +53,8 @@ public class TestPathsUtil {
     // resolveDataFile() Tests
 
     @Test
-    void resolveDataFile_WhenPropertyNotSet_ShouldReturnDefaultPath() {
+    void resolveDataFile_WhenPropertyNotSet() {
+        // ShouldReturnDefaultPath
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.resolveDataFile("test.json");
         Path expected = Paths.get("src", "main", "resources", "test.json");
@@ -61,7 +62,8 @@ public class TestPathsUtil {
     }
 
     @Test
-    void resolveDataFile_WhenPropertyIsBlank_ShouldReturnDefaultPath() {
+    void resolveDataFile_WhenPropertyIsBlank() {
+        // ShouldReturnDefaultPath
         System.setProperty(DATA_DIR_PROPERTY, "   ");
         Path result = PathsUtil.resolveDataFile("test.json");
         Path expected = Paths.get("src", "main", "resources", "test.json");
@@ -69,7 +71,8 @@ public class TestPathsUtil {
     }
 
     @Test
-    void resolveDataFile_WhenPropertyIsDirectory_ShouldResolveFileName(@TempDir Path tempDir) {
+    void resolveDataFile_WhenPropertyIsDirectory(@TempDir Path tempDir) {
+        // ShouldResolveFileName
         System.setProperty(DATA_DIR_PROPERTY, tempDir.toString());
         Path result = PathsUtil.resolveDataFile("test.json");
         Path expected = tempDir.resolve("test.json");
@@ -77,18 +80,23 @@ public class TestPathsUtil {
     }
 
     @Test
-    void resolveDataFile_WhenPropertyIsFile_ShouldReturnBasePath(@TempDir Path tempDir) throws IOException {
+    void resolveDataFile_WhenPropertyIsFile(@TempDir Path tempDir)
+    throws IOException {
+        // ShouldReturnBasePath
         Path testFile = tempDir.resolve("datafile");
         Files.createFile(testFile);
         System.setProperty(DATA_DIR_PROPERTY, testFile.toString());
         Path result = PathsUtil.resolveDataFile("test.json");
+        // test.json is not resolved
         assertEquals(testFile, result);
     }
 
     // openDataStream() Tests
 
     @Test
-    void openDataStream_WhenExternalFileExists_ShouldReturnExternalStream(@TempDir Path tempDir) throws IOException {
+    void openDataStream_WhenExternalFileExists(@TempDir Path tempDir)
+    throws IOException {
+        // ShouldReturnExternalStream
         System.setProperty(DATA_DIR_PROPERTY, tempDir.toString());
         Path testFile = tempDir.resolve("test.json");
         String testContent = "{\"test\": \"data\"}";
@@ -102,8 +110,9 @@ public class TestPathsUtil {
     }
 
     @Test
-    void openDataStream_WhenExternalFileNotExists_ShouldFallbackToClasspath()
+    void openDataStream_WhenExternalFileNotExists()
     throws IOException {
+        // ShouldFallbackToClasspath
         System.clearProperty(DATA_DIR_PROPERTY);
         try (InputStream stream = PathsUtil.openDataStream("nonexistent.json", PathsUtil.BUDGET_RESOURCE)) {
             assertNotNull(stream);
@@ -111,7 +120,9 @@ public class TestPathsUtil {
     }
 
     @Test
-    void openDataStream_WhenExternalFileNotReadable_ShouldFallbackToClasspath(@TempDir Path tempDir) throws IOException {
+    void openDataStream_WhenExternalFileNotReadable(@TempDir Path tempDir)
+    throws IOException {
+        // ShouldFallbackToClasspath
         System.setProperty(DATA_DIR_PROPERTY, tempDir.toString());
         Path testFile = tempDir.resolve("test.json");
         Files.createFile(testFile);
@@ -130,7 +141,8 @@ public class TestPathsUtil {
     // get*WritablePath() Tests
 
     @Test
-    void getBudgetWritablePath_ShouldReturnCorrectPath() {
+    void getBudgetWritablePath() {
+        // ShouldReturnCorrectPath
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.getBudgetWritablePath();
         Path expected = Paths.get("src", "main", "resources", "budget.json");
@@ -138,7 +150,8 @@ public class TestPathsUtil {
     }
 
     @Test
-    void getBillMinistryWritablePath_ShouldReturnCorrectPath() {
+    void getBillMinistryWritablePath() {
+        // ShouldReturnCorrectPath
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.getBillMinistryWritablePath();
         Path expected = Paths.get("src", "main", "resources", "bill-ministry-map.json");
@@ -146,7 +159,8 @@ public class TestPathsUtil {
     }
 
     @Test
-    void getUsersWritablePath_ShouldReturnCorrectPath() {
+    void getUsersWritablePath() {
+        // ShouldReturnCorrectPath
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.getUsersWritablePath();
         Path expected = Paths.get("src", "main", "resources", "users.json");
@@ -154,7 +168,8 @@ public class TestPathsUtil {
     }
 
     @Test
-    void getPendingChangesWritablePath_ShouldReturnCorrectPath() {
+    void getPendingChangesWritablePath() {
+        // ShouldReturnCorrectPath
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.getPendingChangesWritablePath();
         Path expected = Paths.get("src", "main", "resources", "pending-changes.json");
@@ -162,7 +177,8 @@ public class TestPathsUtil {
     }
 
     @Test
-    void getBudgetChangesWritablePath_ShouldReturnCorrectPath() {
+    void getBudgetChangesWritablePath() {
+        // ShouldReturnCorrectPath
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.getBudgetChangesWritablePath();
         Path expected = Paths.get("src", "main", "resources", "budget-changes.json");
@@ -184,7 +200,8 @@ public class TestPathsUtil {
     }
 
     @Test
-    void shouldLoadAllResourcesFromDataDir(@TempDir Path tempDir) throws IOException {
+    void shouldLoadAllResourcesFromDataDir(@TempDir Path tempDir)
+    throws IOException {
         System.setProperty(DATA_DIR_PROPERTY, tempDir.toString());
         for (String fileName : FILE_NAMES) {
             Path testFile = tempDir.resolve(fileName);
@@ -201,7 +218,8 @@ public class TestPathsUtil {
     }
 
     @Test
-    void shouldFallbackToClasspathWhenExternalFileMissing(@TempDir Path tempDir) throws IOException {
+    void shouldFallbackToClasspathWhenExternalFileMissing(
+                                    @TempDir Path tempDir) throws IOException {
         System.setProperty(DATA_DIR_PROPERTY, tempDir.toString());
         // Don't create files - should fallback to classpath
 
