@@ -60,7 +60,7 @@ public class TestPathsUtil {
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.resolveDataFile("test.json");
         Path expected = Paths.get("src", "main", "resources", "test.json");
-        assertEquals(expected, result);
+        assertEquals(expected, result, "Failure - wrong path when property not set");
     }
 
     @Test
@@ -69,7 +69,7 @@ public class TestPathsUtil {
         System.setProperty(DATA_DIR_PROPERTY, "   ");
         Path result = PathsUtil.resolveDataFile("test.json");
         Path expected = Paths.get("src", "main", "resources", "test.json");
-        assertEquals(expected, result);
+        assertEquals(expected, result, "Failure - wrong path when property is blank");
     }
 
     @Test
@@ -78,7 +78,7 @@ public class TestPathsUtil {
         System.setProperty(DATA_DIR_PROPERTY, tempDir.toString());
         Path result = PathsUtil.resolveDataFile("test.json");
         Path expected = tempDir.resolve("test.json");
-        assertEquals(expected, result);
+        assertEquals(expected, result, "Failure - wrong path when property is directory");
     }
 
     @Test
@@ -90,7 +90,7 @@ public class TestPathsUtil {
         System.setProperty(DATA_DIR_PROPERTY, testFile.toString());
         Path result = PathsUtil.resolveDataFile("test.json");
         // test.json is not resolved
-        assertEquals(testFile, result);
+        assertEquals(testFile, result, "Failure - wrong path when property is file");
     }
 
     // openDataStream() Tests
@@ -105,9 +105,9 @@ public class TestPathsUtil {
         Files.writeString(testFile, testContent);
 
         try (InputStream stream = PathsUtil.openDataStream("test.json", "/nonexistent.json")) {
-            assertNotNull(stream);
+            assertNotNull(stream, "Failure - stream should not be null when external file exists");
             String content = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-            assertEquals(testContent, content);
+            assertEquals(testContent, content, "Failure - wrong content when external file exists");
         }
     }
 
@@ -117,7 +117,7 @@ public class TestPathsUtil {
         // ShouldFallbackToClasspath
         System.clearProperty(DATA_DIR_PROPERTY);
         try (InputStream stream = PathsUtil.openDataStream("nonexistent.json", PathsUtil.BUDGET_RESOURCE)) {
-            assertNotNull(stream);
+            assertNotNull(stream, "Failure - stream should not be null when falling back to classpath");
         }
     }
 
@@ -131,10 +131,10 @@ public class TestPathsUtil {
         Files.createDirectory(testFile);
 
         try (InputStream stream = PathsUtil.openDataStream("test.json", PathsUtil.BUDGET_RESOURCE)) {
-            assertNotNull(stream);
+            assertNotNull(stream, "Failure - stream should not be null when external file is directory");
             // Should load from classpath, not external file
             String content = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-            assertTrue(content.length() > 0);
+            assertTrue(content.length() > 0, "Failure - content should not be empty when external file is directory");
         } finally {
             if (Files.exists(testFile) && Files.isDirectory(testFile)) {
                 Files.delete(testFile);
@@ -155,10 +155,10 @@ public class TestPathsUtil {
         testFile.toFile().setReadable(false);
 
         try (InputStream stream = PathsUtil.openDataStream("test.json", PathsUtil.BUDGET_RESOURCE)) {
-            assertNotNull(stream);
+            assertNotNull(stream, "Failure - stream should not be null when external file is not readable");
             // Should load from classpath, not external file
             String content = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-            assertTrue(content.length() > 0);
+            assertTrue(content.length() > 0, "Failure - content should not be empty when external file is not readable");
         } finally {
             testFile.toFile().setReadable(true);
         }
@@ -172,7 +172,7 @@ public class TestPathsUtil {
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.getBudgetWritablePath();
         Path expected = Paths.get("src", "main", "resources", "budget.json");
-        assertEquals(expected, result);
+        assertEquals(expected, result, "Failure - wrong budget writable path");
     }
 
     @Test
@@ -181,7 +181,7 @@ public class TestPathsUtil {
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.getBillMinistryWritablePath();
         Path expected = Paths.get("src", "main", "resources", "bill-ministry-map.json");
-        assertEquals(expected, result);
+        assertEquals(expected, result, "Failure - wrong bill ministry writable path");
     }
 
     @Test
@@ -190,7 +190,7 @@ public class TestPathsUtil {
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.getUsersWritablePath();
         Path expected = Paths.get("src", "main", "resources", "users.json");
-        assertEquals(expected, result);
+        assertEquals(expected, result, "Failure - wrong users writable path");
     }
 
     @Test
@@ -199,7 +199,7 @@ public class TestPathsUtil {
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.getPendingChangesWritablePath();
         Path expected = Paths.get("src", "main", "resources", "pending-changes.json");
-        assertEquals(expected, result);
+        assertEquals(expected, result, "Failure - wrong pending changes writable path");
     }
 
     @Test
@@ -208,7 +208,7 @@ public class TestPathsUtil {
         System.clearProperty(DATA_DIR_PROPERTY);
         Path result = PathsUtil.getBudgetChangesWritablePath();
         Path expected = Paths.get("src", "main", "resources", "budget-changes.json");
-        assertEquals(expected, result);
+        assertEquals(expected, result, "Failure - wrong budget changes writable path");
     }
 
     // get*InputStream() Tests 
@@ -260,11 +260,11 @@ public class TestPathsUtil {
 
     @Test
     void constants_ShouldHaveCorrectValues() {
-        assertEquals("/budget.json", PathsUtil.BUDGET_RESOURCE);
-        assertEquals("/bill-ministry-map.json", PathsUtil.BILL_MINISTRY_MAP_RESOURCE);
-        assertEquals("/users.json", PathsUtil.USERS_RESOURCE);
-        assertEquals("/pending-changes.json", PathsUtil.PENDING_CHANGES_RESOURCE);
-        assertEquals("/budget-changes.json", PathsUtil.BUDGET_CHANGES_RESOURCE);
+        assertEquals("/budget.json", PathsUtil.BUDGET_RESOURCE, "Failure - wrong BUDGET_RESOURCE constant");
+        assertEquals("/bill-ministry-map.json", PathsUtil.BILL_MINISTRY_MAP_RESOURCE, "Failure - wrong BILL_MINISTRY_MAP_RESOURCE constant");
+        assertEquals("/users.json", PathsUtil.USERS_RESOURCE, "Failure - wrong USERS_RESOURCE constant");
+        assertEquals("/pending-changes.json", PathsUtil.PENDING_CHANGES_RESOURCE, "Failure - wrong PENDING_CHANGES_RESOURCE constant");
+        assertEquals("/budget-changes.json", PathsUtil.BUDGET_CHANGES_RESOURCE, "Failure - wrong BUDGET_CHANGES_RESOURCE constant");
     }
 
     private record ResourceEntry(String name, ResourceSupplier loader) { }
