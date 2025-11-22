@@ -1,4 +1,4 @@
-package budget.ui;
+package budget.util;
 
 import java.util.List;
 import budget.model.domain.ChangeLog;
