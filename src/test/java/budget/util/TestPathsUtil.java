@@ -10,6 +10,8 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -120,9 +122,33 @@ public class TestPathsUtil {
     }
 
     @Test
+    void openDataStream_WhenExternalFileIsDirectory(@TempDir Path tempDir)
+    throws IOException {
+        // ShouldFallbackToClasspath
+        System.setProperty(DATA_DIR_PROPERTY, tempDir.toString());
+        Path testFile = tempDir.resolve("test.json");
+        // Create a directory with the same name - this will make !Files.isDirectory() return false
+        Files.createDirectory(testFile);
+
+        try (InputStream stream = PathsUtil.openDataStream("test.json", PathsUtil.BUDGET_RESOURCE)) {
+            assertNotNull(stream);
+            // Should load from classpath, not external file
+            String content = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            assertTrue(content.length() > 0);
+        } finally {
+            if (Files.exists(testFile) && Files.isDirectory(testFile)) {
+                Files.delete(testFile);
+            }
+        }
+    }
+    
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
     void openDataStream_WhenExternalFileNotReadable(@TempDir Path tempDir)
     throws IOException {
         // ShouldFallbackToClasspath
+        // Note: This test is disabled on Windows because setReadable() doesn't work
+        // reliably on Windows due to different file permission models
         System.setProperty(DATA_DIR_PROPERTY, tempDir.toString());
         Path testFile = tempDir.resolve("test.json");
         Files.createFile(testFile);

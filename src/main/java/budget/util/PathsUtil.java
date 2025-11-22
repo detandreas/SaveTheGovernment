@@ -69,7 +69,8 @@ public final class PathsUtil {
         final String resourcePath
     ) {
         Path externalFile = resolveDataFile(fileName);
-        if (Files.exists(externalFile) && Files.isReadable(externalFile)) {
+        if (Files.exists(externalFile) && Files.isReadable(externalFile)
+            && !Files.isDirectory(externalFile)) {
             try {
                 return Files.newInputStream(externalFile);
             } catch (IOException e) {
