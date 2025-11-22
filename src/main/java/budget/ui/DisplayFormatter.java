@@ -6,7 +6,10 @@ import budget.model.domain.ChangeLog;
 import budget.model.domain.PendingChange;
 import budget.model.domain.Budget;
 import budget.model.domain.BudgetItem;
-
+/**
+ * Utility class for formatting various
+ * budget-related data into table-like string representations.
+ */
 public final class DisplayFormatter {
 
     private static final int PIPE_AND_SPACES_WIDTH = 3;
