@@ -88,7 +88,7 @@ public class TestPendingChange {
         assertTrue(out.contains("requestByName=USERNAME"), "Failure - wrong toString");
         assertTrue(out.contains(String.format("oldValue=500.00")), "Failure - wrong toString");
         assertTrue(out.contains(String.format("newValue=1000.00")), "Failure - wrong toString");
-        assertTrue(out.contains("status=Change approval is still pending"), "Failure - wrong toString");
+        assertTrue(out.contains("status=Pending"), "Failure - wrong toString");
         assertTrue(out.contains(pc.getSubmittedDate()), "Failure - wrong toString");
     }
 }

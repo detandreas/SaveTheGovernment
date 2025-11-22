@@ -1,9 +1,9 @@
 package budget.model.enums;
 
 public enum Status {
-    PENDING("Change approval is still pending"),
-    APPROVED("Change is approved"),
-    REJECTED("Change is rejected");
+    PENDING("Pending"),
+    APPROVED("Approved"),
+    REJECTED("Rejected");
 
     private final String description;
     /**

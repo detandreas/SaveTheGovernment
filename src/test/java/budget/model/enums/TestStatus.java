@@ -9,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestStatus {
     private static List<Status> enums;
-    private static final String PENDING_STRING = "Change approval is still pending";
-    private static final String APPROVED_STRING = "Change is approved";
-    private static final String REJECTED_STRING = "Change is rejected";
+    private static final String PENDING_STRING = "Pending";
+    private static final String APPROVED_STRING = "Approved";
+    private static final String REJECTED_STRING = "Rejected";
     private static List<String> strings;
 
     @BeforeAll
