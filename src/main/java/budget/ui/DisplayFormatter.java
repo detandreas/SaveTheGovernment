@@ -1,7 +1,6 @@
 package budget.ui;
 
 import java.util.List;
-
 import budget.model.domain.ChangeLog;
 import budget.model.domain.PendingChange;
 import budget.model.domain.Budget;
@@ -14,6 +13,7 @@ public final class DisplayFormatter {
 
     private static final int PIPE_AND_SPACES_WIDTH = 3;
     private static final int DEFAULT_COLUMN_WIDTH = 20;
+    private static final int TRUNCATE_LENGTH = 3;
 
     /** Private constructor to prevent instantiation. */
     private DisplayFormatter() { }
@@ -94,7 +94,7 @@ public final class DisplayFormatter {
                 String.valueOf(change.getId()),
                 String.valueOf(change.getBudgetItemId()),
                 change.getRequestByName(),
-                String.valueOf(change.getRequestById()),
+                change.getRequestById().toString(),
                 String.format("%.2f", change.getOldValue()),
                 String.format("%.2f", change.getNewValue()),
                 change.getStatus().name(),
@@ -151,7 +151,7 @@ public final class DisplayFormatter {
         }
         String[] headers = {
             "Budget Item ID",
-            "Name of Budget Item",
+            "Budget Item Name",
             "Issued Year",
             "Value",
             "Category",
@@ -228,7 +228,23 @@ public final class DisplayFormatter {
      * @return a formatted string representing the row
      */
     private static String createRowString(String[] columns) {
-        return "| " + String.join(" | ", columns) + " |";
+        StringBuilder sb = new StringBuilder();
+        sb.append("|");
+        for (String column : columns) {
+            String formattedstring = formatCell(column, DEFAULT_COLUMN_WIDTH);
+            sb.append(" ").append(formattedstring).append(" |");
+        }
+        return sb.toString();
+    }
+
+    private static String formatCell(String value, int width) {
+        if (value == null) {
+            value = "";
+        }
+        if (value.length() > width) {
+            return value.substring(0, width - TRUNCATE_LENGTH) + "...";
+        }
+        return String.format("%-" + width + "s", value);
     }
     /**
      * Helper method to create a separator line for the table.
@@ -239,7 +255,7 @@ public final class DisplayFormatter {
      */
     private static String createSeparator(int numColumns, int columnWidth) {
         int totalLength = numColumns * columnWidth
-            + numColumns * PIPE_AND_SPACES_WIDTH;
+            + numColumns * PIPE_AND_SPACES_WIDTH + 1; // +1 για το πρωτο "|"
         return new String(new char[totalLength]).replace('\0', '-');
     }
 }
