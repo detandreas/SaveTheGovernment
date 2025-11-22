@@ -93,12 +93,12 @@ public final class DisplayFormatter {
             String[] rowData = {
                 String.valueOf(change.getId()),
                 String.valueOf(change.getBudgetItemId()),
-                change.getSubmittedDate(),
                 change.getRequestByName(),
+                String.valueOf(change.getRequestById()),
                 String.format("%.2f", change.getOldValue()),
                 String.format("%.2f", change.getNewValue()),
                 change.getStatus().name(),
-                String.valueOf(change.getRequestById()),
+                change.getSubmittedDate(),
             };
             sb.append(createRowString(rowData)).append("\n");
         }
