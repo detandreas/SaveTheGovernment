@@ -201,7 +201,8 @@ public final class DisplayFormatter {
           .append("\n");
         for (BudgetItem item : items) {
             boolean belongsToMinistry = item.getMinistries().stream()
-                .anyMatch(ministry -> ministry.getDisplayName().equals(ministryName));
+                .anyMatch(ministry -> ministry.getDisplayName()
+                .equals(ministryName));
 
             if (!belongsToMinistry) {
                 continue; // Skip items not belonging to the specified ministry
