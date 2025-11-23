@@ -100,7 +100,13 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
                 return;
             }
             List<Budget> budgets = new ArrayList<>(load());
-            
+            OptionalInt index = findIndexByYear(budgets, budget.getYear());
+            if (index.isPresent()) {
+                budgets.set(index.getAsInt(), budget);
+            } else {
+                budgets.add(budget);
+            }
+            saveToFile(budgets);
         }
     }
     private OptionalInt findIndexByYear(final List<Budget> budgets, final int year) {
