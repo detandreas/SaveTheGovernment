@@ -1,31 +1,18 @@
 package budget.repository;
 
-import budget.model.domain.Budget;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-
 import java.lang.reflect.Type;
-
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import budget.util.PathsUtil;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -33,6 +20,9 @@ import java.util.stream.IntStream;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import budget.model.domain.Budget;
+import budget.util.PathsUtil;
 
 
 
@@ -161,33 +151,27 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
     }
     /**
     * Deletes budgets that match the year of the provided Budget entity.
-    * If the provided entity is null, no deletion occurs and an error is logged.
-    * Prints a message indicating whether any budgets were deleted.
-    * Saves the updated list of budgets back to the JSON file.
-    * @param entity the Budget object whose year is used to identify budgets to delete; may not be null
+    * When a matching entry is found it is removed and the updated collection
+     * is persisted; otherwise no action is taken
+     * @param budget the budget to remove, ignored when {@code null}
     */
     @Override
-    public void delete(final Budget entity) {
-        if (entity == null) {
-            System.err.println("Cannot delete null budget");
-            return;
+    public void delete(final Budget budget) {
+        synchronized(LOCK) {
+            if (budget == null) {
+                LOGGER.warning("Cannot delete null budget");
+                return;
+            }
+            List<Budget> budgets = new ArrayList<>(load());
+            OptionalInt index = findIndexByYear(budgets, budget.getYear());
+            if (index.isPresent()) {
+                budgets.remove(index.getAsInt());
+                saveToFile(budgets);
+            } else {
+                LOGGER.warning("Cannot delete a budget because it doesn't exist");
+            }
         }
-
-        List<Budget> budgets = load();
-        boolean removed = budgets.removeIf(b -> b.getYear() == entity.getYear());
-
-        if(removed) {
-            System.out.println("Budget for year " + entity.getYear() + " was deleted");
-        } else {
-            System.out.println("No budget found for year " + entity.getYear());
-        }
-
-        try (OutputStreamWriter writer = new OutputStreamWriter(
-            new FileOutputStream(BUDGET_FILE), StandardCharsets.UTF_8)) {
-        gson.toJson(budgets, writer);
-    } catch (IOException e) {
-        System.err.println("Error saving budgets: " + e.getMessage());
-    }
+        
     }
     /**
      * Finds a Budget by its year.
