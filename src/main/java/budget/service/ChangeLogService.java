@@ -91,4 +91,32 @@ public class ChangeLogService {
         changeLogRepository.save(log);
     }
 
+    /**
+     * Retrieves all ChangeLog entries.
+     *
+     * @return list of logs
+     */
+    public List<ChangeLog> getAllLogs() {
+        List<ChangeLog> logs = changeLogRepository.load();
+        return logs != null ? logs : List.of();
+    }
+
+    /**
+     * Retrieves logs related to a specific budget item.
+     *
+     * @param itemId ID of the budget item
+     * @return list of logs for the item
+     * @throws IllegalArgumentException if itemId is null
+     */
+    public List<ChangeLog> getLogsForItem(Integer itemId) {
+        if (itemId == null) {
+            throw new IllegalArgumentException(
+                    "Item ID cannot be null");
+        }
+
+        return changeLogRepository.load().stream()
+                .filter(log -> log.budgetItemId() == itemId)
+                .toList();
+    }
+
 }
