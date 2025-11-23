@@ -29,6 +29,7 @@ public class ChangeLogService {
      *
      * @param repository repository handling ChangeLog persistence
      * @param auth       authentication service
+     *
      * @throws IllegalArgumentException if any argument is null
      */
     public ChangeLogService(ChangeLogRepository repository,
@@ -119,4 +120,21 @@ public class ChangeLogService {
                 .toList();
     }
 
+    /**
+     * Retrieves logs created by a specific user.
+     *
+     * @param userId ID of the user
+     * @return list of logs created by the user
+     * @throws IllegalArgumentException if userId is null
+     */
+    public List<ChangeLog> getLogsByUser(Integer userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException(
+                    "User ID cannot be null");
+        }
+
+        return changeLogRepository.load().stream()
+                .filter(log -> log.actorId() == userId)
+                .toList();
+    }
 }
