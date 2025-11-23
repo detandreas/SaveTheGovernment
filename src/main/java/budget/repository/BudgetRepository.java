@@ -1,7 +1,6 @@
 package budget.repository;
 
 import budget.model.domain.Budget;
-import budget.model.domain.user.User;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,8 +9,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
+
 import java.lang.reflect.Type;
+
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import budget.util.PathsUtil;
 
@@ -120,6 +124,22 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
         return IntStream.range(0,budgets.size())
             .filter(i -> budgets.get(i).getYear() == year)
             .findFirst();
+    }
+    /**
+     * Serializes the supplied budgets collection to the backing JSON
+     * file using the configured {@link Gson} instance. Any I/O failure is
+     * logged and swallowed so that callers are not forced to handle checked
+     * exceptions.
+     * @param budgets the collection of budgets that should be expand
+     */
+    private void saveToFile(List<Budget> budgets) {
+        Path target = PathsUtil.getBudgetWritablePath();
+        try (Writer writer = Files.newBufferedWriter(target, StandardCharsets.UTF_8)) {
+            GSON.toJson(budgets, writer);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE,"Failed to persist budgets",e);
+        }
+
     }
     /**
      * Checks if a budget exists for the given year.
