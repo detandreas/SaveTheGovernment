@@ -1,4 +1,7 @@
 package budget.model.domain;
+
+import java.util.UUID;
+
 /**
  * Represents a change log entry for a budget item.
  * @param id the unique ID of the change log entry
@@ -16,5 +19,5 @@ public record ChangeLog(
     double newValue,
     String submittedDate,
     String actorUserName,
-    int actorId
+    UUID actorId
 ) { }
