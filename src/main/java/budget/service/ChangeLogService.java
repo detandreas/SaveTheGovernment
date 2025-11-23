@@ -46,4 +46,49 @@ public class ChangeLogService {
         this.changeLogRepository = repository;
         this.authService = auth;
     }
+
+    /**
+     * Records a change for the given budget item.
+     *
+     * @param item     the budget item modified
+     * @param oldValue the previous value
+     * @param newValue the new value
+     *
+     * @throws IllegalArgumentException if item is null
+     * @throws IllegalStateException    if no authenticated user exists
+     */
+    public void recordChange(BudgetItem item,
+            double oldValue, double newValue) {
+
+        if (item == null) {
+            throw new IllegalArgumentException(
+                    "BudgetItem cannot be null");
+        }
+
+        if (authService.getCurrentUser() == null) {
+            throw new IllegalStateException(
+                    "No authenticated user present");
+        }
+
+        String timestamp = LocalDateTime.now().format(FORMATTER);
+
+        String username = authService.getCurrentUser().getUserName();
+        if (username == null) {
+            throw new IllegalStateException(
+                    "Authenticated user has null username");
+        }
+
+        ChangeLog log = new ChangeLog(
+                0,
+                item.getId(),
+                oldValue,
+                newValue,
+                timestamp,
+                username,
+                authService.getCurrentUser().getId()
+        );
+
+        changeLogRepository.save(log);
+    }
+
 }
