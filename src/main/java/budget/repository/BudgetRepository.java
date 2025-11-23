@@ -171,21 +171,28 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
                 LOGGER.warning("Cannot delete a budget because it doesn't exist");
             }
         }
-        
+
     }
     /**
-     * Finds a Budget by its year.
-     * @param year the year of the budget to find; if null, returns an empty Optional
-     * @return an Optional containing the Budget if found, or Optional.empty() if not found
-     */
+    * Retrieves the Budget associated with the specified year.
+    * If a matching entry exists, it is returned wrapped in an Optional;
+    * otherwise, an empty Optional is returned. Null input is safely ignored.
+    *
+    * @param year the year of the budget to search for; ignored when {@code null}
+    * @return an Optional containing the matching Budget, or Optional.empty() if none is found
+    */
     @Override
     public Optional<Budget> findById(final Integer year) {
-        if (year == null) {
-            System.err.println("Cannot find null budget");
-            return Optional.empty();
-        }
-        return load().stream()
+        synchronized (LOCK) {
+            if (year == null) {
+                LOGGER.warning("Cannot find null budget");
+                return Optional.empty();
+            }
+            return load()
+                    .stream()
                     .filter(b -> year.equals(b.getYear()))
                     .findFirst();
+        }
+        
     }
 }
