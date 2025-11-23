@@ -1,20 +1,31 @@
 package budget.repository;
 
+import budget.model.domain.Budget;
+import budget.model.domain.user.User;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import budget.util.PathsUtil;
+
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import budget.model.domain.Budget;
+
 
 
 /**
@@ -26,7 +37,11 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
 
     private static final String  BUDGET_FILE = "src/main/resources/budget.json";
 
-    private final Gson gson = new Gson();
+    private static final Gson GSON =
+                    new GsonBuilder().setPrettyPrinting().create();
+    private static final Logger LOGGER =
+                    Logger.getLogger(BudgetRepository.class.getName());
+    private static final Object LOCK = new Object();
 
 
 
@@ -36,20 +51,36 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
      */
     @Override
      public List<Budget> load() {
-        final File file = new File(BUDGET_FILE);
-        if(!file.exists()) {
-            return new ArrayList<>();
+        synchronized (LOCK) {
+            InputStream input = PathsUtil.getBudgetInputStream();
+            if (input == null) {
+                LOGGER.log(
+                    Level.WARNING,
+                    "Resource {0} was not found returning empty list",
+                    PathsUtil.BUDGET_RESOURCE
+                );
+                return Collections.emptyList();
+            }
+            try (input; InputStreamReader reader =
+                    new InputStreamReader(input, StandardCharsets.UTF_8)) {
+                Type budgetListType = new TypeToken<List<Budget>>() {}.getType();
+                List<Budget> budgets = GSON.fromJson(reader, budgetListType);
+                return budgets != null ? budgets : Collections.emptyList();
+            } catch (IOException io) {
+                LOGGER.log(
+                    Level.SEVERE,
+                    "Error reading " + PathsUtil.BUDGET_RESOURCE,
+                    io
+                );
+                return Collections.emptyList();
+            } catch (RuntimeException e) {
+                LOGGER.log(Level.SEVERE,
+                    "Malformed budget payload",
+                    e
+                );
+                return Collections.emptyList();
+            }
         }
-        
-        try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
-            final Type budgetListType = new TypeToken<List<Budget>>() {}.getType();       // Solves Type erasure problem
-            final List<Budget> loadBudgets = gson.fromJson(reader,budgetListType);
-            return loadBudgets != null ? loadBudgets : new ArrayList<>();
-        } catch (IOException e) {
-            System.err.println("Error loading budgets" + e.getMessage());
-            return new ArrayList<>();
-        }
-        
     }
     /**
      * Saves a Budget entity to the JSON file.
