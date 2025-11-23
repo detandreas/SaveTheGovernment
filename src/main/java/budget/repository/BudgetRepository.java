@@ -109,6 +109,13 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
             saveToFile(budgets);
         }
     }
+    /**
+     * Helper method that finds the index of a Budget in a list by its year.
+     * @param budgets the list of budgets to search through
+     * @param year the year of the budget to locate
+     * @return an OptionalInt containing the index if found, or empty if no
+     *         budget with the specified year exists in the list
+     */
     private OptionalInt findIndexByYear(final List<Budget> budgets, final int year) {
         return IntStream.range(0,budgets.size())
             .filter(i -> budgets.get(i).getYear() == year)
