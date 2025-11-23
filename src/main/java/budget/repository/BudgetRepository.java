@@ -12,14 +12,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+
 import budget.util.PathsUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -88,22 +93,20 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
      * @param entity the Budget object to be saved; must not be null
      */
     @Override
-    public void save(final Budget entity) {
-        if (entity == null) {
-            System.err.println("Cannot save null budget");
-            return;
+    public void save(final Budget budget) {
+        synchronized (LOCK) {
+            if (budget == null) {
+                LOGGER.warning("Cannot save a null budget");
+                return;
+            }
+            List<Budget> budgets = new ArrayList<>(load());
+            
         }
-
-        List<Budget> budgets = load();
-        budgets.removeIf(b -> b.getYear() == entity.getYear());
-        budgets.add(entity);
-
-        try (OutputStreamWriter writer = new OutputStreamWriter(
-                new FileOutputStream(BUDGET_FILE), StandardCharsets.UTF_8)) {
-            gson.toJson(budgets, writer);
-        } catch (IOException e) {
-            System.err.println("Error saving budgets: " + e.getMessage());
-        }
+    }
+    private OptionalInt findIndexByYear(final List<Budget> budgets, final int year) {
+        return IntStream.range(0,budgets.size())
+            .filter(i -> budgets.get(i).getYear() == year)
+            .findFirst();
     }
     /**
      * Checks if a budget exists for the given year.
