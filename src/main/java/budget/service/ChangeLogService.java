@@ -3,6 +3,8 @@ package budget.service;
 import budget.model.domain.BudgetItem;
 import budget.model.domain.ChangeLog;
 import budget.repository.ChangeLogRepository;
+import java.util.UUID;
+import java.util.Objects;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,17 +37,11 @@ public class ChangeLogService {
     public ChangeLogService(ChangeLogRepository repository,
             UserAuthenticationService auth) {
 
-        if (repository == null) {
-            throw new IllegalArgumentException(
-                    "ChangeLogRepository cannot be null");
-        }
-        if (auth == null) {
-            throw new IllegalArgumentException(
-                    "UserAuthenticationService cannot be null");
-        }
-
-        this.changeLogRepository = repository;
-        this.authService = auth;
+        // Defensive null checks
+        this.changeLogRepository =
+            Objects.requireNonNull(repository, "Repository cannot be null");
+        this.authService =
+            Objects.requireNonNull(auth, "AuthService cannot be null");
     }
 
     /**
@@ -127,7 +123,7 @@ public class ChangeLogService {
      * @return list of logs created by the user
      * @throws IllegalArgumentException if userId is null
      */
-    public List<ChangeLog> getLogsByUser(Integer userId) {
+    public List<ChangeLog> getLogsByUser(UUID userId) {
         if (userId == null) {
             throw new IllegalArgumentException(
                     "User ID cannot be null");
