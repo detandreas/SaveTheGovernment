@@ -149,12 +149,15 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
      */
     @Override
     public boolean existsById(final Integer year) {
-        if (year == null) {
-            return false;
+        synchronized(LOCK) {
+            if (year == null) {
+                LOGGER.warning("Cannot search with a null year");
+                return false;
+            }
+            return load()
+                    .stream()
+                    .anyMatch(b -> b.getYear() == year);
         }
-        List<Budget> budgets = load();
-        return budgets.stream()
-                .anyMatch(b -> b.getYear() == year);
     }
     /**
     * Deletes budgets that match the year of the provided Budget entity.
