@@ -61,8 +61,8 @@ public class BudgetRepository
             }
             try (input; InputStreamReader reader =
                     new InputStreamReader(input, StandardCharsets.UTF_8)) {
-                Type budgetListType = new 
-                        TypeToken<List<Budget>>() {}.getType();
+                Type budgetListType = new
+                        TypeToken<List<Budget>>() { }.getType();
                 List<Budget> budgets = GSON.fromJson(reader, budgetListType);
                 return budgets != null ? budgets : Collections.emptyList();
             } catch (IOException io) {
@@ -110,7 +110,8 @@ public class BudgetRepository
      * @return an OptionalInt containing the index if found, or empty if no.
      *         budget with the specified year exists in the list.
      */
-    private OptionalInt findIndexByYear(final List<Budget> budgets, final int year) {
+    private OptionalInt findIndexByYear(final List<Budget> budgets,
+            final int year) {
         return IntStream.range(0,budgets.size())
             .filter(i -> budgets.get(i).getYear() == year)
             .findFirst();
@@ -124,10 +125,11 @@ public class BudgetRepository
      */
     private void saveToFile(List<Budget> budgets) {
         Path target = PathsUtil.getBudgetWritablePath();
-        try (Writer writer = Files.newBufferedWriter(target, StandardCharsets.UTF_8)) {
+        try (Writer writer = Files.
+                newBufferedWriter(target, StandardCharsets.UTF_8)) {
             GSON.toJson(budgets, writer);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE,"Failed to persist budgets", e);
+            LOGGER.log(Level.SEVERE, "Failed to persist budgets", e);
         }
 
     }
@@ -139,7 +141,7 @@ public class BudgetRepository
      */
     @Override
     public boolean existsById(final Integer year) {
-        synchronized(LOCK) {
+        synchronized (LOCK) {
             if (year == null) {
                 LOGGER.warning("Cannot search with a null year");
                 return false;
@@ -157,7 +159,7 @@ public class BudgetRepository
     */
     @Override
     public void delete(final Budget budget) {
-        synchronized(LOCK) {
+        synchronized (LOCK) {
             if (budget == null) {
                 LOGGER.warning("Cannot delete a null budget");
                 return;
@@ -168,7 +170,8 @@ public class BudgetRepository
                 budgets.remove(index.getAsInt());
                 saveToFile(budgets);
             } else {
-                LOGGER.warning("Cannot delete a budget because it doesn't exist");
+                LOGGER.
+                warning("Cannot delete a budget because it doesn't exist");
             }
         }
 
@@ -177,9 +180,9 @@ public class BudgetRepository
     * Retrieves the Budget associated with the specified year.
     * If a matching entry exists, it is returned wrapped in an Optional;
     * otherwise, an empty Optional is returned. Null input is safely ignored.
-    *
     * @param year the year of the budget to search for; ignored when {@code null}.
-    * @return an Optional containing the matching Budget, or Optional.empty() if none is found.
+    * @return an Optional containing the matching Budget,
+    * or Optional.empty() if none is found.
     */
     @Override
     public Optional<Budget> findById(final Integer year) {
@@ -193,6 +196,5 @@ public class BudgetRepository
                     .filter(b -> year.equals(b.getYear()))
                     .findFirst();
         }
-        
     }
 }
