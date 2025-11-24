@@ -108,11 +108,11 @@ public class BudgetRepository
      * @param budgets the list of budgets to search through.
      * @param year the year of the budget to locate.
      * @return an OptionalInt containing the index if found, or empty if no.
-     *         budget with the specified year exists in the list.
+     *budget with the specified year exists in the list.
      */
     private OptionalInt findIndexByYear(final List<Budget> budgets,
             final int year) {
-        return IntStream.range(0,budgets.size())
+        return IntStream.range(0, budgets.size())
             .filter(i -> budgets.get(i).getYear() == year)
             .findFirst();
     }
@@ -180,7 +180,8 @@ public class BudgetRepository
     * Retrieves the Budget associated with the specified year.
     * If a matching entry exists, it is returned wrapped in an Optional;
     * otherwise, an empty Optional is returned. Null input is safely ignored.
-    * @param year the year of the budget to search for; ignored when {@code null}.
+    * @param year the year of the budget to search for;
+    * ignored when {@code null}.
     * @return an Optional containing the matching Budget,
     * or Optional.empty() if none is found.
     */
