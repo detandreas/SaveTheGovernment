@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import java.util.Arrays;
+import java.util.ArrayList;
 /**
  * Repository for managing ChangeLog persistence.
  * Stateless implementation (load-on-demand).
@@ -80,23 +81,13 @@ public class ChangeLogRepository
             return;
         }
         synchronized (LOCK) {
-            List<ChangeLog> logs = load();
+            List<ChangeLog> logs = new ArrayList<>(load());
             OptionalInt index = findIndexById(logs, entity.id());
 
             if (index.isPresent()) {
                 logs.set(index.getAsInt(), entity);
             } else {
-                int newId = generateId(logs);
-                ChangeLog newLog = new ChangeLog(
-                        newId,
-                        entity.budgetItemId(),
-                        entity.oldValue(),
-                        entity.newValue(),
-                        entity.submittedDate(),
-                        entity.actorUserName(),
-                        entity.actorId()
-                );
-                logs.add(newLog);
+                logs.add(entity);
             }
             saveListToFile(logs);
         }
@@ -116,7 +107,8 @@ public class ChangeLogRepository
         final List<ChangeLog> logs,
         final int id
     ) {
-            return IntStream.range(0, logs.size())
+            return IntStream
+                    .range(0, logs.size())
                     .filter(i -> logs.get(i).id() == id)
                     .findFirst();
     }
@@ -168,7 +160,7 @@ public class ChangeLogRepository
             return;
         }
         synchronized (LOCK) {
-            List<ChangeLog> logs = load();
+            List<ChangeLog> logs = new ArrayList<>(load());
             boolean removed = logs.removeIf(log -> log.id() == entity.id());
             if (removed) {
                 saveListToFile(logs);
@@ -193,13 +185,15 @@ public class ChangeLogRepository
 
     /**
      * Generates a new unique ID based on the highest current ID in the list.
-     * @param logs list of existing logs.
      * @return a new unique integer ID
      */
-    private int generateId(List<ChangeLog> logs) {
-        return logs.stream()
-                .mapToInt(ChangeLog::id)
-                .max()
-                .orElse(0) + 1;
+    public int generateId() {
+        synchronized (LOCK) {
+            return load()
+                    .stream()
+                    .mapToInt(ChangeLog::id)
+                    .max()
+                    .orElse(0) + 1;
+        }
     }
 }
