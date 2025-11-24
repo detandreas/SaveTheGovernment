@@ -34,15 +34,11 @@ import budget.util.PathsUtil;
 
 public class BudgetRepository implements GenericInterfaceRepository<Budget, Integer> {
 
-    private static final String  BUDGET_FILE = "src/main/resources/budget.json";
-
     private static final Gson GSON =
                     new GsonBuilder().setPrettyPrinting().create();
     private static final Logger LOGGER =
                     Logger.getLogger(BudgetRepository.class.getName());
     private static final Object LOCK = new Object();
-
-
 
     /**
      * Loads all budgets from the budget.json File
@@ -84,7 +80,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
     /**
      * Saves a Budget entity to the JSON file.
      * Removes any existing budget with the same year to prevent duplicates.
-     * @param entity the Budget object to be saved; must not be null
+     * @param budget the Budget object to be saved; must not be null
      */
     @Override
     public void save(final Budget budget) {
@@ -159,7 +155,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
     public void delete(final Budget budget) {
         synchronized(LOCK) {
             if (budget == null) {
-                LOGGER.warning("Cannot delete null budget");
+                LOGGER.warning("Cannot delete a null budget");
                 return;
             }
             List<Budget> budgets = new ArrayList<>(load());
@@ -185,7 +181,7 @@ public class BudgetRepository implements GenericInterfaceRepository<Budget, Inte
     public Optional<Budget> findById(final Integer year) {
         synchronized (LOCK) {
             if (year == null) {
-                LOGGER.warning("Cannot find null budget");
+                LOGGER.warning("Cannot search for a budget with null year");
                 return Optional.empty();
             }
             return load()
