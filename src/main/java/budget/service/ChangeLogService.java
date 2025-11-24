@@ -1,4 +1,136 @@
 package budget.service;
 
+import budget.model.domain.BudgetItem;
+import budget.model.domain.ChangeLog;
+import budget.repository.ChangeLogRepository;
+import java.util.UUID;
+import java.util.Objects;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+/**
+ * Service responsible for storing and retrieving {@link ChangeLog}
+ * entries. This service is stateless and delegates persistence to
+ * {@link ChangeLogRepository}.
+ */
 public class ChangeLogService {
+    /** Repository for log persistence. */
+    private final ChangeLogRepository changeLogRepository;
+
+    /** Authentication service used to obtain the current user. */
+    private final UserAuthenticationService authService;
+
+    /** Date-time format used for submitted changes. */
+    private static final DateTimeFormatter FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    /**
+     * Constructs a ChangeLogService.
+     *
+     * @param repository repository handling ChangeLog persistence
+     * @param auth       authentication service
+     *
+     * @throws IllegalArgumentException if any argument is null
+     */
+    public ChangeLogService(ChangeLogRepository repository,
+            UserAuthenticationService auth) {
+
+        // Defensive null checks
+        this.changeLogRepository =
+            Objects.requireNonNull(repository, "Repository cannot be null");
+        this.authService =
+            Objects.requireNonNull(auth, "AuthService cannot be null");
+    }
+
+    /**
+     * Records a change for the given budget item.
+     *
+     * @param item     the budget item modified
+     * @param oldValue the previous value
+     * @param newValue the new value
+     *
+     * @throws IllegalArgumentException if item is null
+     * @throws IllegalStateException    if no authenticated user exists
+     */
+    public void recordChange(BudgetItem item,
+            double oldValue, double newValue) {
+
+        if (item == null) {
+            throw new IllegalArgumentException(
+                    "BudgetItem cannot be null");
+        }
+
+        if (authService.getCurrentUser() == null) {
+            throw new IllegalStateException(
+                    "No authenticated user present");
+        }
+
+        String timestamp = LocalDateTime.now().format(FORMATTER);
+
+        String username = authService.getCurrentUser().getUserName();
+        if (username == null) {
+            throw new IllegalStateException(
+                    "Authenticated user has null username");
+        }
+
+        ChangeLog log = new ChangeLog(
+                0,
+                item.getId(),
+                oldValue,
+                newValue,
+                timestamp,
+                username,
+                authService.getCurrentUser().getId()
+        );
+
+        changeLogRepository.save(log);
+    }
+
+    /**
+     * Retrieves all ChangeLog entries.
+     *
+     * @return list of logs
+     */
+    public List<ChangeLog> getAllLogs() {
+        List<ChangeLog> logs = changeLogRepository.load();
+        return logs != null ? logs : List.of();
+    }
+
+    /**
+     * Retrieves logs related to a specific budget item.
+     *
+     * @param itemId ID of the budget item
+     * @return list of logs for the item
+     * @throws IllegalArgumentException if itemId is null
+     */
+    public List<ChangeLog> getLogsForItem(Integer itemId) {
+        if (itemId == null) {
+            throw new IllegalArgumentException(
+                    "Item ID cannot be null");
+        }
+
+        return changeLogRepository.load().stream()
+                .filter(log -> log.budgetItemId() == itemId)
+                .toList();
+    }
+
+    /**
+     * Retrieves logs created by a specific user.
+     *
+     * @param userId ID of the user
+     * @return list of logs created by the user
+     * @throws IllegalArgumentException if userId is null
+     */
+    public List<ChangeLog> getLogsByUser(UUID userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException(
+                    "User ID cannot be null");
+        }
+
+        return changeLogRepository.load().stream()
+                .filter(log -> log.actorId() == userId)
+                .toList();
+    }
 }
