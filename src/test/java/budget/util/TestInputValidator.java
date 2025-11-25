@@ -1,58 +1,55 @@
 package budget.util;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.UUID;
-import budget.model.enums.UserRole;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 
 public class TestInputValidator {    
-    
-    @Test
-    public static boolean isUUID(String s) {
-    if (s == null) {
-        return false;
-    }
-    try {
-        UUID.fromString(s);
-        return true;
-    } catch (IllegalArgumentException e) {
-        return false;
-        }
-    }
-    
 
-    /**
-     * Tests validation rules for usernames.
-     * Valid usernames contain letters, digits or underscores.
-     */
+    @Test 
+    void testIsUUID() {
+        assertFalse(InputValidator.isUUID(null),
+                                        "Failure - UUID can't be null");
+        UUID random = UUID.randomUUID();
+        assertTrue(InputValidator.isUUID(random.toString()),
+                                    "Failure - Valid UUID returned false");
+        assertFalse(InputValidator.isUUID("12983"),
+                                    "Failure - invalid UUID returned true");
+    }
+    
     @Test
     void testIsUserName() {
-        assertTrue(InputValidator.isUserName("User_123"));
-        assertTrue(InputValidator.isUserName("abcXYZ")); // both correct usernames
-
-        assertFalse(InputValidator.isUserName("John Doe")); // space not allowed
-        assertFalse(InputValidator.isUserName("john-doe")); // hyphen not allowed
-        assertFalse(InputValidator.isUserName(null));       // null rejected
+        assertTrue(InputValidator.isUserName("User_123"),
+                                    "Failure - correct userName returned false");
+        assertTrue(InputValidator.isUserName("abcXYZ"),
+                                    "Failure - correct userName returned false");
+        assertFalse(InputValidator.isUserName("John Doe"),
+                                    "Failure - space not allowed");
+        assertFalse(InputValidator.isUserName("john-doe"),
+                                    "Failure - hyphen not allowed");
+        assertFalse(InputValidator.isUserName(null),
+                                    "Failure - null not rejected");
     }
 
-     /**
-     * Tests validation of full names.
-     * Full names must:
-     * - be at least 7 characters long
-     * - contain at least one space
-     * - consist of words starting with uppercase letters
-     */
     @Test
     void testIsFullName() {
-        assertTrue(InputValidator.isFullName("John Doe"));
-        assertTrue(InputValidator.isFullName("Mary Jane Smith"));
-        assertTrue(InputValidator.isFullName("Anna-Maria Johnson")); // all are correct
+        assertTrue(InputValidator.isFullName("John Doe"),
+                                    "Failure - correct FullName returned false");
+        assertTrue(InputValidator.isFullName("Mary Jane Smith"),
+                                    "Failure - correct FullName returned false");
+        assertTrue(InputValidator.isFullName("Anna-Maria Johnson"),
+                                    "Failure - correct FullName returned false");
 
-        assertFalse(InputValidator.isFullName("john doe")); // lowercase start
-        assertFalse(InputValidator.isFullName("John"));      // only one word
-        assertFalse(InputValidator.isFullName("J D"));       // too short
-        assertFalse(InputValidator.isFullName(null));
+        assertFalse(InputValidator.isFullName("john doe"),
+                                    "Failure - lowercase start should return false");
+        assertFalse(InputValidator.isFullName("John"),
+                                    "Failure - only one word should return false");
+        assertFalse(InputValidator.isFullName("J D"),
+                                    "Failure - too shord should return false");
+        assertFalse(InputValidator.isFullName(null),
+                                    "Failure - null should return false");
     }
 
 
@@ -67,16 +64,25 @@ public class TestInputValidator {
      */
     @Test
     void testIsPasswordStrong() {
-        assertTrue(InputValidator.isPasswordStrong("Aa1@aaaa"));
-        assertTrue(InputValidator.isPasswordStrong("Strong1!")); // both are strong passwords
+        assertTrue(InputValidator.isPasswordStrong("Aa1@aaaa"),
+                                    "Failure - valid strong password returned false");
+        assertTrue(InputValidator.isPasswordStrong("Strong1!"),
+                                    "Failure - valid strong password returned false"); // both are strong passwords
 
-        assertFalse(InputValidator.isPasswordStrong("weakpass")); // only lowercase, only letters
-        assertFalse(InputValidator.isPasswordStrong("NOLOWER1!")); // only uppercase, no digits or special chars
-        assertFalse(InputValidator.isPasswordStrong("NOLOWERNODIGIT")); // only uppercase, or special chars
-        assertFalse(InputValidator.isPasswordStrong("noupper1!")); // no uppercase
-        assertFalse(InputValidator.isPasswordStrong("NoDigit!!")); // no digits
-        assertFalse(InputValidator.isPasswordStrong("NoSpec1")); // no special chars
-        assertFalse(InputValidator.isPasswordStrong(null));
+        assertFalse(InputValidator.isPasswordStrong("weakpass"),
+                                    "Failure - only lowercase should return false"); // only lowercase, only letters
+        assertFalse(InputValidator.isPasswordStrong("NOLOWER1!"),
+                                    "Failure - no lowercase should return false"); // only uppercase, no digits or special chars
+        assertFalse(InputValidator.isPasswordStrong("NOLOWERNODIGIT"),
+                                    "Failure - no lowercase, digits or special chars should return false"); // only uppercase, or special chars
+        assertFalse(InputValidator.isPasswordStrong("noupper1!"),
+                                    "Failure - no uppercase should return false"); // no uppercase
+        assertFalse(InputValidator.isPasswordStrong("NoDigit!!"),
+                                    "Failure - no digits should return false"); // no digits
+        assertFalse(InputValidator.isPasswordStrong("NoSpec1"),
+                                    "Failure - no special chars should return false"); // no special chars
+        assertFalse(InputValidator.isPasswordStrong(null),
+                                    "Failure - null should return false");
     }
 
      /**
@@ -84,9 +90,12 @@ public class TestInputValidator {
      */
     @Test
     void testIsNonNull() {
-        assertTrue(InputValidator.isNonNull("Hello"));
-        assertTrue(InputValidator.isNonNull(123));
-        assertFalse(InputValidator.isNonNull(null));
+        assertTrue(InputValidator.isNonNull("Hello"),
+                                    "Failure - non-null string should return true");
+        assertTrue(InputValidator.isNonNull(123),
+                                    "Failure - non-null integer should return true");
+        assertFalse(InputValidator.isNonNull(null),
+                                    "Failure - null should return false");
     }
 
      /**
@@ -95,7 +104,9 @@ public class TestInputValidator {
      */
     @Test
     void testIsValidUserRole() {
-        assertTrue(InputValidator.isValidUserRole(budget.model.enums.UserRole.CITIZEN));
-        assertFalse(InputValidator.isValidUserRole(null));
+        assertTrue(InputValidator.isValidUserRole(budget.model.enums.UserRole.CITIZEN),
+                                    "Failure - valid UserRole should return true");
+        assertFalse(InputValidator.isValidUserRole(null),
+                                    "Failure - null UserRole should return false");
     }
 }
