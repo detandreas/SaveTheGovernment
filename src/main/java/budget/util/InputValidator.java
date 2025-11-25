@@ -25,6 +25,9 @@ public final class InputValidator {
      */
     public static boolean isUUID(String s)
     throws IllegalArgumentException {
+        if (s == null) {
+            return false;
+        }
         try {
             UUID.fromString(s);
             return true;
