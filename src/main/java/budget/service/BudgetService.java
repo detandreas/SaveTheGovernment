@@ -88,9 +88,19 @@ public class BudgetService {
                             user.getFullName(),
                             item.getId()));
             }
-            
-            
         }
-        
+    }
+    /**
+     * Finds a BudgetItem by id across all budgets.
+     * @param id the item id
+     * @return an Optional containing the BudgetItem if found, or empty if not
+     */
+    public Optional<BudgetItem> findItemById(int id) {
+        synchronized (LOCK) {
+            return budgetRepository.load().stream()
+            .flatMap(budget -> budget.getItems().stream())
+            .filter(item -> item.getId() == id)
+            .findFirst();
+        }
     }
 }
