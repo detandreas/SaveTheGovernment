@@ -1,10 +1,13 @@
 package budget.repository;
 
+import budget.model.domain.Budget;
+import budget.model.domain.BudgetItem;
+import budget.model.enums.Ministry;
+import budget.util.PathsUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,13 +19,11 @@ import java.util.OptionalInt;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import budget.model.domain.Budget;
-import budget.util.PathsUtil;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
 
 
@@ -50,8 +51,9 @@ public class BudgetRepository
     @Override
      public List<Budget> load() {
         synchronized (LOCK) {
-            InputStream input = PathsUtil.getBudgetInputStream();
-            if (input == null) {
+            //load budget.json
+            InputStream budgetInput = PathsUtil.getBudgetInputStream();
+            if (budgetInput == null) {
                 LOGGER.log(
                     Level.WARNING,
                     "Resource {0} was not found returning empty list",
@@ -59,12 +61,24 @@ public class BudgetRepository
                 );
                 return Collections.emptyList();
             }
-            try (input; InputStreamReader reader =
-                    new InputStreamReader(input, StandardCharsets.UTF_8)) {
-                Type budgetListType = new
-                        TypeToken<List<Budget>>() { }.getType();
-                List<Budget> budgets = GSON.fromJson(reader, budgetListType);
-                return budgets != null ? budgets : Collections.emptyList();
+            //load bill-ministry-map.json
+            InputStream ministryInput =
+                            PathsUtil.getBillMinistryMapInputStream();
+            if (ministryInput == null) {
+                LOGGER.log(
+                    Level.WARNING,
+                    "Resource {0} was not found returning empty list",
+                    PathsUtil.BILL_MINISTRY_MAP_RESOURCE
+                );
+                return Collections.emptyList();
+            }
+            try (budgetInput; ministryInput;
+                InputStreamReader budgetReader =
+                    new InputStreamReader(budgetInput, StandardCharsets.UTF_8);
+                InputStreamReader ministryReader =
+                    new InputStreamReader(
+                        ministryInput, StandardCharsets.UTF_8)) {
+                return buildBudgetsFromJson(budgetReader, ministryReader);
             } catch (IOException io) {
                 LOGGER.log(
                     Level.SEVERE,
@@ -80,6 +94,181 @@ public class BudgetRepository
                 return Collections.emptyList();
             }
         }
+    }
+    private List<Budget> buildBudgetsFromJson(
+        InputStreamReader budgetReader,
+        InputStreamReader ministryReader
+    ) {
+        JsonObject budgetJson = parseBudgetJson(budgetReader);
+        if (budgetJson == null) {
+            return Collections.emptyList();
+        }
+
+        JsonObject ministryMapJson = parseMinistryMapJson(ministryReader);
+        if (ministryMapJson == null) {
+            return Collections.emptyList();
+        }
+        //παίρνει το json με key byID
+        JsonObject byIdMap = ministryMapJson.getAsJsonObject("byId");
+        //παίρνει το json με key byName
+        JsonObject byNameMap = ministryMapJson.getAsJsonObject("byName");
+
+        List<Budget> budgets = new ArrayList<>();
+        // θυμιθείτε την δομή του budget.json
+        // εχεις ως key τον χρόνο και value είναι ένα αλλο json
+        // που αποτελεί τα στοιχεία του προυπολογισμού ενός έτους
+        for (String yearStr : budgetJson.keySet()) {
+            int year = Integer.parseInt(yearStr);
+            JsonObject yearBudgetData = budgetJson.getAsJsonObject(yearStr);
+            List<BudgetItem> items = buildBudgetItemsForYear(
+                yearBudgetData, year, byIdMap, byNameMap
+            );
+            Budget budget = buildBudgetFromItems(items, year);
+            budgets.add(budget);
+        }
+        return budgets;
+    }
+    private JsonObject parseBudgetJson(InputStreamReader budgetReader) {
+        JsonObject budgetJson = GSON.fromJson(budgetReader, JsonObject.class);
+        return budgetJson;
+    }
+
+    private JsonObject parseMinistryMapJson(InputStreamReader ministryReader) {
+        JsonObject mapJson = GSON.fromJson(ministryReader, JsonObject.class);
+        return mapJson;
+    }
+
+    private List<BudgetItem> buildBudgetItemsForYear(
+        JsonObject yearData,
+        int year,
+        JsonObject byIdMap,
+        JsonObject byNameMap
+    ) {
+        List<BudgetItem> items = new ArrayList<>();
+
+        if (yearData.has("esoda")) {
+            items.addAll(parseRevenueItems(
+                yearData.getAsJsonArray("esoda"),
+                year,
+                byIdMap,
+                byNameMap
+            ));
+        }
+
+        if (yearData.has("eksoda")) {
+            items.addAll(parseExpenseItems(
+                yearData.getAsJsonArray("eksoda"),
+                year,
+                byIdMap,
+                byNameMap
+            ));
+        }
+        return items;
+    }
+
+    private List<BudgetItem> parseRevenueItems(
+        JsonArray revenueData,
+        int year,
+        JsonObject byIdMap,
+        JsonObject byNameMap
+    ) {
+        List<BudgetItem> items = new ArrayList<>();
+        for (JsonElement element : revenueData) {
+            JsonObject item = element.getAsJsonObject();
+            BudgetItem budgetItem = createBudgetItem(
+                item, year, true, byIdMap, byNameMap
+            );
+            items.add(budgetItem);
+        }
+        return items;
+    }
+
+    private List<BudgetItem> parseExpenseItems(
+        JsonArray exepenseData,
+        int year,
+        JsonObject byIdMap,
+        JsonObject byNameMap
+    ) {
+        List<BudgetItem> items = new ArrayList<>();
+        for (JsonElement element : exepenseData) {
+            JsonObject item = element.getAsJsonObject();
+            BudgetItem budegtItem = createBudgetItem(
+                item, year, false, byIdMap, byNameMap
+            );
+            items.add(budegtItem);
+        }
+        return items;
+    }
+
+    private BudgetItem createBudgetItem(
+        JsonObject item,
+        int year,
+        boolean isRevenue,
+        JsonObject byIdMap,
+        JsonObject byNameMap
+    ) {
+        int id = item.get("ID").getAsInt();
+        String name = item.get("BILL").getAsString();
+        double value = item.get("VALUE").getAsDouble();
+        List<Ministry> ministries =
+                            extractMinistries(id, name, byIdMap, byNameMap);
+
+        return new BudgetItem(id, year, name, value, isRevenue, ministries);
+    }
+
+    private List<Ministry> extractMinistries(
+        int id,
+        String name,
+        JsonObject byIdMap,
+        JsonObject byNameMap
+    ) {
+        List<Ministry> ministries = new ArrayList<>();
+        String idStr = String.valueOf(id);
+
+        if (byIdMap != null && byIdMap.has(idStr)) {
+            ministries.addAll(parseMinistriesFromArray(
+                byIdMap.getAsJsonArray(idStr)
+            ));
+        } else if (byNameMap != null && byNameMap.has(name)) {
+            ministries.addAll(parseMinistriesFromArray(
+                byNameMap.getAsJsonArray(name)
+            ));
+        }
+
+        return ministries;
+    }
+
+    private List<Ministry> parseMinistriesFromArray(JsonArray ministryArray) {
+        List<Ministry> ministries = new ArrayList<>();
+        for (JsonElement ministryElement : ministryArray) {
+            String ministryStr = ministryElement.getAsString();
+            try {
+                ministries.add(Ministry.valueOf(ministryStr));
+            } catch (IllegalArgumentException e) {
+                LOGGER.log(
+                    Level.WARNING,
+                    "Unknown ministry: {0}",
+                    ministryStr
+                );
+            }
+        }
+        return ministries;
+    }
+
+    private Budget buildBudgetFromItems(List<BudgetItem> items, int year) {
+        double totalRevenue = items.stream()
+            .filter((budgetItem) -> budgetItem.getIsRevenue())
+            .mapToDouble((budgetItem) -> budgetItem.getValue())
+            .sum();
+
+        double totalExpense = items.stream()
+            .filter(item -> !item.getIsRevenue())
+            .mapToDouble((budgetItem) -> budgetItem.getValue())
+            .sum();
+
+        double netResult = totalRevenue - totalExpense;
+
+        return new Budget(items, year, totalRevenue, totalExpense, netResult);
     }
     /**
      * Saves a Budget entity to the JSON file.
