@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.UUID;
+import budget.model.enums.UserRole;
 
 public class TestInputValidator {    
     
