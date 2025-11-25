@@ -1,5 +1,8 @@
 package budget.repository;
 
+import budget.model.domain.user.User;
+import budget.model.enums.UserRole;
+import budget.util.PathsUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,13 +20,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import budget.model.domain.user.User;
-import budget.model.enums.UserRole;
-import budget.util.PathsUtil;
 
 /**
  * Repository class for managing user data. Handles loading, saving, and
