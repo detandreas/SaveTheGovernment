@@ -39,9 +39,13 @@ public class BudgetService {
         this.changeRequestService = changeRequestService;
     }
     /**
-     * Updates the amount of an existing BudgetItem.
-     * If user has full rights (PrimeMinister) -> update directly.
-     * Otherwise -> create PendingChange.
+     * Updates a budget item's value. 
+     * If the user can edit directly -> update immediately.
+     * Otherwise, create a pending change request.
+     * @param user the user performing the action
+     * @param budget the budget containing the item
+     * @param item the budget item to update
+     * @param newValue the new value
      */
     public void updateItem(User user, Budget budget, BudgetItem item, double newAmount) {
         synchronized (LOCK) {
