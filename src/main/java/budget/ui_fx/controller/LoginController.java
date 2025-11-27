@@ -6,7 +6,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
 import budget.constants.Message;
+import budget.service.UserAuthenticationService;
+import budget.model.domain.user.User;
+import budget.repository.UserRepository;
 import budget.ui_fx.util.SceneLoader;
 
 public class LoginController {
@@ -20,13 +24,40 @@ public class LoginController {
     @FXML private Button loginButton;
     @FXML private Button cancelButton;
 
+    private final UserAuthenticationService authService = new UserAuthenticationService(
+        SceneLoader.getUserRepository()
+    );
+
     @FXML
     public void initialize() {
-        loginLabel.setText(Message.LOGIN_LABEL);
-        usernameLabel.setText(Message.USERNAME_LABEL);
-        passwordLabel.setText(Message.PASSWORD_LABEL);
+        loginLabel.setText(Message.LOGIN_MESSAGE);
+        usernameLabel.setText(Message.USERNAME_PROMPT);
+        passwordLabel.setText(Message.PASSWORD_PROMPT);
         loginButton.setText(Message.LOGIN_BUTTON);
         cancelButton.setText(Message.CANCEL_BUTTON);
+    }
+
+     @FXML
+    private void handleLogin() {
+        String username = usernameField.getText();
+        String password = passwordField.getText();
+
+        boolean isAuthenticated = authService.login(username, password);
+
+        if (isAuthenticated) {
+            errorLabel.setText("");
+            // Αλλαγή σκηνής ανάλογα με τον ρόλο
+            SceneLoader.loadDashboardScreen(); 
+        } else {
+            errorLabel.setText(Message.LOGIN_FAILED);
+        }
+    }
+
+    @FXML
+    private void handleCancel() {
+        usernameField.clear();
+        passwordField.clear();
         errorLabel.setText("");
+        SceneLoader.loadWelcomeScreen();
     }
 }

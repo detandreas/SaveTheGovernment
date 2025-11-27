@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+import budget.repository.UserRepository;
+
 public class SceneLoader {
 
     private Stage stage;
@@ -24,5 +26,11 @@ public class SceneLoader {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static final UserRepository userRepository = new UserRepository();
+
+    public static UserRepository getUserRepository() {
+        return userRepository;
     }
 }
