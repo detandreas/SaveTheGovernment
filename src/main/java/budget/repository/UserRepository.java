@@ -1,6 +1,9 @@
 package budget.repository;
 
 import budget.model.domain.user.User;
+import budget.model.domain.user.Citizen;
+import budget.model.domain.user.GovernmentMember;
+import budget.model.domain.user.PrimeMinister;
 import budget.model.enums.UserRole;
 import budget.util.PathsUtil;
 import java.io.IOException;
@@ -22,6 +25,10 @@ import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
 /**
  * Repository class for managing user data. Handles loading, saving, and
@@ -45,38 +52,83 @@ implements GenericInterfaceRepository<User, UUID> {
     @Override
     public List<User> load() {
         synchronized (LOCK) {
-            InputStream input = PathsUtil.getUsersInputStream();
-            if (input == null) {
-                LOGGER.log(
-                    Level.WARNING,
-                    "Resource {0} was not found returning empty list",
-                    PathsUtil.USERS_RESOURCE
-                );
+            JsonObject jsonObject = loadJsonObject();
+            if (jsonObject == null || jsonObject.isEmpty()) {
+                LOGGER.warning("JsonObject is null or empty");
                 return Collections.emptyList();
             }
-                try (input; InputStreamReader reader =
-                    new InputStreamReader(input, StandardCharsets.UTF_8)) {
-                    User[] users = GSON.fromJson(reader, User[].class);
-                    return users == null ? Collections.emptyList()
-                                        : Arrays.asList(users);
-                } catch (IOException io) {
-                    LOGGER.log(
-                        Level.SEVERE,
-                        "Error reading " + PathsUtil.USERS_RESOURCE,
-                        io
-                    );
-                    return Collections.emptyList();
-                } catch (RuntimeException e) {
-                    LOGGER.log(
-                        Level.SEVERE,
-                        "Malformed users.json",
-                        e
-                    );
-                    return Collections.emptyList();
-                }
+
+            List<Citizen> citizens = loadCitizens(jsonObject);
+            List<GovernmentMember> members = loadGovermentMembers(jsonObject);
+            PrimeMinister pm = loadPrimeMinister(jsonObject);
+
+            List<User> users = new ArrayList<>();
+            users.addAll(citizens);
+            users.addAll(members);
+            users.add(pm);
+
+            return users;
         }
     }
 
+    private List<Citizen> loadCitizens(JsonObject json) {
+        List<Citizen> citizens = new ArrayList<>();
+
+        if (json.has("citizens") && json.get("citizens").isJsonArray()) {
+            JsonArray citizensArray = json.getAsJsonArray("citizens");
+            try {
+                for (JsonElement element : citizensArray) {
+                    Citizen citizen = GSON.fromJson(element, Citizen.class);
+                    if (citizen != null) {
+                        citizens.add(citizen);
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING,
+                    "Failed to deserialize citizen", e);
+            }
+        }
+        return citizens;
+    }
+
+    private List<GovernmentMember> loadGovermentMembers(JsonObject json) {
+        List<GovernmentMember> gms = new ArrayList<>();
+
+        if (json.has("governmentMembers") 
+            && json.get("governmentMembers").isJsonArray()) {
+            JsonArray govMembersArray = json.getAsJsonArray("governmentMembers");
+            try {
+                for (JsonElement element : govMembersArray) {
+                    GovernmentMember govMember = GSON.fromJson(element, GovernmentMember.class);
+                    if (govMember != null) {
+                        gms.add(govMember);
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING,
+                    "Failed to deserialize government member", e);
+            }
+        }
+        return gms;
+    }
+
+    private PrimeMinister loadPrimeMinister(JsonObject json) {
+        PrimeMinister pm;
+        if (json.has("primeMinister") 
+                && json.get("primeMinister").isJsonObject()) {
+            try {
+                JsonElement element = json.getAsJsonObject("primeMinister");
+                pm = GSON.fromJson(element, PrimeMinister.class);
+                if (pm != null) {
+                    return pm;
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING,
+                    "Failed to deserialize prime minister", e);
+            }
+        }
+        return PrimeMinister.getInstance();
+    }
     /**
      * Retrieves the User associated with the supplied identifier.
      *
@@ -271,6 +323,37 @@ implements GenericInterfaceRepository<User, UUID> {
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Failed to persist users", e);
+        }
+    }
+
+    private JsonObject loadJsonObject() {
+        InputStream input = PathsUtil.getUsersInputStream();
+        if (input == null) {
+            LOGGER.log(
+                Level.WARNING,
+                "Resource {0} was not found returning empty Object",
+                PathsUtil.USERS_RESOURCE
+            );
+            return new JsonObject();
+        }
+        try (input; InputStreamReader reader =
+                new InputStreamReader(input, StandardCharsets.UTF_8)) {
+                JsonObject json = GSON.fromJson(reader, JsonObject.class);
+                return json != null ? json : new JsonObject();
+        }catch (IOException io) {
+            LOGGER.log(
+                Level.SEVERE,
+                "Error reading " + PathsUtil.USERS_RESOURCE,
+                io
+            );
+            return new JsonObject();
+        } catch (JsonIOException e) {
+            LOGGER.log(
+                Level.SEVERE,
+                "Malformed users.json",
+                e
+            );
+            return new JsonObject();            
         }
     }
 }
