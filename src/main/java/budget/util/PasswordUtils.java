@@ -2,6 +2,7 @@ package budget.util;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
 public final  class PasswordUtils {
     private PasswordUtils() {
         // Utility class - prevent instantiation
