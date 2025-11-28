@@ -4,6 +4,7 @@ import budget.model.domain.Budget;
 import budget.model.domain.BudgetItem;
 import budget.model.enums.Ministry;
 import budget.util.PathsUtil;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,6 +20,7 @@ import java.util.OptionalInt;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -92,6 +94,16 @@ public class BudgetRepository
             }
         }
     }
+
+    /**
+     * Builds Budget objects from JSON input streams.
+     * Parses both budget.json and bill-ministry-map.json to create
+     * complete Budget objects with BudgetItems and their associated ministries.
+     *
+     * @param budgetReader the input stream reader for budget.json
+     * @param ministryReader the input stream reader for bill-ministry-map.json
+     * @return list of Budget objects, or empty list if parsing fails
+     */
     private List<Budget> buildBudgetsFromJson(
         InputStreamReader budgetReader,
         InputStreamReader ministryReader
@@ -125,16 +137,40 @@ public class BudgetRepository
         }
         return budgets;
     }
+
+    /**
+     * Parses the budget.json file into a JsonObject.
+     *
+     * @param budgetReader the input stream reader for budget.json
+     * @return JsonObject representing the budget data, or null if parsing fails
+     */
     private JsonObject parseBudgetJson(InputStreamReader budgetReader) {
         JsonObject budgetJson = GSON.fromJson(budgetReader, JsonObject.class);
         return budgetJson;
     }
 
+    /**
+     * Parses the bill-ministry-map.json file into a JsonObject.
+     *
+     * @param ministryReader the input stream reader for bill-ministry-map.json
+     * @return JsonObject representing the ministry map, or null if parsing fails
+     */
     private JsonObject parseMinistryMapJson(InputStreamReader ministryReader) {
         JsonObject mapJson = GSON.fromJson(ministryReader, JsonObject.class);
         return mapJson;
     }
 
+    /**
+     * Builds BudgetItem objects for a specific year from JSON data.
+     * Processes both revenue items (esoda) and expense items (eksoda)
+     * and creates BudgetItem objects with their associated ministries.
+     *
+     * @param yearData the JSON object containing year-specific budget data
+     * @param year the budget year
+     * @param byIdMap the ministry mapping by bill ID
+     * @param byNameMap the ministry mapping by bill name
+     * @return list of BudgetItem objects for the year
+     */
     private List<BudgetItem> buildBudgetItemsForYear(
         JsonObject yearData,
         int year,
@@ -163,6 +199,16 @@ public class BudgetRepository
         return items;
     }
 
+    /**
+     * Parses revenue items (esoda) from JSON array.
+     * Converts each JSON element into a BudgetItem with isRevenue set to true.
+     *
+     * @param revenueData the JSON array containing revenue items
+     * @param year the budget year
+     * @param byIdMap the ministry mapping by bill ID
+     * @param byNameMap the ministry mapping by bill name
+     * @return list of BudgetItem objects representing revenue items
+     */
     private List<BudgetItem> parseRevenueItems(
         JsonArray revenueData,
         int year,
@@ -180,6 +226,16 @@ public class BudgetRepository
         return items;
     }
 
+    /**
+     * Parses expense items (eksoda) from JSON array.
+     * Converts each JSON element into a BudgetItem with isRevenue set to false.
+     *
+     * @param exepenseData the JSON array containing expense items
+     * @param year the budget year
+     * @param byIdMap the ministry mapping by bill ID
+     * @param byNameMap the ministry mapping by bill name
+     * @return list of BudgetItem objects representing expense items
+     */
     private List<BudgetItem> parseExpenseItems(
         JsonArray exepenseData,
         int year,
@@ -197,6 +253,18 @@ public class BudgetRepository
         return items;
     }
 
+    /**
+     * Creates a BudgetItem from JSON data.
+     * Extracts ID, name, and value from the JSON object and associates
+     * the appropriate ministries based on the provided mappings.
+     *
+     * @param item the JSON object containing item data
+     * @param year the budget year
+     * @param isRevenue true if this is a revenue item, false if expense
+     * @param byIdMap the ministry mapping by bill ID
+     * @param byNameMap the ministry mapping by bill name
+     * @return a BudgetItem instance
+     */
     private BudgetItem createBudgetItem(
         JsonObject item,
         int year,
@@ -213,6 +281,16 @@ public class BudgetRepository
         return new BudgetItem(id, year, name, value, isRevenue, ministries);
     }
 
+    /**
+     * Extracts the list of ministries for a budget item.
+     * First tries to find ministries by ID, then by name if not found.
+     *
+     * @param id the budget item ID
+     * @param name the budget item name
+     * @param byIdMap the ministry mapping by bill ID
+     * @param byNameMap the ministry mapping by bill name
+     * @return list of Ministry enums associated with the budget item
+     */
     private List<Ministry> extractMinistries(
         int id,
         String name,
@@ -235,6 +313,13 @@ public class BudgetRepository
         return ministries;
     }
 
+    /**
+     * Parses ministry names from JSON array and converts them to Ministry enums.
+     * Invalid ministry names are logged as warnings and skipped.
+     *
+     * @param ministryArray the JSON array containing ministry name strings
+     * @return list of Ministry enums
+     */
     private List<Ministry> parseMinistriesFromArray(JsonArray ministryArray) {
         List<Ministry> ministries = new ArrayList<>();
         for (JsonElement ministryElement : ministryArray) {
@@ -252,6 +337,14 @@ public class BudgetRepository
         return ministries;
     }
 
+    /**
+     * Builds a Budget object from a list of BudgetItems, calculating totals.
+     * Computes total revenue, total expense, and net result (revenue - expense).
+     *
+     * @param items the list of BudgetItem objects
+     * @param year the budget year
+     * @return a Budget object with calculated totals
+     */
     private Budget buildBudgetFromItems(List<BudgetItem> items, int year) {
         double totalRevenue = items.stream()
             .filter((budgetItem) -> budgetItem.getIsRevenue())
@@ -303,52 +396,35 @@ public class BudgetRepository
             .findFirst();
     }
     /**
-     * Serializes the supplied budgets collection to the backing JSON.
-     * file using the configured {@link Gson} instance. Any I/O failure is.
-     * logged and swallowed so that callers are not forced to handle checked.
-     * exceptions.
-     * @param budgets the collection of budgets that should be expand.
-     */
-    private void saveToFile(List<Budget> budgets) {
-        Path target = PathsUtil.getBudgetWritablePath();
-        try (Writer writer = Files.
-                newBufferedWriter(target, StandardCharsets.UTF_8)) {
-            GSON.toJson(budgets, writer);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Failed to persist budgets", e);
-        }
-
-    }
-    /**
      * Checks if a budget exists for the given year.
      * If the provided year is null, the method returns false.
      * @param year the year to check for existence; may be null.
      * @return true if a budget with the specified year exists, false otherwise.
-     */
-    @Override
-    public boolean existsById(final Integer year) {
-        synchronized (LOCK) {
-            if (year == null) {
-                LOGGER.warning("Cannot search with a null year");
-                return false;
+    */
+   @Override
+   public boolean existsById(final Integer year) {
+       synchronized (LOCK) {
+           if (year == null) {
+               LOGGER.warning("Cannot search with a null year");
+               return false;
             }
             return load()
-                    .stream()
-                    .anyMatch(b -> b.getYear() == year);
+            .stream()
+            .anyMatch(b -> b.getYear() == year);
         }
     }
     /**
-    * Deletes budgets that match the year of the provided Budget entity.
-    * When a matching entry is found it is removed and the updated collection.
+     * Deletes budgets that match the year of the provided Budget entity.
+     * When a matching entry is found it is removed and the updated collection.
      * is persisted; otherwise no action is taken.
      * @param budget the budget to remove, ignored when {@code null}.
     */
-    @Override
-    public void delete(final Budget budget) {
-        synchronized (LOCK) {
-            if (budget == null) {
-                LOGGER.warning("Cannot delete a null budget");
-                return;
+   @Override
+   public void delete(final Budget budget) {
+       synchronized (LOCK) {
+           if (budget == null) {
+               LOGGER.warning("Cannot delete a null budget");
+               return;
             }
             List<Budget> budgets = new ArrayList<>(load());
             OptionalInt index = findIndexByYear(budgets, budget.getYear());
@@ -360,28 +436,119 @@ public class BudgetRepository
                 warning("Cannot delete a budget because it doesn't exist");
             }
         }
-
+        
     }
     /**
-    * Retrieves the Budget associated with the specified year.
-    * If a matching entry exists, it is returned wrapped in an Optional;
-    * otherwise, an empty Optional is returned. Null input is safely ignored.
-    * @param year the year of the budget to search for;
-    * ignored when {@code null}.
-    * @return an Optional containing the matching Budget,
-    * or Optional.empty() if none is found.
+     * Retrieves the Budget associated with the specified year.
+     * If a matching entry exists, it is returned wrapped in an Optional;
+     * otherwise, an empty Optional is returned. Null input is safely ignored.
+     * @param year the year of the budget to search for;
+     * ignored when {@code null}.
+     * @return an Optional containing the matching Budget,
+     * or Optional.empty() if none is found.
     */
-    @Override
-    public Optional<Budget> findById(final Integer year) {
-        synchronized (LOCK) {
-            if (year == null) {
-                LOGGER.warning("Cannot search for a budget with null year");
-                return Optional.empty();
+   @Override
+   public Optional<Budget> findById(final Integer year) {
+       synchronized (LOCK) {
+           if (year == null) {
+               LOGGER.warning("Cannot search for a budget with null year");
+               return Optional.empty();
             }
             return load()
-                    .stream()
-                    .filter(b -> year.equals(b.getYear()))
-                    .findFirst();
+            .stream()
+            .filter(b -> year.equals(b.getYear()))
+            .findFirst();
         }
+    }
+    /**
+    * Serializes the supplied budgets collection to the backing JSON file
+    * using the configured {@link Gson} instance.
+    * Converts Budget objects back to the original JSON structure with
+    * years as keys and esoda/eksoda arrays.
+    * Any I/O failure is logged and swallowed so that callers are not
+    * forced to handle checked exceptions.
+    *
+    * @param budgets the collection of budgets that should be persisted
+    */
+    private void saveToFile(List<Budget> budgets) {
+        Path target = PathsUtil.getBudgetWritablePath();
+        try (Writer writer = Files.
+                newBufferedWriter(target, StandardCharsets.UTF_8)) {
+            JsonObject root = buildJsonFromBudgets(budgets);
+            GSON.toJson(root, writer);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Failed to persist budgets", e);
+        }
+    }
+
+    /**
+     * Builds a JsonObject from a list of Budget objects,
+     * converting them back to the original JSON structure.
+     * Creates a root object with years as keys and year-specific data as values.
+     *
+     * @param budgets the list of Budget objects to convert
+     * @return JsonObject with years as keys and esoda/eksoda structure
+     */
+    private JsonObject buildJsonFromBudgets(List<Budget> budgets) {
+        JsonObject root = new JsonObject();
+
+        for (Budget budget : budgets) {
+            String yearStr = String.valueOf(budget.getYear());
+            //χτίζει τον προυπολογισμό της συγκεκριμένης χρονιάς
+            JsonObject yearData = buildYearDataFromBudget(budget);
+            // yearStr ειναι το key και yearData το value
+            root.add(yearStr, yearData);
+        }
+        return root;
+    }
+
+    /**
+     * Builds a JsonObject for a single year from a Budget object.
+     * Separates BudgetItems into esoda (revenue) and eksoda (expense) arrays.
+     *
+     * @param budget the Budget object to convert
+     * @return JsonObject with "esoda" and "eksoda" arrays
+     */
+    private JsonObject buildYearDataFromBudget(Budget budget) {
+        JsonObject yearData = new JsonObject();
+
+        JsonArray esodaArray = new JsonArray();
+        JsonArray eksodaArray = new JsonArray();
+
+        for (BudgetItem item : budget.getItems()) {
+            if (item == null) {
+                continue;
+            }
+
+            JsonObject itemJson = buildItemJson(item);
+
+            if (item.getIsRevenue()) {
+                esodaArray.add(itemJson);
+            } else  {
+                eksodaArray.add(itemJson);
+            }
+        }
+
+        yearData.add("esoda", esodaArray);
+        yearData.add("eksoda", eksodaArray);
+
+        return  yearData;
+    }
+
+    /**
+     * Builds a JsonObject from a BudgetItem, containing only
+     * the fields that exist in the JSON structure (ID, BILL, VALUE).
+     * Ministries and other metadata are not included in the JSON output.
+     *
+     * @param item the BudgetItem to convert
+     * @return JsonObject with ID, BILL, and VALUE fields
+     */
+    private JsonObject buildItemJson(BudgetItem item) {
+        JsonObject itemJson = new JsonObject();
+        itemJson.addProperty("ID", item.getId());
+        itemJson.addProperty("BILL", item.getName());
+        itemJson.addProperty("VALUE", item.getValue());
+        
+        return itemJson;
     }
 }
