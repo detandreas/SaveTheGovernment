@@ -1,3 +1,52 @@
-{
-    "pendingChanges": []
-}
+[
+  {
+    "id": 1,
+    "budgetItemId": 101,
+    "requestByName": "andreas",
+    "requestById": "550e8400-e29b-41d4-a716-446655440000",
+    "oldValue": 1000.0,
+    "newValue": 1500.0,
+    "status": "APPROVED",
+    "submittedDate": "2024-01-15T10:30:00"
+  },
+  {
+    "id": 2,
+    "budgetItemId": 102,
+    "requestByName": "nancy1",
+    "requestById": "550e8400-e29b-41d4-a716-446655440001",
+    "oldValue": 2500.5,
+    "newValue": 3000.0,
+    "status": "APPROVED",
+    "submittedDate": "2024-01-14T14:20:15"
+  },
+  {
+    "id": 3,
+    "budgetItemId": 103,
+    "requestByName": "Nais",
+    "requestById": "c41f50ca-bdf8-4c2f-bc22-95cee5543eda",
+    "oldValue": 500.0,
+    "newValue": 750.25,
+    "status": "REJECTED",
+    "submittedDate": "2024-01-13T09:15:30"
+  },
+  {
+    "id": 4,
+    "budgetItemId": 104,
+    "requestByName": "andreas1",
+    "requestById": "550e8400-e29b-41d4-a716-446655440000",
+    "oldValue": 12000.0,
+    "newValue": 15000.0,
+    "status": "PENDING",
+    "submittedDate": "2024-01-16T16:45:00"
+  },
+  {
+    "id": 5,
+    "budgetItemId": 105,
+    "requestByName": "govuser",
+    "requestById": "550e8400-e29b-41d4-a716-446655440001",
+    "oldValue": 800.75,
+    "newValue": 1000.0,
+    "status": "PENDING",
+    "submittedDate": "2024-01-17T11:00:00"
+  }
+]
