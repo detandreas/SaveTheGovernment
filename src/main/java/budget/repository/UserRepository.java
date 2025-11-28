@@ -64,12 +64,20 @@ implements GenericInterfaceRepository<User, UUID> {
             List<User> users = new ArrayList<>();
             users.addAll(citizens);
             users.addAll(members);
-            users.add(pm);
+            if (pm != null) {
+                users.add(pm);
+            }
 
             return users;
         }
     }
-
+    /**
+    * Loads all Citizen users from the JSON object.
+    *
+    * @param json the JSON object containing user data
+    * @return a list of {@link Citizen} users found in the JSON,
+    *         or empty list if none found or an error occurs
+    */
     private List<Citizen> loadCitizens(JsonObject json) {
         List<Citizen> citizens = new ArrayList<>();
 
@@ -89,7 +97,13 @@ implements GenericInterfaceRepository<User, UUID> {
         }
         return citizens;
     }
-
+    /**
+    * Loads all GovernmentMember users from the JSON object.
+    *
+    * @param json the JSON object containing user data
+    * @return a list of {@link GovernmentMember} users found in the JSON,
+    *         or empty list if none found or an error occurs
+    */
     private List<GovernmentMember> loadGovermentMembers(JsonObject json) {
         List<GovernmentMember> gms = new ArrayList<>();
 
@@ -110,7 +124,14 @@ implements GenericInterfaceRepository<User, UUID> {
         }
         return gms;
     }
-
+    /**
+    * Loads the PrimeMinister user from the JSON object.
+    * Returns null if the Prime Minister is not found in the JSON
+    *
+    * @param json the JSON object containing user data
+    * @return the {@link PrimeMinister} instance if found in JSON,
+    *         or null if not found or an error occurs
+    */
     private PrimeMinister loadPrimeMinister(JsonObject json) {
         PrimeMinister pm;
         if (json.has("primeMinister") 
@@ -222,6 +243,7 @@ implements GenericInterfaceRepository<User, UUID> {
     /**
      * Checks if a User exists in users.json
      * through its id.
+     * @param id the unique identifier of the User to check
      * @return {@code true} if it exists {@code false} otherwise.
      */
     @Override
@@ -319,7 +341,6 @@ implements GenericInterfaceRepository<User, UUID> {
                             target,
                             StandardCharsets.UTF_8)) {
             
-            
             List<Citizen> citizens = new ArrayList<>();
             List<GovernmentMember> governmentMembers = new ArrayList<>();
             PrimeMinister primeMinister = null;
@@ -357,7 +378,14 @@ implements GenericInterfaceRepository<User, UUID> {
             LOGGER.log(Level.SEVERE, "Failed to persist users", e);
         }
     }
-
+    /**
+    * Loads the JSON object from the users.json file.
+    * Handles errors gracefully by returning an empty JsonObject
+    * if the file is not found or malformed.
+    *
+    * @return the loaded {@link JsonObject}, or an empty JsonObject
+    *         if the file is not found or an error occurs
+    */
     private JsonObject loadJsonObject() {
         InputStream input = PathsUtil.getUsersInputStream();
         if (input == null) {
