@@ -417,25 +417,35 @@ public class BudgetRepository
             .anyMatch(b -> b.getYear() == year);
         }
     }
+    /**
+    * Checks if a budget item with the specified name exists in a given year.
+    * Searches through all budgets for the specified year and checks if any
+    * budget item has a matching name (case-sensitive comparison).
+    *
+    * @param itemName the name of the budget item to search for
+    * @param year the year of the budget to search within
+    * @return true if a budget item with the specified name exists
+    *                in the given year, false otherwise or if itemName is null
+    */
     public boolean existsByName(final String itemName, final int year) {
         synchronized (LOCK) {
             if (itemName == null) {
                 LOGGER.warning("Cannot search with a null item name");
                 return false;
             }
-            
+
             List<Budget> budgets = load();
-    
+
             for (Budget budget : budgets) {
                 if (budget.getYear() != year) {
                     continue;
                 }
-    
+
                 List<BudgetItem> items = budget.getItems();
                 boolean found = items.stream()
                         .filter(item -> item != null)
                         .anyMatch(item -> itemName.equals(item.getName()));
-                
+
                 if (found) {
                     return true;
                 }

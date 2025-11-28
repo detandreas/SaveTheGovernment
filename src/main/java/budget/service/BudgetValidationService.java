@@ -26,7 +26,7 @@ public class BudgetValidationService {
     );
     /**
      * Constructs a new BudgetValidationService with the specified repository.
-     * 
+     *
      * @param budgetRepository the repository used for budget item data access
      */
     @SuppressFBWarnings(
@@ -46,7 +46,7 @@ public class BudgetValidationService {
      * Validates all requirements for creating a new budget item.
      * Checks for unique ID, unique name, non-negative amount, valid ministries,
      * and balance change limits.
-     * 
+     *
      * @param newItem the budget item to be created
      * @param budget the current budget to validate against
      * @throws ValidationException if any validation rule is violated
@@ -67,14 +67,14 @@ public class BudgetValidationService {
     }
     /**
      * Validates that the specified budget item ID is unique in the system.
-     * 
+     *
      * @param id the ID to check for uniqueness
      * @throws ValidationException if the ID already exists
      */
     private void validateUniqueId(int id)
     throws ValidationException {
         boolean idExists = budgetRepository.existsById(id);
-        
+
         if (idExists) {
             throw new ValidationException(
                 Message.DUPLICATE_BUDGET_ITEM_ERROR
@@ -83,15 +83,16 @@ public class BudgetValidationService {
     }
     /**
      * Validates that the specified budget item name is unique in the system.
-     * 
+     *
      * @param budgetItemName the name to check for uniqueness
+     * @param year the year of the budgetItem we are searching
      * @throws ValidationException if the name already exists
      */
     private void validateUniqueName(String budgetItemName, int year)
     throws ValidationException {
         boolean nameExists = budgetRepository
                                         .existsByName(budgetItemName, year);
-        
+
         if (nameExists) {
             throw new ValidationException(
                 Message.DUPLICATE_BUDGET_ITEM_ERROR
@@ -100,7 +101,7 @@ public class BudgetValidationService {
     }
     /**
      * Validates that the specified amount is non-negative.
-     * 
+     *
      * @param value the amount to validate
      * @throws ValidationException if the amount is negative
      */
@@ -113,7 +114,7 @@ public class BudgetValidationService {
     /**
      * Validates that the ministry list contains valid Ministry enum values
      * and is not null or empty.
-     * 
+     *
      * @param ministries the list of ministries to validate
      * @throws ValidationException if the ministry list is invalid
      */
@@ -132,7 +133,7 @@ public class BudgetValidationService {
     /**
      * Validates that adding the new budget item does not exceed
      * the allowed balance change limits.
-     * 
+     *
      * @param newItem the budget item to be added
      * @param budget the current budget to check against
      * @throws ValidationException if balance limits are exceeded
@@ -140,12 +141,13 @@ public class BudgetValidationService {
     private void validateBalanceChangeLimit(BudgetItem newItem, Budget budget)
     throws ValidationException {
         double currentNetResult = Math.abs(budget.getNetResult());
-        // Αν το ισοζύγιο ειναι 0 επιτρέπεται οποιαδήποτε αλλαγη 
-        if (currentNetResult <= 0.01) {
+        // Αν το ισοζύγιο ειναι 0 επιτρέπεται οποιαδήποτε αλλαγη
+        if (currentNetResult <= Limits.SMALL_NUMBER) {
             return;
         }
         double newNetResult = calculateNewNetResult(budget, newItem);
-        double changePercent = calculateChangePercent(newNetResult, budget.getNetResult());
+        double changePercent = calculateChangePercent(
+                                        newNetResult, budget.getNetResult());
 
         if (changePercent > Limits.BALANCE_CHANGE_LIMIT_PERCENT) {
             throw new ValidationException(
@@ -153,17 +155,20 @@ public class BudgetValidationService {
                     "Introducing this account will change the "
                     + "budget balance by %.2f%%, "
                     + "which exceeds the allowed limit ±%.2f%%",
-                    changePercent * 100,
-                    Limits.BALANCE_CHANGE_LIMIT_PERCENT * 100
+                    changePercent * Limits.NUMBER_ONE_HUNDRED,
+                    Limits.BALANCE_CHANGE_LIMIT_PERCENT
+                                                * Limits.NUMBER_ONE_HUNDRED
                 )
             );
         }
     }
     /**
-    * Calculates the new net result that would occur after adding the specified budget item.
-    * If the item is revenue, it adds to the current net result; if it's an expense,
+    * Calculates the new net result that would occur
+    *               after adding the specified budget item.
+    * If the item is revenue, it adds to the current net result,
+    *                                                   if it's an expense,
     * it subtracts from the current net result.
-    * 
+    *
     * @param budget the current budget
     * @param newItem the budget item to be added
     * @return the projected net result after adding the new item
@@ -178,8 +183,9 @@ public class BudgetValidationService {
     }
     /**
     * Calculates the percentage change between two values.
-    * Returns the absolute percentage difference from the start value to the final value.
-    * 
+    * Returns the absolute percentage difference
+    *                               from the start value to the final value.
+    *
     * @param finalValue the ending value
     * @param startValue the starting value (must not be zero)
     * @return the absolute percentage change as a decimal (e.g., 0.15 for 15%)
@@ -202,12 +208,13 @@ public class BudgetValidationService {
     * Validates all requirements for deleting a budget item.
     * Checks that the item and budget are not null, that existing budget items
     * can be loaded, and that the item is not protected from deletion.
-    * 
+    *
     * @param itemToDelete the budget item to be deleted
     * @param budget the current budget containing the item
     * @throws ValidationException if any validation rule is violated
     */
-    public void validateBudgetItemDeletion(BudgetItem itemToDelete, Budget budget)
+    public void validateBudgetItemDeletion(
+                            BudgetItem itemToDelete, Budget budget)
     throws ValidationException {
         if (itemToDelete == null) {
             throw new ValidationException("item to delete cannot be null");
@@ -225,11 +232,13 @@ public class BudgetValidationService {
     }
     /**
     * Validates that the specified budget item is not protected from deletion.
-    * Protected items include critical budget categories such as Defense, Education, and Health
+    * Protected items include critical budget categories such as
+    *                                            Defense, Education, and Health
     * that cannot be removed from the budget system.
-    * 
+    *
     * @param item the budget item to check for protection status
-    * @throws ValidationException if the item is protected and cannot be deleted
+    * @throws ValidationException if the item is protected
+    *                                               and cannot be deleted
     */
     private void validateNotProtectedItem(BudgetItem item)
     throws ValidationException {
@@ -239,7 +248,8 @@ public class BudgetValidationService {
                                 .anyMatch(protectedName ->
                                     itemName.equalsIgnoreCase(protectedName));
         if (isProtected) {
-            throw new ValidationException("protected BudgetItem cannot be deleted");
+            throw new ValidationException(
+                "protected BudgetItem cannot be deleted");
         }
     }
 
@@ -249,7 +259,7 @@ public class BudgetValidationService {
     * Validates all requirements for updating an existing budget item.
     * Checks that both the original and updated items are not null,
     * and that the change amount does not exceed the allowed edit limits.
-    * 
+    *
     * @param originalItem the current budget item before modification
     * @param updatedItem the proposed budget item after modification
     * @throws ValidationException if any validation rule is violated
@@ -272,10 +282,11 @@ public class BudgetValidationService {
     * Validates that the change between original and updated budget item values
     * does not exceed the allowed edit change limit percentage.
     * If the original value is zero, any change is permitted.
-    * 
+    *
     * @param original the original budget item with current values
     * @param updated the updated budget item with new values
-    * @throws ValidationException if the percentage change exceeds the allowed limit
+    * @throws ValidationException if the percentage change
+    *                                           exceeds the allowed limit
     */
     private void validateEditChangeLimit(
         BudgetItem original,
@@ -298,8 +309,9 @@ public class BudgetValidationService {
                     "The change in amount (%.2f%%) exceeds "
                     + "the allowed limit ±%.2f%%. "
                     + "Additional approval required.",
-                    changePercent * 100,
-                    Limits.EDIT_CHANGE_LIMIT_PERCENT * 100
+                    changePercent * Limits.NUMBER_ONE_HUNDRED,
+                    Limits.EDIT_CHANGE_LIMIT_PERCENT
+                                                * Limits.NUMBER_ONE_HUNDRED
                 )
             );
         }
@@ -312,7 +324,7 @@ public class BudgetValidationService {
     * Checks that all required fields are present and have valid values,
     * including positive ID, non-empty name, valid year, ministries list,
     * and revenue/expense classification.
-    * 
+    *
     * @param item the budget item to validate for data integrity
     * @throws ValidationException if any data integrity rule is violated
     */
@@ -331,7 +343,7 @@ public class BudgetValidationService {
                 "BudgetItem name can't be null or empty");
         }
 
-        if (item.getYear()  <= 2000) {
+        if (item.getYear()  <= Limits.MIN_BUDGET_YEAR) {
             throw new ValidationException(
                 "BudgetItem year can't be lower than 2000");
         }
