@@ -58,7 +58,7 @@ implements GenericInterfaceRepository<User, UUID> {
             }
 
             List<Citizen> citizens = loadCitizens(jsonObject);
-            List<GovernmentMember> members = loadGovermentMembers(jsonObject);
+            List<GovernmentMember> members = loadGovernmentMembers(jsonObject);
             PrimeMinister pm = loadPrimeMinister(jsonObject);
 
             List<User> users = new ArrayList<>();
@@ -104,15 +104,17 @@ implements GenericInterfaceRepository<User, UUID> {
     * @return a list of {@link GovernmentMember} users found in the JSON,
     *         or empty list if none found or an error occurs
     */
-    private List<GovernmentMember> loadGovermentMembers(JsonObject json) {
+    private List<GovernmentMember> loadGovernmentMembers(JsonObject json) {
         List<GovernmentMember> gms = new ArrayList<>();
 
-        if (json.has("governmentMembers") 
+        if (json.has("governmentMembers")
             && json.get("governmentMembers").isJsonArray()) {
-            JsonArray govMembersArray = json.getAsJsonArray("governmentMembers");
+            JsonArray govMembersArray = json
+                                        .getAsJsonArray("governmentMembers");
             try {
                 for (JsonElement element : govMembersArray) {
-                    GovernmentMember govMember = GSON.fromJson(element, GovernmentMember.class);
+                    GovernmentMember govMember =
+                                GSON.fromJson(element, GovernmentMember.class);
                     if (govMember != null) {
                         gms.add(govMember);
                     }
@@ -134,7 +136,7 @@ implements GenericInterfaceRepository<User, UUID> {
     */
     private PrimeMinister loadPrimeMinister(JsonObject json) {
         PrimeMinister pm;
-        if (json.has("primeMinister") 
+        if (json.has("primeMinister")
                 && json.get("primeMinister").isJsonObject()) {
             try {
                 JsonElement element = json.getAsJsonObject("primeMinister");
@@ -147,7 +149,7 @@ implements GenericInterfaceRepository<User, UUID> {
                     "Failed to deserialize prime minister", e);
             }
         }
-        return PrimeMinister.getInstance();
+        return null;
     }
     /**
      * Retrieves the User associated with the supplied identifier.
@@ -340,40 +342,52 @@ implements GenericInterfaceRepository<User, UUID> {
         try (Writer writer = Files.newBufferedWriter(
                             target,
                             StandardCharsets.UTF_8)) {
-            
+
             List<Citizen> citizens = new ArrayList<>();
             List<GovernmentMember> governmentMembers = new ArrayList<>();
             PrimeMinister primeMinister = null;
-            
+
             for (User user : users) {
-                if (user instanceof Citizen) {
-                    citizens.add((Citizen) user);
-                } else if (user instanceof GovernmentMember) {
-                    governmentMembers.add((GovernmentMember) user);
-                } else if (user instanceof PrimeMinister) {
-                    primeMinister = (PrimeMinister) user;
+                if (user instanceof Citizen c) {
+                    citizens.add(c);
+                } else if (user instanceof GovernmentMember gm) {
+                    governmentMembers.add(gm);
+                } else if (user instanceof PrimeMinister pm) {
+                    primeMinister = pm;
+                } else {
+                    LOGGER.log(
+                        Level.WARNING,
+                        "Unknown user type: {0}",
+                        user.getClass()
+                    );
                 }
             }
-            
+
             JsonObject rootObject = new JsonObject();
-            
+
             if (!citizens.isEmpty()) {
-                JsonArray citizensArray = GSON.toJsonTree(citizens).getAsJsonArray();
+                JsonArray citizensArray = GSON
+                                            .toJsonTree(citizens)
+                                            .getAsJsonArray();
                 rootObject.add("citizens", citizensArray);
             }
-            
+
             if (!governmentMembers.isEmpty()) {
-                JsonArray govMembersArray = GSON.toJsonTree(governmentMembers).getAsJsonArray();
+                JsonArray govMembersArray = GSON
+                                                .toJsonTree(governmentMembers)
+                                                .getAsJsonArray();
                 rootObject.add("governmentMembers", govMembersArray);
             }
-            
+
             if (primeMinister != null) {
-                JsonObject pmObject = GSON.toJsonTree(primeMinister).getAsJsonObject();
+                JsonObject pmObject = GSON
+                                        .toJsonTree(primeMinister)
+                                        .getAsJsonObject();
                 rootObject.add("primeMinister", pmObject);
             }
-            
+
             GSON.toJson(rootObject, writer);
-            
+
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Failed to persist users", e);
         }
@@ -400,7 +414,7 @@ implements GenericInterfaceRepository<User, UUID> {
                 new InputStreamReader(input, StandardCharsets.UTF_8)) {
                 JsonObject json = GSON.fromJson(reader, JsonObject.class);
                 return json != null ? json : new JsonObject();
-        }catch (IOException io) {
+        } catch (IOException io) {
             LOGGER.log(
                 Level.SEVERE,
                 "Error reading " + PathsUtil.USERS_RESOURCE,
@@ -413,7 +427,7 @@ implements GenericInterfaceRepository<User, UUID> {
                 "Malformed users.json",
                 e
             );
-            return new JsonObject();            
+            return new JsonObject();
         }
     }
 }

@@ -1,43 +1,50 @@
 {
-    "citizens": [
-      {
-        "id": "550e8400-e29b-41d4-a716-446655440000",
-        "userName": "andreas1",
-        "fullName": "Andreas Papathanasiou",
-        "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
-        "userRole": "CITIZEN"
-      },
-      {
-        "id": "550e8400-e29b-41d4-a716-446655440001",
-        "userName": "nancy1",
-        "fullName": "Nancy Patata",
-        "password": "9d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
-        "userRole": "CITIZEN"
-      }
-    ],
-    "governmentMembers": [
-      {
-        "id": "550e8400-e29b-41d4-a716-446655440001",
-        "userName": "govuser",
-        "fullName": "Government Member",
-        "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
-        "userRole": "GOVERNMENT_MEMBER",
-        "ministry": "FINANCE"
-      },
-      {
-        "id": "550e8400-e29b-41d4-a716-446655440003",
-        "userName": "govuser2",
-        "fullName": "Government Member",
-        "password": "1d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
-        "userRole": "GOVERNMENT_MEMBER",
-        "ministry": "FINANCE"
-      }
-    ],
-    "primeMinister": {
-      "id": "550e8400-e29b-41d4-a716-446655440002",
-      "userName": "pmuser",
-      "fullName": "Prime Minister",
+  "citizens": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "userName": "andreas1",
+      "fullName": "Andreas Papathanasiou",
       "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
-      "userRole": "PRIME_MINISTER"
+      "userRole": "CITIZEN"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "userName": "nancy1",
+      "fullName": "Nancy Patata",
+      "password": "9d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+      "userRole": "CITIZEN"
+    },
+    {
+      "id": "c41f50ca-bdf8-4c2f-bc22-95cee5543eda",
+      "userName": "Nais",
+      "fullName": "NAIS-AGGELOS",
+      "password": "2006",
+      "userRole": "CITIZEN"
     }
+  ],
+  "governmentMembers": [
+    {
+      "ministry": "FINANCE",
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "userName": "govuser",
+      "fullName": "Government Member",
+      "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+      "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "FINANCE",
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "userName": "govuser2",
+      "fullName": "Government Member",
+      "password": "1d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+      "userRole": "GOVERNMENT_MEMBER"
+    }
+  ],
+  "primeMinister": {
+    "id": "550e8400-e29b-41d4-a716-446655440002",
+    "userName": "pmuser",
+    "fullName": "Prime Minister",
+    "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+    "userRole": "PRIME_MINISTER"
   }
+}
