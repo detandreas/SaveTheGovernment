@@ -417,6 +417,32 @@ public class BudgetRepository
             .anyMatch(b -> b.getYear() == year);
         }
     }
+    public boolean existsByName(final String itemName, final int year) {
+        synchronized (LOCK) {
+            if (itemName == null) {
+                LOGGER.warning("Cannot search with a null item name");
+                return false;
+            }
+            
+            List<Budget> budgets = load();
+    
+            for (Budget budget : budgets) {
+                if (budget.getYear() != year) {
+                    continue;
+                }
+    
+                List<BudgetItem> items = budget.getItems();
+                boolean found = items.stream()
+                        .filter(item -> item != null)
+                        .anyMatch(item -> itemName.equals(item.getName()));
+                
+                if (found) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
     /**
      * Deletes budgets that match the year of the provided Budget entity.
      * When a matching entry is found it is removed and the updated collection.

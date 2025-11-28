@@ -9,6 +9,7 @@ import budget.model.domain.Budget;
 import budget.model.enums.Ministry;
 import java.util.List;
 import java.util.Set;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Service class responsible for validating budget-related operations.
@@ -28,6 +29,11 @@ public class BudgetValidationService {
      * 
      * @param budgetRepository the repository used for budget item data access
      */
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2",
+        justification
+        = "This allows testability and shared state across service instances."
+    )
     public BudgetValidationService(
         BudgetRepository budgetRepository
     ) {
@@ -54,7 +60,7 @@ public class BudgetValidationService {
             throw new ValidationException("Budget cannot be null");
         }
         validateUniqueId(newItem.getId());
-        validateUniqueName(newItem.getName());
+        validateUniqueName(newItem.getName(), newItem.getYear());
         validateNonNegativeAmount(newItem.getValue());
         validateMinistry(newItem.getMinistries());
         validateBalanceChangeLimit(newItem, budget);
@@ -81,9 +87,10 @@ public class BudgetValidationService {
      * @param budgetItemName the name to check for uniqueness
      * @throws ValidationException if the name already exists
      */
-    private void validateUniqueName(String budgetItemName)
+    private void validateUniqueName(String budgetItemName, int year)
     throws ValidationException {
-        boolean nameExists = budgetRepository.existsByName(budgetItemName);
+        boolean nameExists = budgetRepository
+                                        .existsByName(budgetItemName, year);
         
         if (nameExists) {
             throw new ValidationException(
@@ -208,7 +215,7 @@ public class BudgetValidationService {
         if (budget == null) {
             throw new ValidationException("Budget cannot be null");
         }
-        List<BudgetItem> existingBudgetItems = budgetRepository.load();
+        List<BudgetItem> existingBudgetItems = budget.getItems();
         if (existingBudgetItems == null) {
             throw new ValidationException("Cannot delete:"
                                     + "Existing items cannot be null");
