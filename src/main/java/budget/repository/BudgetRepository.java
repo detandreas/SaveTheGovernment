@@ -153,7 +153,8 @@ public class BudgetRepository
      * Parses the bill-ministry-map.json file into a JsonObject.
      *
      * @param ministryReader the input stream reader for bill-ministry-map.json
-     * @return JsonObject representing the ministry map, or null if parsing fails
+     * @return JsonObject representing the ministry map,
+     *                                 or null if parsing fails
      */
     private JsonObject parseMinistryMapJson(InputStreamReader ministryReader) {
         JsonObject mapJson = GSON.fromJson(ministryReader, JsonObject.class);
@@ -314,7 +315,8 @@ public class BudgetRepository
     }
 
     /**
-     * Parses ministry names from JSON array and converts them to Ministry enums.
+     * Parses ministry names from JSON array and converts
+     *                                  them to Ministry enums.
      * Invalid ministry names are logged as warnings and skipped.
      *
      * @param ministryArray the JSON array containing ministry name strings
@@ -339,7 +341,8 @@ public class BudgetRepository
 
     /**
      * Builds a Budget object from a list of BudgetItems, calculating totals.
-     * Computes total revenue, total expense, and net result (revenue - expense).
+     * Computes total revenue, total expense,
+     *                              and net result (revenue - expense).s
      *
      * @param items the list of BudgetItem objects
      * @param year the budget year
@@ -399,7 +402,8 @@ public class BudgetRepository
      * Checks if a budget exists for the given year.
      * If the provided year is null, the method returns false.
      * @param year the year to check for existence; may be null.
-     * @return true if a budget with the specified year exists, false otherwise.
+     * @return true if a budget with the specified year exists,
+     *                                              false otherwise.
     */
    @Override
    public boolean existsById(final Integer year) {
@@ -436,7 +440,6 @@ public class BudgetRepository
                 warning("Cannot delete a budget because it doesn't exist");
             }
         }
-        
     }
     /**
      * Retrieves the Budget associated with the specified year.
@@ -484,7 +487,8 @@ public class BudgetRepository
     /**
      * Builds a JsonObject from a list of Budget objects,
      * converting them back to the original JSON structure.
-     * Creates a root object with years as keys and year-specific data as values.
+     * Creates a root object with years as keys
+     *                                      and year-specific data as values.
      *
      * @param budgets the list of Budget objects to convert
      * @return JsonObject with years as keys and esoda/eksoda structure
@@ -548,7 +552,7 @@ public class BudgetRepository
         itemJson.addProperty("ID", item.getId());
         itemJson.addProperty("BILL", item.getName());
         itemJson.addProperty("VALUE", item.getValue());
-        
+
         return itemJson;
     }
 }
