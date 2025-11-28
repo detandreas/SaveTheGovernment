@@ -6,6 +6,7 @@ import budget.model.domain.user.GovernmentMember;
 import budget.model.domain.user.PrimeMinister;
 import budget.model.enums.UserRole;
 import budget.util.PathsUtil;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,12 +23,14 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Repository class for managing user data. Handles loading, saving, and
@@ -90,7 +93,7 @@ implements GenericInterfaceRepository<User, UUID> {
                         citizens.add(citizen);
                     }
                 }
-            } catch (Exception e) {
+            } catch (JsonSyntaxException e) {
                 LOGGER.log(Level.WARNING,
                     "Failed to deserialize citizen", e);
             }
@@ -119,7 +122,7 @@ implements GenericInterfaceRepository<User, UUID> {
                         gms.add(govMember);
                     }
                 }
-            } catch (Exception e) {
+            } catch (JsonSyntaxException e) {
                 LOGGER.log(Level.WARNING,
                     "Failed to deserialize government member", e);
             }
@@ -144,7 +147,7 @@ implements GenericInterfaceRepository<User, UUID> {
                 if (pm != null) {
                     return pm;
                 }
-            } catch (Exception e) {
+            } catch (JsonSyntaxException e) {
                 LOGGER.log(Level.WARNING,
                     "Failed to deserialize prime minister", e);
             }
@@ -348,6 +351,10 @@ implements GenericInterfaceRepository<User, UUID> {
             PrimeMinister primeMinister = null;
 
             for (User user : users) {
+                if (user == null) {
+                    continue;
+                }
+
                 if (user instanceof Citizen c) {
                     citizens.add(c);
                 } else if (user instanceof GovernmentMember gm) {
