@@ -73,7 +73,7 @@ public class BudgetValidationService {
      */
     private void validateUniqueId(int id)
     throws ValidationException {
-        boolean idExists = budgetRepository.existsById(id);
+        boolean idExists = budgetRepository.existsByItemId(id);
 
         if (idExists) {
             throw new ValidationException(
