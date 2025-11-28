@@ -20,15 +20,15 @@ def process_pdf(file_path: str):
                             df.columns[2]: 'BILL',
                             df.columns[3]: 'VALUE'})
     # Συγκεκριμένες συγχωνεύσεις για το layout του 2025 PDF
-    df = merge_rows(df, 28, 31)
-    df = merge_rows(df, 8, 11)
+    df = merge_rows(df, 28, 30)
+    df = merge_rows(df, 8, 10)
 
     df['ID'] = pd.to_numeric(df['ID'], errors='coerce').fillna(0).astype(int)
     df['VALUE'] = df['VALUE'].astype(str).str.replace('.', '', regex=False)
     df['VALUE'] = pd.to_numeric(df['VALUE'], errors='coerce').fillna(0.0)
 
-    esoda = df.iloc[0:12][['ID', 'BILL', 'VALUE']]
-    eksoda = df.iloc[14:][['ID', 'BILL', 'VALUE']]
+    esoda = df.iloc[0:13][['ID', 'BILL', 'VALUE']]
+    eksoda = df.iloc[15:][['ID', 'BILL', 'VALUE']]
     return esoda, eksoda
 
 def update_budget_json(out_path: str, year: int, esoda: pd.DataFrame, eksoda: pd.DataFrame):
