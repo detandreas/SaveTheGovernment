@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -319,8 +318,41 @@ implements GenericInterfaceRepository<User, UUID> {
         try (Writer writer = Files.newBufferedWriter(
                             target,
                             StandardCharsets.UTF_8)) {
-            GSON.toJson(users, writer);
-
+            
+            
+            List<Citizen> citizens = new ArrayList<>();
+            List<GovernmentMember> governmentMembers = new ArrayList<>();
+            PrimeMinister primeMinister = null;
+            
+            for (User user : users) {
+                if (user instanceof Citizen) {
+                    citizens.add((Citizen) user);
+                } else if (user instanceof GovernmentMember) {
+                    governmentMembers.add((GovernmentMember) user);
+                } else if (user instanceof PrimeMinister) {
+                    primeMinister = (PrimeMinister) user;
+                }
+            }
+            
+            JsonObject rootObject = new JsonObject();
+            
+            if (!citizens.isEmpty()) {
+                JsonArray citizensArray = GSON.toJsonTree(citizens).getAsJsonArray();
+                rootObject.add("citizens", citizensArray);
+            }
+            
+            if (!governmentMembers.isEmpty()) {
+                JsonArray govMembersArray = GSON.toJsonTree(governmentMembers).getAsJsonArray();
+                rootObject.add("governmentMembers", govMembersArray);
+            }
+            
+            if (primeMinister != null) {
+                JsonObject pmObject = GSON.toJsonTree(primeMinister).getAsJsonObject();
+                rootObject.add("primeMinister", pmObject);
+            }
+            
+            GSON.toJson(rootObject, writer);
+            
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Failed to persist users", e);
         }
