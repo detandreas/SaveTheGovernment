@@ -418,6 +418,72 @@ public class BudgetRepository
         }
     }
     /**
+    * Checks if a budget item with the specified name exists in a given year.
+    * Searches through all budgets for the specified year and checks if any
+    * budget item has a matching name (case-sensitive comparison).
+    *
+    * @param itemName the name of the budget item to search for
+    * @param year the year of the budget to search within
+    * @return true if a budget item with the specified name exists
+    *                in the given year, false otherwise or if itemName is null
+    */
+    public boolean existsByName(final String itemName, final int year) {
+        synchronized (LOCK) {
+            if (itemName == null) {
+                LOGGER.warning("Cannot search with a null item name");
+                return false;
+            }
+
+            List<Budget> budgets = load();
+
+            for (Budget budget : budgets) {
+                if (budget.getYear() != year) {
+                    continue;
+                }
+
+                List<BudgetItem> items = budget.getItems();
+                boolean found = items.stream()
+                        .filter(item -> item != null)
+                        .anyMatch(item -> itemName.equals(item.getName()));
+
+                if (found) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    /**
+     * Checks if a budget item with the specified ID exists in any budget.
+     * Searches through all budgets and their items to find a matching ID.
+     *
+     * @param itemId the ID of the budget item to search for
+     * @return true if a budget item with the specified ID exists,
+     *         false otherwise or if itemId is null or <= 0
+     */
+    public boolean existsByItemId(final int itemId) {
+        synchronized (LOCK) {
+            if (itemId <= 0) {
+                LOGGER.warning("Cannot search with a invalid item ID");
+                return false;
+            }
+
+            List<Budget> budgets = load();
+
+            for (Budget budget : budgets) {
+                List<BudgetItem> items = budget.getItems();
+                boolean found = items.stream()
+                        .filter(item -> item != null)
+                        .anyMatch(item -> item.getId() == itemId);
+
+                if (found) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    /**
      * Deletes budgets that match the year of the provided Budget entity.
      * When a matching entry is found it is removed and the updated collection.
      * is persisted; otherwise no action is taken.
