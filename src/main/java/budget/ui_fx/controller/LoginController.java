@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 
 import budget.constants.Message;
 import budget.service.UserAuthenticationService;
-import budget.model.domain.user.User;
 import budget.repository.UserRepository;
 import budget.ui_fx.util.SceneLoader;
 
@@ -23,10 +22,10 @@ public class LoginController {
     @FXML private PasswordField passwordField;
     @FXML private Button loginButton;
     @FXML private Button cancelButton;
+    @FXML private Button backButton;
 
-    private final UserAuthenticationService authService = new UserAuthenticationService(
-        SceneLoader.getUserRepository()
-    );
+    private final UserAuthenticationService authService = 
+        new UserAuthenticationService(new UserRepository());
 
     @FXML
     public void initialize() {
@@ -35,9 +34,11 @@ public class LoginController {
         passwordLabel.setText(Message.PASSWORD_PROMPT);
         loginButton.setText(Message.LOGIN_BUTTON);
         cancelButton.setText(Message.CANCEL_BUTTON);
+        backButton.setText(Message.BACK_BUTTON);
+        errorLabel.setText("");
     }
 
-     @FXML
+    @FXML
     private void handleLogin() {
         String username = usernameField.getText();
         String password = passwordField.getText();
@@ -46,8 +47,9 @@ public class LoginController {
 
         if (isAuthenticated) {
             errorLabel.setText("");
-            // Αλλαγή σκηνής ανάλογα με τον ρόλο
-            SceneLoader.loadDashboardScreen(); 
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            SceneLoader loader = new SceneLoader(stage);
+            loader.load("/view/DashboardView.fxml", "Dashboard"); 
         } else {
             errorLabel.setText(Message.LOGIN_FAILED);
         }
@@ -58,6 +60,17 @@ public class LoginController {
         usernameField.clear();
         passwordField.clear();
         errorLabel.setText("");
-        SceneLoader.loadWelcomeScreen();
+
+        Stage stage = (Stage) cancelButton.getScene().getWindow();
+        SceneLoader loader = new SceneLoader(stage);
+        
+        loader.load("/resources/view/WelcomeView.fxml", "Welcome");
+    }
+
+    @FXML
+    private void handleBack() {
+        Stage stage = (Stage) loginButton.getScene().getWindow();
+        SceneLoader loader = new SceneLoader(stage);
+        loader.load("/view/WelcomeView.fxml", "Welcome");
     }
 }
