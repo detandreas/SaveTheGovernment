@@ -169,7 +169,7 @@ public class BudgetService {
             List<BudgetItem> items = budget.getItems();
             items.add(newItem);
             budget.setItems(items);
-            
+
             recalculateBudgetTotals(budget);
 
             budgetRepository.save(budget);
@@ -182,6 +182,14 @@ public class BudgetService {
             ));
         }
     }
+    /**
+     * Recalculates the financial totals for the specified budget.
+     * Iterates through all budget items to sum up revenues and expenses,
+     * then updates the total revenue, total expense, and net result fields
+     * of the budget object to ensure data consistency.
+     *
+     * @param budget the budget entity whose totals need to be updated
+     */
     private void recalculateBudgetTotals(Budget budget) {
         double totalRevenue = 0;
         double totalExpense = 0;
