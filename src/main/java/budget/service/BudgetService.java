@@ -3,7 +3,6 @@ package budget.service;
 import budget.exceptions.UserNotAuthorizedException;
 import budget.model.domain.Budget;
 import budget.model.domain.BudgetItem;
-import budget.model.domain.PendingChange;
 import budget.model.domain.user.User;
 import budget.model.enums.Ministry;
 import budget.model.domain.user.PrimeMinister;
@@ -12,8 +11,8 @@ import budget.repository.BudgetRepository;
 
 
 import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -118,7 +117,7 @@ public class BudgetService {
     * @param isRevenue true if the item is revenue, false if expense
      * @param ministries list of ministries associated with the item
     */
-    public void creatNewBudgetItem(
+    public void createNewBudgetItem(
         User user,
         Budget budget,
         int id,
@@ -262,5 +261,25 @@ public class BudgetService {
                 .filter(b -> b.getItems().stream().anyMatch(i -> i.getId() == itemId))
                 .findFirst();
        }
+   }
+   /**
+     * Retrieves a list of budget items associated with a specific ministry.
+     * Searches across all loaded budgets and filters items that are linked
+     * to the provided ministry. If the input ministry is null, a warning is
+     * logged and an empty list is returned.
+     * @param ministry the ministry to filter by; if null, an empty list is returned
+     * @return a list of {@link BudgetItem} objects associated with the given ministry
+     */
+   public List<BudgetItem> getItemsByMinistry(Ministry ministry) {
+    synchronized (LOCK) {
+        if (ministry == null) {
+            LOGGER.warning("Ministry cannot be null");
+            return Collections.emptyList();
+        }
+        return budgetRepository.load().stream()
+            .flatMap(budget -> budget.getItems().stream())
+            .filter(item -> item.getMinistries().contains(ministry))
+            .toList();
+    }
    }
 }
