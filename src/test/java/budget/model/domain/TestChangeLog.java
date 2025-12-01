@@ -71,6 +71,6 @@ public class TestChangeLog {
         assertTrue(s.contains("newValue=1000.0"), "Failure - toString missing newValue");
         assertTrue(s.contains("submittedDate=25-11-2025 12:00"), "Failure - toString missing submittedDate");
         assertTrue(s.contains("actorUserName=User"), "Failure - toString missing actorUserName");
-        assertTrue(s.contains("actorId=99"), "Failure - toString missing actorId");
+        assertTrue(s.contains("actorId=" + changeLog.actorId()), "Failure - toString missing actorId");
     }
 }
