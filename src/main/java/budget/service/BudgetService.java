@@ -1,9 +1,11 @@
 package budget.service;
 
+import budget.exceptions.UserNotAuthorizedException;
 import budget.model.domain.Budget;
 import budget.model.domain.BudgetItem;
 import budget.model.domain.PendingChange;
 import budget.model.domain.user.User;
+import budget.model.enums.Ministry;
 import budget.model.domain.user.PrimeMinister;
 import budget.model.domain.user.GovernmentMember;
 import budget.repository.BudgetRepository;
@@ -101,6 +103,79 @@ public class BudgetService {
             .flatMap(budget -> budget.getItems().stream())
             .filter(item -> item.getId() == id)
             .findFirst();
+        }
+    }
+    /**
+    * Creates a new budget item and adds it to the given budget.
+    * Only government members of the Finance Ministry can create new items.
+    * @param user the user performing the creation
+    * @param budget the budget to which the item will be added
+    * @param id unique identifier for the new budget item
+    * @param name name of the new budget item
+    * @param value monetary value of the new budget item
+    * @param isRevenue true if the item is revenue, false if expense
+     * @param ministries list of ministries associated with the item
+    */
+    public void creatNewBudgetItem(
+        User user,
+        Budget budget,
+        int id,
+        String name,
+        double value,
+        boolean isRevenue,
+        List<Ministry> ministries
+    ) {
+        synchronized (LOCK) {
+            if (user == null) {
+                throw new IllegalArgumentException("User cannot be null");
+            }
+            if (budget == null) {
+                throw new IllegalArgumentException("Budget cannot be null");
+            }
+            if (ministries == null || ministries.isEmpty()) {
+                throw new IllegalArgumentException("Ministries list cannot be empty");
+            }
+            if (value < 0) {
+                throw new IllegalArgumentException("Value cannot be negative");
+            }
+            
+            if (!(user instanceof GovernmentMember gm)) {
+                throw new UserNotAuthorizedException(
+                "Only government members can edit budget items."
+                );
+            }
+            if (gm.getMinistry() != Ministry.FINANCE) {
+                throw new UserNotAuthorizedException(
+                "Only members of the Finance Ministry "
+                + "can directly edit this budget item."
+                );
+            }
+            if (budgetRepository.existsById(id)) {
+                throw new IllegalArgumentException(
+                    "A BudgetItem with id " + id + " already exists."
+                );
+            }
+
+            BudgetItem newItem = new BudgetItem(
+                id,
+                budget.getYear(),
+                name,
+                value,
+                isRevenue,
+                ministries);
+            
+            List<BudgetItem> items = budget.getItems();
+            items.add(newItem);
+            budget.setItems(items);
+
+            budgetRepository.save(budget);
+
+            changeLogService.recordChange(newItem, 0.0, value);
+
+            LOGGER.info(String.format(
+                "Created new BudgetItem (id=%d, name=%s) in budget %d by %s",
+                id, name, budget.getYear(), user.getFullName()
+            ));
         }
     }
 }
