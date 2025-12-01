@@ -205,4 +205,13 @@ public class BudgetService {
         budget.setTotalExpense(totalExpense);
         budget.setNetResult(totalRevenue - totalExpense);
     }
+    /**
+     * Retrieves all budget entities from the repository.
+     * @return a list containing all Budget objects available in the system
+     */
+    public List<Budget> getAllBudgets() {
+        synchronized (LOCK) {
+            return budgetRepository.load();
+        }
+    }
 }
