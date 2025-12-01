@@ -214,4 +214,19 @@ public class BudgetService {
             return budgetRepository.load();
         }
     }
+    /**
+     * Retrieves the Budget entity that contains the specified item ID.
+     * Searches across all loaded budgets to identify which one holds
+     * the item with the provided unique identifier.
+     * @param itemId the unique identifier of the budget item to search for
+     * @return an Optional containing the Budget that holds the item,
+     * or empty if the item is not found in any budget
+     */
+    public Optional<Budget> findBudgetByItemId(int itemId) {
+        synchronized (LOCK) {
+           return budgetRepository.load().stream()
+                .filter(b -> b.getItems().stream().anyMatch(i -> i.getId() == itemId))
+                .findFirst();
+       }
+   }
 }
