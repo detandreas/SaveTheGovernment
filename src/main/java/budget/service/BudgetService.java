@@ -74,21 +74,7 @@ public class BudgetService {
             
             if(authorizationService.canUserEditBudgetItem(user, item)) {
                 item.setValue(newAmount);
-                
-                // Recalculate the totals for the budget
-                double totalRevenue = 0;
-                double totalExpense = 0;
-                for (BudgetItem i : budget.getItems()) {
-                    if (i.getIsRevenue()) {
-                        totalRevenue += i.getValue();
-                    } else {
-                        totalExpense += i.getValue();
-                    }
-                }
-                budget.setTotalRevenue(totalRevenue);
-                budget.setTotalExpense(totalExpense);
-                budget.setNetResult(totalRevenue - totalExpense);
-
+                recalculateBudgetTotals(budget);
                 budgetRepository.save(budget);
                 changeLogService.recordChange(item, oldValue, newAmount);
                 LOGGER.info(String.format("Item %d updated directly by %s", 
@@ -166,7 +152,7 @@ public class BudgetService {
                 + "can directly edit this budget item."
                 );
             }
-            if (budgetRepository.existsById(id)) {
+            if (budgetRepository.existsByItemId(id)) {
                 throw new IllegalArgumentException(
                     "A BudgetItem with id " + id + " already exists."
                 );
@@ -193,5 +179,20 @@ public class BudgetService {
                 id, name, budget.getYear(), user.getFullName()
             ));
         }
+    }
+    private void recalculateBudgetTotals(Budget budget) {
+        double totalRevenue = 0;
+        double totalExpense = 0;
+
+        for (BudgetItem i : budget.getItems()) {
+            if (i.getIsRevenue()) {
+                totalRevenue += i.getValue();
+            } else {
+                totalExpense += i.getValue();
+            }
+        }
+        budget.setTotalRevenue(totalRevenue);
+        budget.setTotalExpense(totalExpense);
+        budget.setNetResult(totalRevenue - totalExpense);
     }
 }
