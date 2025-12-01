@@ -169,6 +169,8 @@ public class BudgetService {
             List<BudgetItem> items = budget.getItems();
             items.add(newItem);
             budget.setItems(items);
+            
+            recalculateBudgetTotals(budget);
 
             budgetRepository.save(budget);
 
