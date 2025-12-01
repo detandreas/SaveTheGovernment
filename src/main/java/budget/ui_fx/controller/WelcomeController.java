@@ -19,14 +19,26 @@ public class WelcomeController {
     }
     
     @FXML
-    private void goToLoginView() {
-        SceneLoader loader = new SceneLoader((Stage) loginButton.getScene().getWindow());
-        loader.load("/fxml/loginView.fxml", "Login");
+    private void handleLogin() {
+        try {
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            SceneLoader loader = new SceneLoader(stage);
+            loader.load("/view/LoginView.fxml", "Login");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error loading Login View");
+        }
     }
 
     @FXML
-    private void goToAccountCreationView() {
-        SceneLoader loader = new SceneLoader((Stage) createAccountButton.getScene().getWindow());
-        loader.load("/fxml/AccountCreationView.fxml", "Create Account");
+private void handleAccountCreation() {
+    try {
+        Stage stage = (Stage) createAccountButton.getScene().getWindow();
+        SceneLoader loader = new SceneLoader(stage);
+        loader.load("/view/AccountCreationView.fxml", "Create New Account");
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Δεν βρέθηκε το αρχείο AccountCreationView.fxml");
     }
+}
 }

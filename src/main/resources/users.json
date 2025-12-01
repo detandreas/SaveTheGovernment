@@ -1,3 +1,9 @@
-{
-    "users": []
-}
+[
+  {
+    "id": "cbbbabcd-1bfd-4bdc-ac7e-4941f760c6d7",
+    "userName": "ATHANASIA",
+    "fullName": "PATATOUKAKI ATHANASIA",
+    "password": "c92ddb69d0b191437ec53fc345adddd19e97f78b09034641546970c5750736aa",
+    "userRole": "CITIZEN"
+  }
+]

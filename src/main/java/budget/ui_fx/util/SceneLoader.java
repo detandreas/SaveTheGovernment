@@ -6,8 +6,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 
-import budget.repository.UserRepository;
-
 public class SceneLoader {
 
     private Stage stage;
@@ -20,17 +18,20 @@ public class SceneLoader {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            
+            // Προαιρετικό: Φόρτωση CSS αν έχεις
+            // scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
+            stage.setScene(scene);
             stage.setTitle(title);
             stage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Σφάλμα: Δεν βρέθηκε το αρχείο " + fxmlPath);
+            System.out.println("Ελεγξε αν ο φάκελος λέγεται 'view' ή 'fxml' στα resources!");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
-
-    private static final UserRepository userRepository = new UserRepository();
-
-    public static UserRepository getUserRepository() {
-        return userRepository;
     }
 }

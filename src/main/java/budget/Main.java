@@ -1,23 +1,22 @@
 package budget;
 
-import java.util.Scanner;
-import java.nio.charset.StandardCharsets;
+import javafx.application.Application;
+import javafx.stage.Stage;
+import budget.ui_fx.util.SceneLoader;
 
-/**
- * Entry point της εφαρμογής CLI.
- */
-public final class Main {
+public class Main extends Application {
 
-    private Main() { }
-    /**
-     * Main method της εφαρμογής CLI.
-     * @param args ορίσματα γραμμής εντολών
-     */
-    public static void main(final String[] args) {
-        Scanner input = new Scanner(System.in, StandardCharsets.UTF_8);
-        System.out.print("Enter your username: ");
-        String name = input.nextLine();
-        System.out.println("Hello, " + name + "!");
-        input.close();
+    @Override
+    public void start(Stage primaryStage) {
+        try {
+            SceneLoader loader = new SceneLoader(primaryStage);
+            loader.load("/view/WelcomeView.fxml", "Budget App - Welcome");
+        } catch (Exception e) {
+            System.err.println("Κρίσιμο σφάλμα κατά την εκκίνηση της εφαρμογής!");
+            e.printStackTrace();
+        }
+    }
+    public static void main(String[] args) {
+        launch(args);
     }
 }
