@@ -29,6 +29,13 @@ public class BudgetService {
     private final ChangeLogService changeLogService;
     private final ChangeRequestService changeRequestService;
 
+    /**
+     * Constructs a new BudgetService with the necessary dependencies.
+     * @param budgetRepository the repository for budget data operations
+     * @param authorizationService the service used to check user permissions
+     * @param changeLogService the service used to track history of changes
+     * @param changeRequestService the service used to handle pending requests
+     */
     public BudgetService(BudgetRepository budgetRepository,
                         UserAuthorizationService authorizationService,
                         ChangeLogService changeLogService,
