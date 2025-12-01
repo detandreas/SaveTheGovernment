@@ -11,7 +11,6 @@ import budget.model.domain.user.GovernmentMember;
 import budget.repository.BudgetRepository;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -51,11 +50,21 @@ public class BudgetService {
      */
     public void updateItem(User user, Budget budget, BudgetItem item, double newAmount) {
         synchronized (LOCK) {
-            if (budget == null || item == null) {
-                throw new IllegalArgumentException("Budget or BudgetItem cannot be null");
+            if (user == null || budget == null || item == null) {
+                throw new IllegalArgumentException("User, Budget or BudgetItem cannot be null");
+            }
+            if (newAmount < 0) {
+                throw new IllegalArgumentException("Value cannot be negative");
             }
 
             double oldValue = item.getValue();
+            if (newAmount == oldValue) {
+                LOGGER.
+                    info(String.
+                        format("No change in value for BudgetItem id = %d",
+                        item.getId()));
+                return;
+            }
 
             if (user instanceof PrimeMinister) {
                 LOGGER.
@@ -64,19 +73,26 @@ public class BudgetService {
             }
             
             if(authorizationService.canUserEditBudgetItem(user, item)) {
-                if (newAmount < 0) {
-                    throw new IllegalArgumentException("Value cannot be negative");
-                }
-                if (newAmount == oldValue) {
-                    LOGGER.
-                        info(String.
-                            format("No change in value for BudgetItem id = %d",
-                            item.getId()));
-                    return;
-                }
                 item.setValue(newAmount);
+                
+                // Recalculate the totals for the budget
+                double totalRevenue = 0;
+                double totalExpense = 0;
+                for (BudgetItem i : budget.getItems()) {
+                    if (i.getIsRevenue()) {
+                        totalRevenue += i.getValue();
+                    } else {
+                        totalExpense += i.getValue();
+                    }
+                }
+                budget.setTotalRevenue(totalRevenue);
+                budget.setTotalExpense(totalExpense);
+                budget.setNetResult(totalRevenue - totalExpense);
+
                 budgetRepository.save(budget);
                 changeLogService.recordChange(item, oldValue, newAmount);
+                LOGGER.info(String.format("Item %d updated directly by %s", 
+                    item.getId(), user.getFullName()));
             } else if (authorizationService.canUserSubmitRequest(user, item)) {
                 changeRequestService.submitChangeRequest(user, item, newAmount);
                 LOGGER.
@@ -84,11 +100,11 @@ public class BudgetService {
                             format("Pending change request created for item id = %d",
                             item.getId()));
             } else {
-                LOGGER.
-                    warning(String.
-                            format("%s is not authorized to edit or submit change request for item id = %d",
-                            user.getFullName(),
-                            item.getId()));
+                throw new UserNotAuthorizedException(
+                    String.
+                    format("%s is not authorized to edit or submit change request for item id = %d",
+                    user.getFullName(),
+                    item.getId()));
             }
         }
     }
