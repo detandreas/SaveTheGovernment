@@ -148,8 +148,8 @@ public class BudgetService {
             }
             if (gm.getMinistry() != Ministry.FINANCE) {
                 throw new UserNotAuthorizedException(
-                "Only members of the Finance Ministry "
-                + "can directly edit this budget item."
+                "Only members of the Finance Ministry"
+                + " can directly edit this budget item."
                 );
             }
             if (budgetRepository.existsByItemId(id)) {
@@ -182,6 +182,40 @@ public class BudgetService {
             ));
         }
     }
+    /**
+     * Deletes a budget item based on the provided ID.
+     * Only government members of the Finance Ministry can delete items.
+     * @param user the user performing the deletion
+     * @param id unique identifier of the budget item to be deleted
+     * @throws IllegalArgumentException if the user is null or the item is not found
+     * @throws UserNotAuthorizedException if the user is not authorized to delete items
+     */
+    public void deleteBudgetItem(User user, int id) {
+        synchronized (LOCK) {
+            if (user == null) {
+                throw new IllegalArgumentException("User cannot be null");
+            }
+            if (!(user instanceof GovernmentMember gm)
+                || gm.getMinistry() != Ministry.FINANCE) {
+                throw new
+                    UserNotAuthorizedException("Only Finance Ministry can delete items.");
+            }
+            Optional<Budget> budgetOptional = findBudgetByItemId(id);
+            if (budgetOptional.isEmpty()) {
+                throw new 
+                    IllegalArgumentException("Item with ID " + id + " not found.");
+            }
+            Budget budget = budgetOptional.get();
+            boolean remove = budget.getItems().removeIf(item -> item.getId() == id);
+            if (remove) {
+                recalculateBudgetTotals(budget);
+                budgetRepository.save(budget);
+                LOGGER.info(String.format("Item %d deleted by %s",
+                    id, user.getFullName()));
+            }
+        }
+    }
+
     /**
      * Recalculates the financial totals for the specified budget.
      * Iterates through all budget items to sum up revenues and expenses,
