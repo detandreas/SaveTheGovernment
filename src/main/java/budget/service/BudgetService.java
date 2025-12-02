@@ -82,7 +82,8 @@ public class BudgetService {
             }
 
             if (user instanceof PrimeMinister) {
-                throw new UserNotAuthorizedException("Prime Minister cannot edit items directly.");
+                throw new UserNotAuthorizedException("Prime Minister "
+                                                    + "cannot edit items directly.");
             }
             if (authorizationService.canUserEditBudgetItem(user, item)) {
                 item.setValue(newAmount);
