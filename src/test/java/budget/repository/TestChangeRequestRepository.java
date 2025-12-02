@@ -53,8 +53,11 @@ public class TestChangeRequestRepository {
         double oldValue,
         double newValue
     ) {
+        
         return new PendingChange(
             budgetItemId,
+            2024,
+            "Test Budget Item",
             requestByName,
             UUID.randomUUID(),
             oldValue,
@@ -117,6 +120,10 @@ public class TestChangeRequestRepository {
                  "Failure - IDs should match");
         assertEquals(change.getBudgetItemId(), readChange.getBudgetItemId(),
                      "Failure - budgetItemId should match");
+        assertEquals(change.getBudgetItemYear(), readChange.getBudgetItemYear(),
+                     "Failure - budgetItemYear should match");
+        assertEquals(change.getBudgetItemName(), readChange.getBudgetItemName(),
+                     "Failure - budgetItemName should match");
         assertEquals(change.getRequestByName(), readChange.getRequestByName(),
                      "Failure - requestByName should match");
         assertEquals(change.getRequestById(), readChange.getRequestById(),

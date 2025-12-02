@@ -19,6 +19,8 @@ public class PendingChange {
 
     private final int id;
     private final int budgetItemId;
+    private final String budgetItemName;
+    private final int budgetItemYear;
     private final String requestByName;
     private final UUID requestById;
     private final double oldValue;
@@ -31,6 +33,9 @@ public class PendingChange {
      * PENDING status.
      *
      * @param budgetItemId the ID of the budget item to be modified
+     * @param budgetItemYear the year of the Budget that
+     *                                      the budgetItem belongs to
+     * @param budgetItemName the name of the budget item to be modified.
      * @param requestByName the user name requesting the change
      * @param requestById the user id requesting the change
      * @param oldValue the current value of the budget item
@@ -38,13 +43,17 @@ public class PendingChange {
      */
     public PendingChange(
         int budgetItemId,
+        int budgetItemYear,
+        String budgetItemName,
         String requestByName,
         UUID requestById,
         double oldValue,
         double newValue
     ) {
         this.id = NEXT_ID.getAndIncrement();
+        this.budgetItemName = budgetItemName;
         this.budgetItemId = budgetItemId;
+        this.budgetItemYear = budgetItemYear;
         this.requestByName = requestByName;
         this.requestById = requestById;
         this.oldValue = oldValue;
@@ -59,6 +68,22 @@ public class PendingChange {
      */
     public int getId() {
         return id;
+    }
+    /**
+     * Returns the year of the budget item that this change affects.
+     *
+     * @return an int representing the year of the budget item to be modified
+     */
+    public int getBudgetItemYear() {
+        return budgetItemYear;
+    }
+    /**
+     * Returns the name of the budget item that this change affects.
+     *
+     * @return a String representing the name of the budget item to be modified
+     */
+    public String getBudgetItemName() {
+        return budgetItemName;
     }
     /**
      * Returns the ID of the budget item that this change affects.
@@ -139,10 +164,11 @@ public class PendingChange {
     public String toString() {
         return String.format(
             Locale.US,
-            "PendingChange{id=%d, budgetItemId=%d, requestByName=%s, "
+            "PendingChange{id=%d, budgetItemId=%d, budgetItemYear=%d, "
+            + "budgetItemName=%s, requestByName=%s, requestById=%s, "
             + "oldValue=%.2f, newValue=%.2f, status=%s, submittedDate=%s}",
-            id, budgetItemId, requestByName, oldValue, newValue,
-            status, submittedDate
+            id, budgetItemId, budgetItemYear, budgetItemName, requestByName,
+            requestById, oldValue, newValue, status, submittedDate
         );
     }
 }
