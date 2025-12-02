@@ -157,7 +157,7 @@ public class BudgetService {
                 + " can directly edit this budget item."
                 );
             }
-            if (budgetRepository.existsByItemId(id)) {
+            if (budgetRepository.existsByItemId(id), budget.getYear()) {
                 throw new IllegalArgumentException(
                     "A BudgetItem with id " + id + " already exists."
                 );
