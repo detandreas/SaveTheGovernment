@@ -294,7 +294,7 @@ public class BudgetRepository
      * @param byNameMap the ministry mapping by bill name
      * @return list of Ministry enums associated with the budget item
      */
-    public List<Ministry> extractMinistries(
+    private List<Ministry> extractMinistries(
         int id,
         String name,
         JsonObject byIdMap,

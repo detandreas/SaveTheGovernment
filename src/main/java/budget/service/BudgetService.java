@@ -1,4 +1,4 @@
 package budget.service;
 
-public class BudgetService {
+public class BudgetService {    
 }
