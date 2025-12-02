@@ -524,8 +524,10 @@ public class BudgetRepository
    @Override
    public Optional<Budget> findById(final Integer year) {
        synchronized (LOCK) {
-           if (year < Limits.MIN_BUDGET_YEAR) {
-               LOGGER.warning("Cannot search for a budget with null year");
+           if (year == null || year < Limits.MIN_BUDGET_YEAR) {
+               LOGGER
+               .warning("Cannot search for a budget with null year"
+               + "or earlier than 2000");
                return Optional.empty();
             }
             return load()
