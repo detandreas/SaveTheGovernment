@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.logging.Level;
@@ -59,7 +60,7 @@ public class ChangeLogRepository
             try (in; InputStreamReader reader =
                 new InputStreamReader(in, StandardCharsets.UTF_8)) {
                 ChangeLog[] logs = GSON.fromJson(reader, ChangeLog[].class);
-                return logs != null ? Arrays.asList(logs)
+                return logs != null ? new ArrayList<>(Arrays.asList(logs))
                                     : Collections.emptyList();
             } catch (IOException | RuntimeException e) {
                 LOGGER.log(Level.SEVERE, "Failed to load ChangeLog data", e);
@@ -147,7 +148,46 @@ public class ChangeLogRepository
                     .findFirst();
         }
     }
+    /**
+     * Retrieves logs related to a specific budget item.
+     *
+     * @param itemId ID of the budget item
+     * @return list of logs for the item
+     * @throws IllegalArgumentException if itemId is null
+     */
+    public List<ChangeLog> getLogsForItem(Integer itemId) {
+        synchronized (LOCK) {
+            if (itemId == null) {
+                throw new IllegalArgumentException(
+                        "Item ID cannot be null");
+            }
 
+            return  load()
+                    .stream()
+                    .filter(log -> log.budgetItemId() == itemId)
+                    .toList();
+        }
+    }
+    /**
+     * Retrieves logs created by a specific user.
+     *
+     * @param userId ID of the user
+     * @return list of logs created by the user
+     * @throws IllegalArgumentException if userId is null
+     */
+    public List<ChangeLog> getLogsByUser(UUID userId) {
+        synchronized (LOCK) {
+            if (userId == null) {
+                throw new IllegalArgumentException(
+                        "User ID cannot be null");
+            }
+
+            return  load()
+                    .stream()
+                    .filter(log -> log.actorId() == userId)
+                    .toList();
+        }
+    }
     /**
      * Deletes a ChangeLog record.
      *
