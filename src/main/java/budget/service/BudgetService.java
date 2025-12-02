@@ -82,11 +82,9 @@ public class BudgetService {
                 item.setValue(newAmount);
                 recalculateBudgetTotals(budget);
                 budgetRepository.save(budget);
-                changeLogService.recordChange(item, oldValue, newAmount);
                 LOGGER.info(String.format("Item %d updated directly by %s",
                     item.getId(), user.getFullName()));
             } else if (authorizationService.canUserSubmitRequest(user, item)) {
-                changeRequestService.submitChangeRequest(user, item, newAmount);
                 LOGGER.
                     info(String.
                     format("Pending change request created for item id = %d",
