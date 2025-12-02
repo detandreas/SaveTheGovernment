@@ -344,7 +344,7 @@ public class BudgetValidationService {
                 "BudgetItem name can't be null or empty");
         }
 
-        if (item.getYear()  <= Limits.MIN_BUDGET_YEAR) {
+        if (item.getYear()  < Limits.MIN_BUDGET_YEAR) {
             throw new ValidationException(
                 "BudgetItem year can't be lower than 2000");
         }
