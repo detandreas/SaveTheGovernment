@@ -179,8 +179,6 @@ public class BudgetService {
 
             budgetRepository.save(budget);
 
-            changeLogService.recordChange(newItem, 0.0, value);
-
             LOGGER.info(String.format(
                 "Created new BudgetItem (id=%d, name=%s) in budget %d by %s",
                 id, name, budget.getYear(), user.getFullName()
