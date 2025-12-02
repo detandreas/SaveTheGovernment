@@ -46,18 +46,21 @@ public class BudgetService {
         this.changeRequestService = changeRequestService;
     }
     /**
-     * Updates a budget item's value. 
+     * Updates a budget item's value.
      * If the user can edit directly -> update immediately.
      * Otherwise, create a pending change request.
      * @param user the user performing the action
      * @param budget the budget containing the item
      * @param item the budget item to update
-     * @param newValue the new value
+     * @param newAmount the new value
      */
-    public void updateItem(User user, Budget budget, BudgetItem item, double newAmount) {
+    public void updateItem(User user, Budget budget,
+            BudgetItem item, double newAmount) {
         synchronized (LOCK) {
             if (user == null || budget == null || item == null) {
-                throw new IllegalArgumentException("User, Budget or BudgetItem cannot be null");
+                throw new
+                    IllegalArgumentException("User, Budget or"
+                        + "BudgetItem cannot be null");
             }
             if (newAmount < 0) {
                 throw new IllegalArgumentException("Value cannot be negative");
@@ -73,28 +76,26 @@ public class BudgetService {
             }
 
             if (user instanceof PrimeMinister) {
-                LOGGER.
-                    warning("Prime Minister cannot edit items directly");
-                return;
+                throw new UserNotAuthorizedException("Prime Minister cannot edit items directly.");
             }
-            
-            if(authorizationService.canUserEditBudgetItem(user, item)) {
+            if (authorizationService.canUserEditBudgetItem(user, item)) {
                 item.setValue(newAmount);
                 recalculateBudgetTotals(budget);
                 budgetRepository.save(budget);
                 changeLogService.recordChange(item, oldValue, newAmount);
-                LOGGER.info(String.format("Item %d updated directly by %s", 
+                LOGGER.info(String.format("Item %d updated directly by %s",
                     item.getId(), user.getFullName()));
             } else if (authorizationService.canUserSubmitRequest(user, item)) {
                 changeRequestService.submitChangeRequest(user, item, newAmount);
                 LOGGER.
                     info(String.
-                            format("Pending change request created for item id = %d",
-                            item.getId()));
+                    format("Pending change request created for item id = %d",
+                    item.getId()));
             } else {
                 throw new UserNotAuthorizedException(
                     String.
-                    format("%s is not authorized to edit or submit change request for item id = %d",
+                    format("%s is not authorized to edit or"
+                    + "submit change request for item id = %d",
                     user.getFullName(),
                     item.getId()));
             }
@@ -141,12 +142,12 @@ public class BudgetService {
                 throw new IllegalArgumentException("Budget cannot be null");
             }
             if (ministries == null || ministries.isEmpty()) {
-                throw new IllegalArgumentException("Ministries list cannot be empty");
+                throw new
+                IllegalArgumentException("Ministries list cannot be empty");
             }
             if (value < 0) {
                 throw new IllegalArgumentException("Value cannot be negative");
             }
-            
             if (!(user instanceof GovernmentMember gm)) {
                 throw new UserNotAuthorizedException(
                 "Only government members can edit budget items."
@@ -171,7 +172,7 @@ public class BudgetService {
                 value,
                 isRevenue,
                 ministries);
-            
+
             List<BudgetItem> items = budget.getItems();
             items.add(newItem);
             budget.setItems(items);
@@ -193,8 +194,10 @@ public class BudgetService {
      * Only government members of the Finance Ministry can delete items.
      * @param user the user performing the deletion
      * @param id unique identifier of the budget item to be deleted
-     * @throws IllegalArgumentException if the user is null or the item is not found
-     * @throws UserNotAuthorizedException if the user is not authorized to delete items
+     * @throws IllegalArgumentException if the user is null
+     * or the item is not found
+     * @throws UserNotAuthorizedException if the user is not authorized
+     * to delete items
      */
     public void deleteBudgetItem(User user, int id) {
         synchronized (LOCK) {
@@ -204,15 +207,18 @@ public class BudgetService {
             if (!(user instanceof GovernmentMember gm)
                 || gm.getMinistry() != Ministry.FINANCE) {
                 throw new
-                    UserNotAuthorizedException("Only Finance Ministry can delete items.");
+                    UserNotAuthorizedException("Only Finance Ministry"
+                    + "can delete items.");
             }
             Optional<Budget> budgetOptional = findBudgetByItemId(id);
             if (budgetOptional.isEmpty()) {
-                throw new 
-                    IllegalArgumentException("Item with ID " + id + " not found.");
+                throw new
+                    IllegalArgumentException("Item with ID "
+                    + id + " not found.");
             }
             Budget budget = budgetOptional.get();
-            boolean remove = budget.getItems().removeIf(item -> item.getId() == id);
+            boolean remove = budget.getItems().
+                removeIf(item -> item.getId() == id);
             if (remove) {
                 recalculateBudgetTotals(budget);
                 budgetRepository.save(budget);
@@ -265,7 +271,8 @@ public class BudgetService {
     public Optional<Budget> findBudgetByItemId(int itemId) {
         synchronized (LOCK) {
            return budgetRepository.load().stream()
-                .filter(b -> b.getItems().stream().anyMatch(i -> i.getId() == itemId))
+                .filter(b -> b.getItems()
+                .stream().anyMatch(i -> i.getId() == itemId))
                 .findFirst();
        }
    }
@@ -274,8 +281,10 @@ public class BudgetService {
      * Searches across all loaded budgets and filters items that are linked
      * to the provided ministry. If the input ministry is null, a warning is
      * logged and an empty list is returned.
-     * @param ministry the ministry to filter by; if null, an empty list is returned
-     * @return a list of {@link BudgetItem} objects associated with the given ministry
+     * @param ministry the ministry to filter by;if null, an empty list
+     * is returned
+     * @return a list of {@link BudgetItem} objects associated with the
+     * given ministry
      */
    public List<BudgetItem> getItemsByMinistry(Ministry ministry) {
     synchronized (LOCK) {
