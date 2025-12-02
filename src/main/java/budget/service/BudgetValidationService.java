@@ -357,7 +357,7 @@ public class BudgetValidationService {
             throw new ValidationException(
                 "BudgetItem ministries can't be null or empty");
         }
-        
+
         validateNonNegativeAmount(item.getValue());
     }
 }
