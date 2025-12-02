@@ -527,7 +527,7 @@ public class BudgetRepository
            if (year == null || year < Limits.MIN_BUDGET_YEAR) {
                LOGGER
                .warning("Cannot search for a budget with null year"
-               + "or earlier than 2000");
+               + " or earlier than 2000");
                return Optional.empty();
             }
             return load()
