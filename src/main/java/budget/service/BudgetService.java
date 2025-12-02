@@ -8,6 +8,7 @@ import budget.model.enums.Ministry;
 import budget.model.domain.user.PrimeMinister;
 import budget.model.domain.user.GovernmentMember;
 import budget.repository.BudgetRepository;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 
 import java.util.List;
@@ -36,6 +37,11 @@ public class BudgetService {
      * @param changeLogService the service used to track history of changes
      * @param changeRequestService the service used to handle pending requests
      */
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2",
+        justification
+        = "This allows testability and shared state across service instances."
+    )
     public BudgetService(BudgetRepository budgetRepository,
                         UserAuthorizationService authorizationService,
                         ChangeLogService changeLogService,
