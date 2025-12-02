@@ -1,13 +1,19 @@
 package budget.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import budget.model.domain.Budget;
 import budget.model.domain.BudgetItem;
 import budget.model.domain.PendingChange;
 import budget.model.domain.user.User;
+import budget.model.domain.user.GovernmentMember;
 import budget.model.domain.user.PrimeMinister;
+import budget.model.enums.Ministry;
 import budget.model.enums.Status;
 import budget.repository.ChangeRequestRepository;
 import budget.repository.BudgetRepository;
@@ -29,6 +35,7 @@ public class ChangeRequestService {
 
     private final ChangeRequestRepository changeRequestRepository;
     private final BudgetService budgetService;
+    private final BudgetValidationService budgetValidationService;
     private final BudgetRepository budgetRepository;
     private final ChangeLogRepository changeLogRepository;
     /**
@@ -41,12 +48,12 @@ public class ChangeRequestService {
      */
     public ChangeRequestService(
         ChangeRequestRepository changeRequestRepository,
-        BudgetService budgetService,
+        BudgetValidationService budgetValidationService,
         BudgetRepository budgetRepository,
         ChangeLogRepository changeLogRepository
     ) {
         this.changeRequestRepository = changeRequestRepository;
-        this.budgetService = budgetService;
+        this.budgetValidationService = budgetValidationService;
         this.budgetRepository = budgetRepository;
         this.changeLogRepository = changeLogRepository;
     }
@@ -77,7 +84,7 @@ public class ChangeRequestService {
         if (countPendingRequestsByUser(user.getId()) >= Limits.MAX_PENDING_REQUESTS_PER_USER) {
             throw new IllegalStateException(Message.MAX_PENDING_REQUESTS_MESSAGE);
         }
-        if (item.isDeletionProhibited()) {
+        if (budgetValidationService.validateBudgetItemDeletion(item, budgetRepository.load())) {
             throw new IllegalStateException(Message.DELETE_NOT_ALLOWED_MESSAGE);
         }
         if (newValue == existingItem.getValue()) {
@@ -139,41 +146,97 @@ public class ChangeRequestService {
 
     }
     /**
-     * Updates the status of a change request using the model's built-in approve/reject methods.
+     * Updates the status of a change request.
      *
      * @param pm the Prime Minister performing the update
      * @param id the ID of the change request
      * @param status the new status to set
      */
     public void updateChangeStatus(PrimeMinister pm, int id, Status status) {
-        if (id <= 0) {
-            LOGGER.warning("Cannot update change with invalid id: " + id);
-            return;
-        }
-        if (status == null) {
-            LOGGER.warning("Cannot update change with null status for id: " + id);
+        Optional<PendingChange> requestOpt = validateRequest(id, status);
+        if (requestOpt.isEmpty()) {
             return;
         }
 
-        PendingChange request = changeRequestRepository.findById(id).orElse(null);
-
-        if (request == null) {
-            LOGGER.warning("No pending change found with id: " + id);
-            return;
-        }
-
-        if (request.getStatus() != Status.PENDING) {
-            LOGGER.warning("Change request already resolved: id=" + id);
-            return;
-        }
+        PendingChange request = requestOpt.get();
 
         if (status == Status.APPROVED) {
-            BudgetItem item = budgetRepository.findById(request.getBudgetItemId());
-            if (item != null) {
-                item.setValue(request.getNewValue());
-                budgetRepository.save();
+            if (status == Status.APPROVED) {
+            List<Budget> allBudgets = budgetRepository.load();
+            boolean itemFound = false;
+
+            // Ενημέρωση υπάρχοντος BudgetItem
+            for (Budget budget : allBudgets) {
+                Optional<BudgetItem> itemOpt = budget.getItems().stream()
+                    .filter(i -> i.getId() == request.getBudgetItemId())
+                    .findFirst();
+
+                if (itemOpt.isPresent()) {
+                    BudgetItem item = itemOpt.get();
+                    item.setValue(request.getNewValue());
+                    budgetRepository.save(budget);
+                    itemFound = true;
+                    break;
+                }
             }
+
+            // Αν δεν υπάρχει, δημιουργία νέου
+            if (!itemFound) {
+                LOGGER.info("Item not found. Creating auto-generated BudgetItem.");
+
+                int currentYear = java.time.LocalDate.now().getYear();
+
+                User submitter = userRepository.findById(request.getRequestById()).orElse(null);
+                List<Ministry> assignedMinistries = new ArrayList<>();
+
+                if (submitter != null) {
+                     GovernmentMember member = (GovernmentMember) submitter;
+                     // το κονδύλι που θα δημιουργηθεί θα ανατεθεί στο υπουργείο
+                     // αυτού που υπέβαλε το αίτημα
+                     if (member.getMinistry() != null) {
+                         assignedMinistries.add(member.getMinistry());
+                     } else {
+                         LOGGER.warning("Member has no ministry. Cannot auto-create item.");
+                         return;
+                     }
+                } else {
+                     LOGGER.warning("Submitter user not found. Cannot auto-create item.");
+                     return;
+                }
+
+                Budget targetBudget = budgetRepository.findById(currentYear)
+                        .orElseGet(() -> new Budget(new ArrayList<>(), currentYear, 0.0, 0.0, 0.0));
+
+                BudgetItem newItem = new BudgetItem(
+                    request.getBudgetItemId(),
+                    currentYear,
+                    !!!!request.getBudgetItem(),
+                    request.getNewValue(),
+                    false, 
+                    assignedMinistries // Η λίστα περιέχει μόνο το 1 υπουργείο του χρήστη
+                );
+
+                if (targetBudget.getItems() == null) {
+                    targetBudget.setItems(new ArrayList<>());
+                }
+                
+                targetBudget.getItems().add(newItem);
+                budgetRepository.save(targetBudget);
+            }
+
             request.approve();
+
+            // Καταγραφή στο Log ΜΟΝΟ αν εγκριθεί
+            if (pm != null) {
+                changeLogRepository.insert(
+                        pm.getId(),
+                        pm.getFullName(),
+                        request.getBudgetItemId(),
+                        request.getOldValue(),
+                        request.getNewValue(),
+                        LocalDateTime.now()
+                );
+            }
         } else if (status == Status.REJECTED) {
             request.reject();
         } else {
@@ -182,18 +245,6 @@ public class ChangeRequestService {
         }
 
         changeRequestRepository.save(request);
-
-        if (pm != null) {
-            changeLogRepository.insert(
-                    pm.getId(),
-                    pm.getFullName(),
-                    request.getBudgetItemId(),
-                    request.getOldValue(),
-                    request.getNewValue(),
-                    LocalDateTime.now()
-            );
-        }
-        
     }
 
     /**
@@ -218,5 +269,39 @@ public class ChangeRequestService {
                         && userId.equals(change.getRequestById())
                         && change.getStatus() == Status.PENDING)
                 .count();
+    }
+
+    /**
+     * Validates the request ID and status, and ensures the request exists and is pending.
+     * Logs warnings if validation fails.
+     *
+     * @param id the ID of the request
+     * @param status the target status
+     * @return Optional containing the request if valid, or empty if invalid
+     */
+    private Optional<PendingChange> validateRequest(int id, Status status) {
+        if (id <= 0) {
+            LOGGER.warning("Cannot update change with invalid id: " + id);
+            return Optional.empty();
+        }
+        if (status == null) {
+            LOGGER.warning("Cannot update change with null status for id: " + id);
+            return Optional.empty();
+        }
+        Optional<PendingChange> requestOpt = changeRequestRepository.findById(id);
+
+        if (requestOpt.isEmpty()) {
+            LOGGER.warning("No pending change found with id: " + id);
+            return Optional.empty();
+        }
+
+        PendingChange request = requestOpt.get();
+
+        if (request.getStatus() != Status.PENDING) {
+            LOGGER.warning("Change request already resolved: id=" + id);
+            return Optional.empty();
+        }
+
+        return Optional.of(request);
     }
 }
