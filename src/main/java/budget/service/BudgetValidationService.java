@@ -59,7 +59,7 @@ public class BudgetValidationService {
         if (budget == null) {
             throw new ValidationException("Budget cannot be null");
         }
-        validateUniqueId(newItem.getId());
+        validateUniqueId(newItem.getId(), newItem.getYear());
         validateUniqueName(newItem.getName(), newItem.getYear());
         validateNonNegativeAmount(newItem.getValue());
         validateMinistry(newItem.getMinistries());
@@ -68,12 +68,13 @@ public class BudgetValidationService {
     /**
      * Validates that the specified budget item ID is unique in the system.
      *
-     * @param id the ID to check for uniqueness
+     * @param id the ID to check for uniqueness.
+     * @param year the year of the Budget in which we search for uniqueness.
      * @throws ValidationException if the ID already exists
      */
-    private void validateUniqueId(int id)
+    private void validateUniqueId(int id, int year)
     throws ValidationException {
-        boolean idExists = budgetRepository.existsByItemId(id);
+        boolean idExists = budgetRepository.existsByItemId(id, year);
 
         if (idExists) {
             throw new ValidationException(
@@ -275,7 +276,11 @@ public class BudgetValidationService {
         if (updatedItem == null) {
             throw new ValidationException("updated BudgetItem can't be null");
         }
-
+        if (originalItem.getValue() == updatedItem.getValue()) {
+            throw
+            new ValidationException("update doesn't change BudgetItem value");
+        }
+        validateNonNegativeAmount(updatedItem.getValue());
         validateEditChangeLimit(originalItem, updatedItem);
     }
     /**
@@ -343,7 +348,7 @@ public class BudgetValidationService {
                 "BudgetItem name can't be null or empty");
         }
 
-        if (item.getYear()  <= Limits.MIN_BUDGET_YEAR) {
+        if (item.getYear()  < Limits.MIN_BUDGET_YEAR) {
             throw new ValidationException(
                 "BudgetItem year can't be lower than 2000");
         }
@@ -352,5 +357,7 @@ public class BudgetValidationService {
             throw new ValidationException(
                 "BudgetItem ministries can't be null or empty");
         }
+
+        validateNonNegativeAmount(item.getValue());
     }
 }

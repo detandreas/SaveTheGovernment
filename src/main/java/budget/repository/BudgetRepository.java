@@ -27,6 +27,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
+import budget.constants.Limits;
+
 /**
  * Repository class for managing budget data. Handles loading, saving, and
  * validation of files from JSON storage.
@@ -458,29 +460,64 @@ public class BudgetRepository
      * Searches through all budgets and their items to find a matching ID.
      *
      * @param itemId the ID of the budget item to search for
+     * @param year the year of the Budget we are searching in
      * @return true if a budget item with the specified ID exists,
      *         false otherwise or if itemId is null or <= 0
      */
-    public boolean existsByItemId(final int itemId) {
+    public boolean existsByItemId(final int itemId, final int year) {
         synchronized (LOCK) {
             if (itemId <= 0) {
                 LOGGER.warning("Cannot search with a invalid item ID");
                 return false;
             }
-
-            List<Budget> budgets = load();
-
-            for (Budget budget : budgets) {
-                List<BudgetItem> items = budget.getItems();
-                boolean found = items.stream()
-                        .filter(item -> item != null)
-                        .anyMatch(item -> item.getId() == itemId);
-
-                if (found) {
-                    return true;
-                }
+            if (year < Limits.MIN_BUDGET_YEAR) {
+                LOGGER.warning("Cannot search with year earlier than 2000");
+                return false;
             }
-            return false;
+
+            Optional<Budget> budget = findById(year);
+            if (budget.isEmpty()) {
+                return false;
+            }
+
+            Budget budgetForYear = budget.get();
+            List<BudgetItem> items = budgetForYear.getItems();
+            return items
+                    .stream()
+                    .filter(item -> item != null)
+                    .anyMatch(item -> item.getId() == itemId);
+        }
+    }
+    /**
+     * Finds a BudgetItem by id across all budgets.
+     * @param id the item id.
+     * @param year the year of the budget to search in.
+     * @return an Optional containing the BudgetItem if found, or empty if not
+     */
+    public Optional<BudgetItem> findItemById(int id, int year) {
+        synchronized (LOCK) {
+            if (id <= 0) {
+                LOGGER.warning("Cannot search with a invalid item ID");
+                return Optional.empty();
+            }
+            if (year < Limits.MIN_BUDGET_YEAR) {
+                LOGGER.warning("Cannot search with year earlier than 2000");
+                return Optional.empty();
+            }
+
+            Optional<Budget> budget = findById(year);
+            if (budget.isEmpty()) {
+                return Optional.empty();
+            }
+
+            Budget budgetForYear = budget.get();
+            List<BudgetItem> items = budgetForYear.getItems();
+
+            return items
+                    .stream()
+                    .filter(item -> item != null)
+                    .filter(item -> item.getId() == id)
+                    .findFirst();
         }
     }
     /**
@@ -519,8 +556,10 @@ public class BudgetRepository
    @Override
    public Optional<Budget> findById(final Integer year) {
        synchronized (LOCK) {
-           if (year == null) {
-               LOGGER.warning("Cannot search for a budget with null year");
+           if (year == null || year < Limits.MIN_BUDGET_YEAR) {
+               LOGGER
+               .warning("Cannot search for a budget with null year"
+               + " or earlier than 2000");
                return Optional.empty();
             }
             return load()
