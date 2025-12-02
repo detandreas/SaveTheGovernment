@@ -59,7 +59,7 @@ public class BudgetValidationService {
         if (budget == null) {
             throw new ValidationException("Budget cannot be null");
         }
-        validateUniqueId(newItem.getId());
+        validateUniqueId(newItem.getId(), newItem.getYear());
         validateUniqueName(newItem.getName(), newItem.getYear());
         validateNonNegativeAmount(newItem.getValue());
         validateMinistry(newItem.getMinistries());
@@ -68,12 +68,13 @@ public class BudgetValidationService {
     /**
      * Validates that the specified budget item ID is unique in the system.
      *
-     * @param id the ID to check for uniqueness
+     * @param id the ID to check for uniqueness.
+     * @param year the year of the Budget in which we search for uniqueness.
      * @throws ValidationException if the ID already exists
      */
-    private void validateUniqueId(int id)
+    private void validateUniqueId(int id, int year)
     throws ValidationException {
-        boolean idExists = budgetRepository.existsByItemId(id);
+        boolean idExists = budgetRepository.existsByItemId(id, year);
 
         if (idExists) {
             throw new ValidationException(
