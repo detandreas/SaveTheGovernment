@@ -515,6 +515,7 @@ public class BudgetRepository
 
             return items
                     .stream()
+                    .filter(item -> item != null)
                     .filter(item -> item.getId() == id)
                     .findFirst();
         }
