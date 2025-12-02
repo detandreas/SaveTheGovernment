@@ -276,7 +276,11 @@ public class BudgetValidationService {
         if (updatedItem == null) {
             throw new ValidationException("updated BudgetItem can't be null");
         }
-
+        if (originalItem.getValue() == updatedItem.getValue()) {
+            throw
+            new ValidationException("update doesn't change BudgetItem value");
+        }
+        validateNonNegativeAmount(updatedItem.getValue());
         validateEditChangeLimit(originalItem, updatedItem);
     }
     /**
