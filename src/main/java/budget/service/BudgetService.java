@@ -9,8 +9,6 @@ import budget.model.domain.user.PrimeMinister;
 import budget.model.domain.user.GovernmentMember;
 import budget.repository.BudgetRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-
 import java.util.List;
 import java.util.Collections;
 import java.util.Optional;
@@ -107,19 +105,6 @@ public class BudgetService {
         }
     }
     /**
-     * Finds a BudgetItem by id across all budgets.
-     * @param id the item id
-     * @return an Optional containing the BudgetItem if found, or empty if not
-     */
-    public Optional<BudgetItem> findItemById(int id) {
-        synchronized (LOCK) {
-            return budgetRepository.load().stream()
-            .flatMap(budget -> budget.getItems().stream())
-            .filter(item -> item.getId() == id)
-            .findFirst();
-        }
-    }
-    /**
     * Creates a new budget item and adds it to the given budget.
     * Only government members of the Finance Ministry can create new items.
     * @param user the user performing the creation
@@ -197,12 +182,13 @@ public class BudgetService {
      * Only government members of the Finance Ministry can delete items.
      * @param user the user performing the deletion
      * @param id unique identifier of the budget item to be deleted
+     * @param year the year of the budget we are deleting the item from.
      * @throws IllegalArgumentException if the user is null
      * or the item is not found
      * @throws UserNotAuthorizedException if the user is not authorized
      * to delete items
      */
-    public void deleteBudgetItem(User user, int id) {
+    public void deleteBudgetItem(User user, int id, int year) {
         synchronized (LOCK) {
             if (user == null) {
                 throw new IllegalArgumentException("User cannot be null");
@@ -213,13 +199,19 @@ public class BudgetService {
                     UserNotAuthorizedException("Only Finance Ministry"
                     + "can delete items.");
             }
-            Optional<Budget> budgetOptional = findBudgetByItemId(id);
+            Optional<Budget> budgetOptional = budgetRepository.findById(year);
             if (budgetOptional.isEmpty()) {
                 throw new
-                    IllegalArgumentException("Item with ID "
-                    + id + " not found.");
+                    IllegalArgumentException("Budget with year "
+                    + year + " not found.");
             }
             Budget budget = budgetOptional.get();
+            boolean exists = budgetRepository.existsByItemId(id, year);
+            if (!exists) {
+                throw new IllegalArgumentException("Budget item with id: "
+                    + id + " doesn't exists for year: " + year
+                );
+            }
             boolean remove = budget.getItems().
                 removeIf(item -> item.getId() == id);
             if (remove) {
@@ -239,7 +231,7 @@ public class BudgetService {
      *
      * @param budget the budget entity whose totals need to be updated
      */
-    private void recalculateBudgetTotals(Budget budget) {
+    public void recalculateBudgetTotals(Budget budget) {
         double totalRevenue = 0;
         double totalExpense = 0;
 
@@ -254,31 +246,6 @@ public class BudgetService {
         budget.setTotalExpense(totalExpense);
         budget.setNetResult(totalRevenue - totalExpense);
     }
-    /**
-     * Retrieves all budget entities from the repository.
-     * @return a list containing all Budget objects available in the system
-     */
-    public List<Budget> getAllBudgets() {
-        synchronized (LOCK) {
-            return budgetRepository.load();
-        }
-    }
-    /**
-     * Retrieves the Budget entity that contains the specified item ID.
-     * Searches across all loaded budgets to identify which one holds
-     * the item with the provided unique identifier.
-     * @param itemId the unique identifier of the budget item to search for
-     * @return an Optional containing the Budget that holds the item,
-     * or empty if the item is not found in any budget
-     */
-    public Optional<Budget> findBudgetByItemId(int itemId) {
-        synchronized (LOCK) {
-           return budgetRepository.load().stream()
-                .filter(b -> b.getItems()
-                .stream().anyMatch(i -> i.getId() == itemId))
-                .findFirst();
-       }
-   }
    /**
      * Retrieves a list of budget items associated with a specific ministry.
      * Searches across all loaded budgets and filters items that are linked
@@ -302,3 +269,4 @@ public class BudgetService {
     }
    }
 }
+
