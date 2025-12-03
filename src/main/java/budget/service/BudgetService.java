@@ -231,7 +231,7 @@ public class BudgetService {
      *
      * @param budget the budget entity whose totals need to be updated
      */
-    private void recalculateBudgetTotals(Budget budget) {
+    public void recalculateBudgetTotals(Budget budget) {
         double totalRevenue = 0;
         double totalExpense = 0;
 
