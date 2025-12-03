@@ -20,5 +20,37 @@ import static org.junit.jupiter.api.Assertions.*;
  * null input handling, and authenticated user presence.
  */
 public class TestChangeLogService {
+    private ChangeLogRepository repository;
+    private UserAuthenticationService authService;
+    private ChangeLogService changeLogService;
+    private User testUser;
 
+    /**
+     * Setup in-memory repository and fake auth service
+     * before each test.
+     */
+    @BeforeEach
+    void setup() {
+        repository = new ChangeLogRepository() {
+            private final List<ChangeLog> logs = new java.util.ArrayList<>();
+
+            @Override
+            public List<ChangeLog> load() { return new java.util.ArrayList<>(logs); }
+
+            @Override
+            public void save(ChangeLog entity) { logs.add(entity); }
+
+            @Override
+            public int generateId() { return logs.size() + 1; }
+        };
+
+        testUser = new Citizen("USER1", "Test User", "hashedPassword");
+
+        authService = new UserAuthenticationService(null) {
+            @Override
+            public User getCurrentUser() { return testUser; }
+        };
+
+        changeLogService = new ChangeLogService(repository, authService);
+    }
 }
