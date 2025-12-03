@@ -89,4 +89,10 @@ public class TestChangeLogService {
         assertEquals("Change is not approved yet", ex.getMessage());
     }
 
+    @Test
+    void testRecordChangeNullPendingChangeThrows() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> changeLogService.recordChange(null));
+        assertEquals("PendingChange cannot be null", ex.getMessage());
+    }
 }
