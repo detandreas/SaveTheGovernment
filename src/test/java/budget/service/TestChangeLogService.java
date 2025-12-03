@@ -53,4 +53,24 @@ public class TestChangeLogService {
 
         changeLogService = new ChangeLogService(repository, authService);
     }
+    @Test
+    void testRecordChangeApprovedDoesNotThrow() {
+        PendingChange change = new PendingChange(
+                1, 2025, "Budget Item 1",
+                testUser.getUserName(), testUser.getId(),
+                1000.0, 1200.0
+        );
+        change.approve(); // approved
+
+        assertDoesNotThrow(() -> changeLogService.recordChange(change));
+
+        List<ChangeLog> logs = repository.load();
+        assertEquals(1, logs.size());
+        ChangeLog log = logs.get(0);
+        assertEquals(change.getBudgetItemId(), log.budgetItemId());
+        assertEquals(change.getOldValue(), log.oldValue());
+        assertEquals(change.getNewValue(), log.newValue());
+        assertEquals(testUser.getUserName(), log.actorUserName());
+        assertEquals(testUser.getId(), log.actorId());
+    }
 }
