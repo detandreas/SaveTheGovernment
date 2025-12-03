@@ -133,4 +133,19 @@ public class TestChangeLogService {
         assertEquals("Authenticated user has null username", ex.getMessage());
     }
 
+    @Test
+    void testRecordMultipleApprovedChanges() {
+        for (int i = 1; i <= 3; i++) {
+            PendingChange change = new PendingChange(
+                    i, 2025, "Budget Item " + i,
+                    testUser.getUserName(), testUser.getId(),
+                    1000.0 * i, 1200.0 * i
+            );
+            change.approve();
+            changeLogService.recordChange(change);
+        }
+
+        List<ChangeLog> logs = repository.load();
+        assertEquals(3, logs.size());
+    }
 }
