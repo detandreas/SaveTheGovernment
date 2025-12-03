@@ -1,6 +1,7 @@
 package budget.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,9 +31,11 @@ import budget.exceptions.ValidationException;
  * Responsible for submitting, approving, and rejecting change requests.
  * Delegates validation to BudgetValidationService.
  */
+@SuppressFBWarnings("EI_EXPOSE_REP2")
 public class ChangeRequestService {
 
-    private static final Logger LOGGER = Logger.getLogger(ChangeRequestService.class.getName());
+    private static final Logger LOGGER = Logger
+        .getLogger(ChangeRequestService.class.getName());
 
     private final ChangeRequestRepository changeRequestRepository;
     private final BudgetService budgetService;
@@ -40,10 +43,6 @@ public class ChangeRequestService {
     private final BudgetRepository budgetRepository;
     private final ChangeLogRepository changeLogRepository;
     private final UserRepository userRepository;
-    @SuppressFBWarnings(
-        value = {"EI_EXPOSE_REP2", "EI_EXPOSE_REP"},
-        justification = "Injected dependencies are final and expected to be stateless singletons (DI pattern)."
-    )
     /**
      * Constructor for ChangeRequestService.
      * @param changeRequestRepository repository for change requests
@@ -85,7 +84,7 @@ public class ChangeRequestService {
         } else {
              throw new IllegalArgumentException("User must be a Government Member.");
         }
-        
+
         if (userMinistry == null) {
             throw new IllegalArgumentException("User does not belong to any ministry.");
         }
@@ -96,9 +95,9 @@ public class ChangeRequestService {
 
         BudgetItem existingItem = budgetRepository.findItemById(item.getId(), item.getYear())
                                                   .orElse(null);
-        
+
         String nameToStoreInRequest = item.getName();
-        BudgetItem itemForValidation; 
+        BudgetItem itemForValidation;
 
         if (existingItem != null) {
             // ΥΠΑΡΧΕΙ ΗΔΗ
@@ -110,13 +109,13 @@ public class ChangeRequestService {
             // ΝΕΟ: (Δεν υπάρχει στο budget)
             List<Ministry> mockMinistries = new ArrayList<>();
             mockMinistries.add(userMinistry);
-            
+
             itemForValidation = new BudgetItem(
                 item.getId(),
                 item.getYear(),
                 item.getName(),
-                0.0, 
-                item.getIsRevenue(), 
+                0.0,
+                item.getIsRevenue(),
                 mockMinistries
             );
         }
@@ -150,7 +149,7 @@ public class ChangeRequestService {
             nameToStoreInRequest,
             user.getFullName(),
             user.getId(),
-            itemForValidation.getValue(), 
+            itemForValidation.getValue(),
             newValue
         );
         
@@ -182,13 +181,19 @@ public class ChangeRequestService {
      * Validates the change request before processing.
      */
     private Optional<PendingChange> validateRequest(int id, Status status) {
-        if (id <= 0) return Optional.empty();
+        if (id <= 0) {
+            return Optional.empty();
+        }
         Optional<PendingChange> requestOpt = changeRequestRepository.findById(id);
-        if (requestOpt.isEmpty()) return Optional.empty();
-        
+        if (requestOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
         PendingChange request = requestOpt.get();
-        if (request.getStatus() != Status.PENDING) return Optional.empty();
-        
+        if (request.getStatus() != Status.PENDING) {
+            return Optional.empty();
+        }
+
         return Optional.of(request);
     }
     /**
@@ -201,17 +206,22 @@ public class ChangeRequestService {
      * @param status the new status (APPROVED or REJECTED)
      */
     public void updateChangeStatus(PrimeMinister pm, int id, Status status) {
-        if (pm == null || !pm.canApprove()) return;
-
+        if (pm == null || !pm.canApprove()) {
+            return;
+        }
         Optional<PendingChange> requestOpt = validateRequest(id, status);
-        if (requestOpt.isEmpty()) return;
+        if (requestOpt.isEmpty()) { 
+            return;
+        }
         PendingChange request = requestOpt.get();
 
         Budget budget = budgetRepository.findById(request.getBudgetItemYear())
-                .orElseThrow(() -> new IllegalStateException("Budget not found for year " + request.getBudgetItemYear()));
+                .orElseThrow(() -> new IllegalStateException("Budget not found for year " 
+                + request.getBudgetItemYear()
+                ));
 
         if (status == Status.APPROVED) {
-            
+
             Optional<BudgetItem> itemOpt = budget.getItems().stream()
                 .filter(i -> i.getId() == request.getBudgetItemId())
                 .findFirst();
@@ -225,10 +235,12 @@ public class ChangeRequestService {
                 String realName = request.getBudgetItemName();
                 List<Ministry> ministries = new ArrayList<>();
 
-                // Βρίσκουμε τον αιτούντα και παίρνουμε το Υπουργείο του (fallback)
-                User submitter = userRepository.findById(request.getRequestById()).orElse(null);
+                // Βρίσκουμε τον αιτούντα και παίρνουμε το Υπουργείο του
+                User submitter = userRepository.findById(request.getRequestById())
+                                               .orElse(null);
                 if (submitter instanceof GovernmentMember) {
-                    ministries.add(((GovernmentMember) submitter).getMinistry());
+                    ministries.add(((GovernmentMember) submitter)
+                              .getMinistry());
                 }
 
                 if (!ministries.isEmpty()) {
@@ -240,29 +252,30 @@ public class ChangeRequestService {
                         false, // Default Expense
                         ministries
                     );
-                    
-                    if (budget.getItems() == null) {
-                        budget.setItems(new ArrayList<>());
-                    }
+
                     budget.getItems().add(newItem);
                 } else {
-                     LOGGER.severe("CRITICAL: Submitter ministry missing. Cannot create item.");
+                     LOGGER.severe(
+                        "CRITICAL: Submitter ministry missing. Cannot create item."
+                    );
                      return;
                 }
             }
 
             // ΜΟΝΟ ΤΩΡΑ ΣΩΖΟΥΜΕ ΣΤΟ BUDGET REPO
             budgetRepository.save(budget);
-            
+
             request.approve();
-            
+
             int newLogId = changeLogRepository.generateId();
             ChangeLog logEntry = new ChangeLog(
                 newLogId,
                 request.getBudgetItemId(),
                 request.getOldValue(),
                 request.getNewValue(),
-                LocalDateTime.now().format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                LocalDateTime.now().format(
+                    DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                ),
                 pm.getFullName(),
                 pm.getId()
             );
@@ -281,10 +294,13 @@ public class ChangeRequestService {
      */
     private long countPendingRequestsByUser(UUID userId) {
         Iterable<PendingChange> all = changeRequestRepository.load();
-        if (all == null) return 0;
+        if (all == null) {
+             return 0;
+        }
         return java.util.stream.StreamSupport.stream(all.spliterator(), false)
-                .filter(c -> c != null && userId.equals(c.getRequestById()) && c.getStatus() == Status.PENDING)
+                .filter(c -> c != null && userId.equals(
+                    c.getRequestById()) && c.getStatus() == Status.PENDING
+                    )
                 .count();
     }
 }
-
