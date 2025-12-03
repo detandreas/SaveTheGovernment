@@ -241,7 +241,9 @@ public class ChangeRequestService {
                         ministries
                     );
                     
-                    if (budget.getItems() == null) { /* init check */ }
+                    if (budget.getItems() == null) {
+                        budget.setItems(new ArrayList<>());
+                    }
                     budget.getItems().add(newItem);
                 } else {
                      LOGGER.severe("CRITICAL: Submitter ministry missing. Cannot create item.");
