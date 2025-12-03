@@ -76,24 +76,37 @@ public class ChangeRequestService {
      * @param newValue the proposed new value for the budget item
      * @throws IllegalArgumentException if validation fails
      */
-    public void submitChangeRequest(User user, BudgetItem item, double newValue) {
+    public void submitChangeRequest(
+        User user,
+        BudgetItem item,
+        double newValue) {
 
         Ministry userMinistry = null;
         if (user instanceof GovernmentMember) {
             userMinistry = ((GovernmentMember) user).getMinistry();
         } else {
-             throw new IllegalArgumentException("User must be a Government Member.");
+             throw new IllegalArgumentException(
+                "User must be a Government Member."
+            );
         }
 
         if (userMinistry == null) {
-            throw new IllegalArgumentException("User does not belong to any ministry.");
+            throw new IllegalArgumentException(
+                "User does not belong to any ministry."
+            );
         }
 
         if (!budgetRepository.existsById(item.getYear())) {
-             throw new IllegalArgumentException("Budget for year " + item.getYear() + " does not exist.");
+             throw new IllegalArgumentException(
+                "Budget for year "
+                + item.getYear()
+                + " does not exist."
+            );
         }
 
-        BudgetItem existingItem = budgetRepository.findItemById(item.getId(), item.getYear())
+        BudgetItem existingItem = budgetRepository.findItemById(
+                                                        item.getId(),
+                                                        item.getYear())
                                                   .orElse(null);
 
         String nameToStoreInRequest = item.getName();
@@ -102,7 +115,9 @@ public class ChangeRequestService {
         if (existingItem != null) {
             // ΥΠΑΡΧΕΙ ΗΔΗ
             if (!user.canEdit(existingItem)) {
-                throw new IllegalArgumentException(Message.CHANGE_REQUEST_PERMISSION);
+                throw new IllegalArgumentException(
+                    Message.CHANGE_REQUEST_PERMISSION
+                );
             }
             itemForValidation = existingItem;
         } else {
@@ -120,8 +135,11 @@ public class ChangeRequestService {
             );
         }
         // CHECK PENDING REQUEST LIMIT
-        if (countPendingRequestsByUser(user.getId()) >= Limits.MAX_PENDING_REQUESTS_PER_USER) {
-            throw new IllegalStateException(Message.MAX_PENDING_REQUESTS_MESSAGE);
+        if (countPendingRequestsByUser(user.getId())
+            >= Limits.MAX_PENDING_REQUESTS_PER_USER) {
+            throw new IllegalStateException(
+                Message.MAX_PENDING_REQUESTS_MESSAGE
+            );
         }
 
         // VALIDATION SERVICE (Εδώ γίνεται ο κεντρικός έλεγχος)
@@ -152,7 +170,7 @@ public class ChangeRequestService {
             itemForValidation.getValue(),
             newValue
         );
-        
+
         changeRequestRepository.save(changeRequest);
     }
     /**
@@ -162,7 +180,9 @@ public class ChangeRequestService {
      */
     public void approveRequest(PrimeMinister pm, PendingChange request) {
         if (request == null) {
-            throw new IllegalArgumentException(Message.REQUEST_DOES_NOT_EXIST_MESSAGE);
+            throw new IllegalArgumentException(
+                Message.REQUEST_DOES_NOT_EXIST_MESSAGE
+            );
         }
         updateChangeStatus(pm, request.getId(), Status.APPROVED);
     }
@@ -173,18 +193,25 @@ public class ChangeRequestService {
      */
     public void rejectRequest(PrimeMinister pm, PendingChange request) {
         if (request == null) {
-            throw new IllegalArgumentException(Message.REQUEST_DOES_NOT_EXIST_MESSAGE);
+            throw new IllegalArgumentException(
+                Message.REQUEST_DOES_NOT_EXIST_MESSAGE
+            );
         }
         updateChangeStatus(pm, request.getId(), Status.REJECTED);
     }
     /**
      * Validates the change request before processing.
+     * @param id the ID of the change request
+     * @param status the new status to set
+     * @return an Optional containing
+     * the PendingChange if valid, otherwise empty
      */
     private Optional<PendingChange> validateRequest(int id, Status status) {
         if (id <= 0) {
             return Optional.empty();
         }
-        Optional<PendingChange> requestOpt = changeRequestRepository.findById(id);
+        Optional<PendingChange> requestOpt =
+            changeRequestRepository.findById(id);
         if (requestOpt.isEmpty()) {
             return Optional.empty();
         }
@@ -210,13 +237,14 @@ public class ChangeRequestService {
             return;
         }
         Optional<PendingChange> requestOpt = validateRequest(id, status);
-        if (requestOpt.isEmpty()) { 
+        if (requestOpt.isEmpty()) {
             return;
         }
         PendingChange request = requestOpt.get();
 
         Budget budget = budgetRepository.findById(request.getBudgetItemYear())
-                .orElseThrow(() -> new IllegalStateException("Budget not found for year " 
+                .orElseThrow(() -> new IllegalStateException(
+                    "Budget not found for year "
                 + request.getBudgetItemYear()
                 ));
 
@@ -236,8 +264,8 @@ public class ChangeRequestService {
                 List<Ministry> ministries = new ArrayList<>();
 
                 // Βρίσκουμε τον αιτούντα και παίρνουμε το Υπουργείο του
-                User submitter = userRepository.findById(request.getRequestById())
-                                               .orElse(null);
+                User submitter = userRepository.findById(
+                    request.getRequestById()).orElse(null);
                 if (submitter instanceof GovernmentMember) {
                     ministries.add(((GovernmentMember) submitter)
                               .getMinistry());
@@ -256,7 +284,7 @@ public class ChangeRequestService {
                     budget.getItems().add(newItem);
                 } else {
                      LOGGER.severe(
-                        "CRITICAL: Submitter ministry missing. Cannot create item."
+                        "CRITICAL: Submitter ministry missing."
                     );
                      return;
                 }
