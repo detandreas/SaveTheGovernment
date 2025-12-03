@@ -82,8 +82,8 @@ public class ChangeRequestService {
         double newValue) {
 
         Ministry userMinistry = null;
-        if (user instanceof GovernmentMember) {
-            userMinistry = ((GovernmentMember) user).getMinistry();
+        if (user instanceof GovernmentMember gm) {
+            userMinistry = gm.getMinistry();
         } else {
              throw new IllegalArgumentException(
                 "User must be a Government Member."
