@@ -4,15 +4,13 @@ import budget.model.domain.ChangeLog;
 import budget.model.domain.PendingChange;
 import budget.model.domain.user.Citizen;
 import budget.model.domain.user.User;
-import budget.model.enums.Status;
 import budget.repository.ChangeLogRepository;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for ChangeLogService.
@@ -101,7 +99,7 @@ public class TestChangeLogService {
         PendingChange change = new PendingChange(
                 3, 2025, "Budget Item 3",
                 testUser.getUserName(), testUser.getId(),
-                3000.0, 3500.0
+                3000.0, 3300.0
         );
         change.approve();
 
@@ -112,4 +110,27 @@ public class TestChangeLogService {
                 () -> changeLogService.recordChange(change));
         assertEquals("No authenticated user present", ex.getMessage());
     }
+
+    @Test
+    void testRecordChangeAuthenticatedUserNullUsernameThrows() {
+        PendingChange change = new PendingChange(
+                4, 2025, "Budget Item 4",
+                "dummy", testUser.getId(),
+                4000.0, 4500.0
+        );
+        change.approve();
+
+        authService = new UserAuthenticationService(null) {
+            @Override
+            public User getCurrentUser() {
+                return new Citizen(null, "NoName", "hashed"); // null username
+            }
+        };
+        changeLogService = new ChangeLogService(repository, authService);
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> changeLogService.recordChange(change));
+        assertEquals("Authenticated user has null username", ex.getMessage());
+    }
+
 }
