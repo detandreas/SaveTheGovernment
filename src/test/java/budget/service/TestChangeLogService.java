@@ -95,4 +95,21 @@ public class TestChangeLogService {
                 () -> changeLogService.recordChange(null));
         assertEquals("PendingChange cannot be null", ex.getMessage());
     }
+
+    @Test
+    void testRecordChangeNoAuthenticatedUserThrows() {
+        PendingChange change = new PendingChange(
+                3, 2025, "Budget Item 3",
+                testUser.getUserName(), testUser.getId(),
+                3000.0, 3500.0
+        );
+        change.approve();
+
+        authService = new UserAuthenticationService(null);
+        changeLogService = new ChangeLogService(repository, authService);
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> changeLogService.recordChange(change));
+        assertEquals("No authenticated user present", ex.getMessage());
+    }
 }
