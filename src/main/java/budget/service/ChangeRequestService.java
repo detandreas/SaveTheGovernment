@@ -40,6 +40,10 @@ public class ChangeRequestService {
     private final BudgetRepository budgetRepository;
     private final ChangeLogRepository changeLogRepository;
     private final UserRepository userRepository;
+    @SuppressFBWarnings(
+        value = {"EI_EXPOSE_REP2", "EI_EXPOSE_REP"},
+        justification = "Injected dependencies are final and expected to be stateless singletons (DI pattern)."
+    )
     /**
      * Constructor for ChangeRequestService.
      * @param changeRequestRepository repository for change requests
