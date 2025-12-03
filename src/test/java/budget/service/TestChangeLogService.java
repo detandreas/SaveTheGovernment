@@ -53,6 +53,7 @@ public class TestChangeLogService {
 
         changeLogService = new ChangeLogService(repository, authService);
     }
+
     @Test
     void testRecordChangeApprovedDoesNotThrow() {
         PendingChange change = new PendingChange(
@@ -73,4 +74,19 @@ public class TestChangeLogService {
         assertEquals(testUser.getUserName(), log.actorUserName());
         assertEquals(testUser.getId(), log.actorId());
     }
+
+    @Test
+    void testRecordChangeNotApprovedThrows() {
+        PendingChange change = new PendingChange(
+                2, 2025, "Budget Item 2",
+                testUser.getUserName(), testUser.getId(),
+                2000.0, 2500.0
+        );
+        // Not approved
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> changeLogService.recordChange(change));
+        assertEquals("Change is not approved yet", ex.getMessage());
+    }
+
 }
