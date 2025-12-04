@@ -1,18 +1,14 @@
 package budget.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import budget.model.domain.Budget;
 import budget.model.domain.BudgetItem;
 import budget.model.domain.PendingChange;
-import budget.model.domain.ChangeLog;
 import budget.model.domain.user.PrimeMinister;
 import budget.model.domain.user.User;
 import budget.model.enums.Status;
 import budget.repository.BudgetRepository;
-import budget.repository.ChangeLogRepository;
 import budget.repository.ChangeRequestRepository;
 import budget.constants.Limits;
 import budget.constants.Message;
@@ -29,28 +25,28 @@ public class ChangeRequestService {
     private final ChangeRequestRepository changeRequestRepository;
     private final BudgetValidationService budgetValidationService;
     private final BudgetRepository budgetRepository;
-    private final ChangeLogRepository changeLogRepository;
+    private final ChangeLogService changeLogService;
     private final BudgetService budgetService;
     /**
      * Constructor for ChangeRequestService.
      * @param changeRequestRepository repository for change requests
      * @param budgetValidationService service for validating budget changes
      * @param budgetRepository repository for budgets
-     * @param changeLogRepository repository for change logs
+     * @param changeLogService service for change logs
      * @param budgetService service for budget calculations
      */
     public ChangeRequestService(
         ChangeRequestRepository changeRequestRepository,
         BudgetValidationService budgetValidationService,
         BudgetRepository budgetRepository,
-        ChangeLogRepository changeLogRepository,
-        BudgetService budgetService
+        BudgetService budgetService,
+        ChangeLogService changeLogService
     ) {
         this.changeRequestRepository = changeRequestRepository;
         this.budgetValidationService = budgetValidationService;
         this.budgetRepository = budgetRepository;
-        this.changeLogRepository = changeLogRepository;
         this.budgetService = budgetService;
+        this.changeLogService = changeLogService;
     }
 
     /**
@@ -234,7 +230,7 @@ public class ChangeRequestService {
      * @param change the change request to update
      * @param newStatus the new status to set (APPROVED or REJECTED)
      */
-    public void updateChangeStatus(
+    private void updateChangeStatus(
         PrimeMinister pm,
         PendingChange change,
         Status newStatus) {
@@ -244,7 +240,7 @@ public class ChangeRequestService {
         Budget budget = findBudget(change.getBudgetItemYear());
 
         if (newStatus == Status.APPROVED) {
-            processApprovedChange(change, budget, pm);
+            processApprovedChange(change, budget);
         } else if (newStatus == Status.REJECTED) {
             change.reject();
         }
@@ -301,13 +297,11 @@ public class ChangeRequestService {
      *
      * @param change the approved change request
      * @param budget the budget containing the item to be updated
-     * @param pm the prime minister who approved the change
      * @throws IllegalArgumentException if the budget item doesn't exist
      */
     private void processApprovedChange(
         PendingChange change,
-        Budget budget,
-        PrimeMinister pm)
+        Budget budget)
         throws IllegalArgumentException {
         Optional<BudgetItem> existingItem = findBudgetItem(
             budget,
@@ -327,7 +321,7 @@ public class ChangeRequestService {
                 existingItem.get(), change.getNewValue(), budget);
             budgetRepository.save(budget);
             change.approve();
-            createChangeLog(change, pm);
+            changeLogService.recordChange(change);
         } catch (Exception e) {
             // Rollback: restore old value and recalculate totals
             existingItem.get().setValue(oldValue);
@@ -359,24 +353,5 @@ public class ChangeRequestService {
         return budget.getItems().stream()
             .filter(item -> item.getId() == itemId)
             .findFirst();
-    }
-
-    /**
-     * Creates and saves a change log entry for an approved change request.
-     * @param request the approved change request
-     * @param pm the prime minister who approved the change
-     */
-    private void createChangeLog(PendingChange request, PrimeMinister pm) {
-        int newLogId = changeLogRepository.generateId();
-        ChangeLog logEntry = new ChangeLog(
-            newLogId,
-            request.getBudgetItemId(),
-            request.getOldValue(),
-            request.getNewValue(),
-            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            pm.getFullName(),
-            pm.getId()
-        );
-        changeLogRepository.save(logEntry);
     }
 }
