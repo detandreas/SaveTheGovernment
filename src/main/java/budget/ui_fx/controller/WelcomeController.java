@@ -8,13 +8,14 @@ import budget.constants.Message;
 import budget.ui_fx.util.SceneLoader;
 
 public class WelcomeController {
-
+    @FXML private Label nameLabel;
     @FXML private Label welcomeLabel;
     @FXML private Button loginButton;
     @FXML private Button createAccountButton;
 
     @FXML
     public void initialize() {
+        nameLabel.setText(Message.APPLICATION_NAME);
         welcomeLabel.setText(Message.WELCOME_MESSAGE);
     }
     

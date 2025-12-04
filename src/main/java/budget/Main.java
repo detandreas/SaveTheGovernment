@@ -10,7 +10,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         try {
             SceneLoader loader = new SceneLoader(primaryStage);
-            loader.load("/view/WelcomeView.fxml", "Budget App - Welcome");
+            loader.load("/view/WelcomeView.fxml", "Save The Government App - Welcome");
         } catch (Exception e) {
             System.err.println("Κρίσιμο σφάλμα κατά την εκκίνηση της εφαρμογής!");
             e.printStackTrace();
