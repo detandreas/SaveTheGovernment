@@ -41,7 +41,7 @@ public class TestChangeLog {
         assertEquals(OLD_VALUE, changeLog.oldValue(), "Failure - wrong oldValue");
         assertEquals(NEW_VALUE, changeLog.newValue(), "Failure - wrong newValue");
         assertEquals(SUBMITTED_DATE, changeLog.submittedDate(), "Failure - wrong submittedDate");
-        assertEquals(ACTOR_USERNAME, changeLog.actorUserName(), "Failure - wrong actorUserName");
+        assertEquals(ACTOR_USERNAME, changeLog.actorName(), "Failure - wrong actorName");
         assertEquals(ACTOR_ID, changeLog.actorId(), "Failure - wrong actorId");
     }
 
@@ -71,7 +71,7 @@ public class TestChangeLog {
         assertTrue(s.contains("oldValue=750.0"), "Failure - toString missing oldValue");
         assertTrue(s.contains("newValue=1000.0"), "Failure - toString missing newValue");
         assertTrue(s.contains("submittedDate=25-11-2025 12:00"), "Failure - toString missing submittedDate");
-        assertTrue(s.contains("actorUserName=User"), "Failure - toString missing actorUserName");
+        assertTrue(s.contains("actorName=User"), "Failure - toString missing actorName");
         assertTrue(s.contains("actorId=" + changeLog.actorId()), "Failure - toString missing actorId");
     }
 }

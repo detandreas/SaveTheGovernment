@@ -1,6 +1,7 @@
 package budget.service;
 
 import java.util.Optional;
+import java.util.UUID;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import budget.model.domain.Budget;
 import budget.model.domain.BudgetItem;
@@ -10,6 +11,7 @@ import budget.model.domain.user.User;
 import budget.model.enums.Status;
 import budget.repository.BudgetRepository;
 import budget.repository.ChangeRequestRepository;
+import budget.repository.UserRepository;
 import budget.constants.Limits;
 import budget.constants.Message;
 import budget.exceptions.ValidationException;
@@ -23,28 +25,32 @@ import budget.exceptions.ValidationException;
 public class ChangeRequestService {
 
     private final ChangeRequestRepository changeRequestRepository;
-    private final BudgetValidationService budgetValidationService;
     private final BudgetRepository budgetRepository;
+    private final UserRepository userRepository;
+    private final BudgetValidationService budgetValidationService;
     private final ChangeLogService changeLogService;
     private final BudgetService budgetService;
     /**
      * Constructor for ChangeRequestService.
      * @param changeRequestRepository repository for change requests
-     * @param budgetValidationService service for validating budget changes
      * @param budgetRepository repository for budgets
+     * @param userRepository repository for users
+     * @param budgetValidationService service for validating budget changes
      * @param changeLogService service for change logs
      * @param budgetService service for budget calculations
      */
     public ChangeRequestService(
         ChangeRequestRepository changeRequestRepository,
-        BudgetValidationService budgetValidationService,
         BudgetRepository budgetRepository,
+        UserRepository userRepository,
+        BudgetValidationService budgetValidationService,
         BudgetService budgetService,
         ChangeLogService changeLogService
     ) {
         this.changeRequestRepository = changeRequestRepository;
-        this.budgetValidationService = budgetValidationService;
         this.budgetRepository = budgetRepository;
+        this.userRepository = userRepository;
+        this.budgetValidationService = budgetValidationService;
         this.budgetService = budgetService;
         this.changeLogService = changeLogService;
     }
@@ -238,9 +244,10 @@ public class ChangeRequestService {
         validateRequestStatus(change);
 
         Budget budget = findBudget(change.getBudgetItemYear());
+        User userWhoProposedChange = findUser(change.getRequestById());
 
         if (newStatus == Status.APPROVED) {
-            processApprovedChange(change, budget);
+            processApprovedChange(change, budget, userWhoProposedChange);
         } else if (newStatus == Status.REJECTED) {
             change.reject();
         }
@@ -290,6 +297,16 @@ public class ChangeRequestService {
                 "Budget not found for year " + year
             ));
     }
+    private User findUser(UUID userId) {
+        Optional<User> user = userRepository.findById(userId);
+
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Change doesn't have requestor");
+        }
+        return user.get();
+
+    }
 
     /**
      * Processes an approved change request by applying it to the budget.
@@ -297,11 +314,13 @@ public class ChangeRequestService {
      *
      * @param change the approved change request
      * @param budget the budget containing the item to be updated
+     * @param userWhoProposedChange the user that sumbitted the PendingChange
      * @throws IllegalArgumentException if the budget item doesn't exist
      */
     private void processApprovedChange(
         PendingChange change,
-        Budget budget)
+        Budget budget,
+        User userWhoProposedChange)
         throws IllegalArgumentException {
         Optional<BudgetItem> existingItem = findBudgetItem(
             budget,
@@ -321,7 +340,7 @@ public class ChangeRequestService {
                 existingItem.get(), change.getNewValue(), budget);
             budgetRepository.save(budget);
             change.approve();
-            changeLogService.recordChange(change);
+            changeLogService.recordChange(change, userWhoProposedChange);
         } catch (Exception e) {
             // Rollback: restore old value and recalculate totals
             existingItem.get().setValue(oldValue);

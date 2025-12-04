@@ -9,7 +9,7 @@ import java.util.UUID;
  * @param oldValue the old value of the budget item
  * @param newValue the new value of the budget item
  * @param submittedDate the date when the change was submitted
- * @param actorUserName the user name of the actor
+ * @param actorName the full name of the actor
  * @param actorId the ID of the actor
  */
 public record ChangeLog(
@@ -18,6 +18,6 @@ public record ChangeLog(
     double oldValue,
     double newValue,
     String submittedDate,
-    String actorUserName,
+    String actorName,
     UUID actorId
 ) { }

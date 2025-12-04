@@ -36,7 +36,7 @@ public class PendingChange {
      * @param budgetItemYear the year of the Budget that
      *                                      the budgetItem belongs to
      * @param budgetItemName the name of the budget item to be modified.
-     * @param requestByName the user name requesting the change
+     * @param requestByName the full name requesting the change
      * @param requestById the user id requesting the change
      * @param oldValue the current value of the budget item
      * @param newValue the proposed new value for the budget item
@@ -95,7 +95,7 @@ public class PendingChange {
     }
     /**
      * Return the name of the user that requested the change.
-     * @return a String representing UserName
+     * @return a String representing User FullName
      */
     public String getRequestByName() {
         return requestByName;

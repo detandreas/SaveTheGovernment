@@ -2,6 +2,7 @@ package budget.service;
 
 import budget.model.domain.ChangeLog;
 import budget.model.domain.PendingChange;
+import budget.model.domain.user.User;
 import budget.model.enums.Status;
 import budget.repository.ChangeLogRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -17,9 +18,6 @@ public class ChangeLogService {
     /** Repository for log persistence. */
     private final ChangeLogRepository changeLogRepository;
 
-    /** Authentication service used to obtain the current user. */
-    private final UserAuthenticationService authService;
-
     /** Date-time format used for submitted changes. */
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -28,25 +26,23 @@ public class ChangeLogService {
      * Constructs a ChangeLogService.
      *
      * @param repository repository handling ChangeLog persistence
-     * @param auth       authentication service
      */
     @SuppressFBWarnings(
         value = "EI_EXPOSE_REP2",
         justification =
         "This allows testability and shared state across service instances."
     )
-    public ChangeLogService(ChangeLogRepository repository,
-            UserAuthenticationService auth) {
+    public ChangeLogService(ChangeLogRepository repository) {
         this.changeLogRepository = repository;
-        this.authService = auth;
     }
 
     /**
      * Records a change for the given budget item.
      *
      * @param change  the proposed change
+     * @param user the user who proposed the change
      */
-    public void recordChange(PendingChange change) {
+    public void recordChange(PendingChange change, User user) {
         if (change == null) {
             throw new IllegalArgumentException(
                     "PendingChange cannot be null");
@@ -55,19 +51,18 @@ public class ChangeLogService {
         if (change.getStatus() != Status.APPROVED) {
             throw new IllegalStateException("Change is not approved yet");
         }
-        validateRecordChangeInputs(change);
+        validateRecordChangeInputs(change, user);
 
         String timestamp = LocalDateTime.now().format(FORMATTER);
         int logId = changeLogRepository.generateId();
-        var currentUser = authService.getCurrentUser();
         ChangeLog log = new ChangeLog(
                 logId,
                 change.getBudgetItemId(),
                 change.getOldValue(),
                 change.getNewValue(),
                 timestamp,
-                currentUser.getUserName(),
-                currentUser.getId()
+                user.getFullName(),
+                user.getId()
         );
 
         changeLogRepository.save(log);
@@ -77,25 +72,51 @@ public class ChangeLogService {
      * Validates inputs for recordChange method.
      *
      * @param change the Pending change to log
+     * @param user the user who proposed the change
      * @throws IllegalArgumentException if change is null
      * @throws IllegalStateException if no authenticated user exists
      * or user has invalid data
      */
-    private void validateRecordChangeInputs(PendingChange change) {
-        if (change == null) {
-            throw new IllegalArgumentException(
-                    "PendingChange cannot be null");
-        }
-
-        var currentUser = authService.getCurrentUser();
-        if (currentUser == null) {
+    private void validateRecordChangeInputs(PendingChange change, User user) {
+        if (user == null) {
             throw new IllegalStateException(
                     "No authenticated user present");
         }
 
-        if (currentUser.getUserName() == null) {
+        if (user.getUserName() == null) {
             throw new IllegalStateException(
                     "Authenticated user has null username");
+        }
+
+        if (user.getFullName() == null) {
+            throw new IllegalStateException(
+                    "Authenticated user has null full name");
+        }
+
+        if (!user.getId().equals(change.getRequestById())) {
+            throw new IllegalArgumentException(
+                    "User ID mismatch: change was requested by different user");
+        }
+
+        String changeRequesterName = change.getRequestByName();
+        if (changeRequesterName == null) {
+            throw new IllegalArgumentException(
+                    "Change request name cannot be null");
+        }
+
+        boolean nameMatches = changeRequesterName.equals(user.getFullName())
+                || changeRequesterName.equals(user.getUserName());
+                //αμα ταιριάζει με το username το δεχόμαστε
+
+        if (!nameMatches) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "User name mismatch: change was requested by '%s' "
+                            + "but authenticated user is '%s' (fullName: '%s')",
+                            changeRequesterName,
+                            user.getUserName(),
+                            user.getFullName()
+                    ));
         }
     }
 }
