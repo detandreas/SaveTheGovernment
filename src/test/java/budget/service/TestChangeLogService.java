@@ -198,7 +198,9 @@ public class TestChangeLogService {
 
         // This test verifies that if requestByName were null, it would be caught
         // In practice, PendingChange constructor doesn't allow null, but validation checks for it
-        assertThrows(IllegalArgumentException.class, () -> changeLogService.recordChange(change, testUser));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> changeLogService.recordChange(change, testUser));
+        assertEquals("Change request name cannot be null", ex.getMessage());
     }
 
     @Test
