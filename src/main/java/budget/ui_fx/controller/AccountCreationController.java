@@ -6,9 +6,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import budget.ui_fx.util.SceneLoader;
 import budget.constants.Message;
@@ -21,24 +24,26 @@ import budget.repository.UserRepository;
 public class AccountCreationController {
 
     @FXML private Label createAccountLabel;
-    @FXML private Label usernameLabel;
-    @FXML private Label passwordLabel;
-    @FXML private Label confirmPasswordLabel;
-    @FXML private Label fullNameLabel;
-    @FXML private Label roleLabel;
-    @FXML private Label ministryLabel;
     @FXML private Label errorLabel;
     @FXML private Label successLabel;
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
     @FXML private TextField fullNameField;
+    @FXML private TextField visiblePasswordField;
+    @FXML private TextField confirmVisiblePasswordField;
+    @FXML private Button showPasswordButton;
+    @FXML private ImageView eyeIconImageView;
+    @FXML private ImageView confirmEyeIconImageView;
     @FXML private ComboBox<UserRole> roleComboBox;
     @FXML private ComboBox<Ministry> ministryComboBox;
     @FXML private HBox ministryContainer;
     @FXML private Button createAccountButton;
     @FXML private Button cancelButton;
     @FXML private Button backButton;
+
+    private final String EYE_OPEN_PATH = "/images/eye_open.png";
+    private final String EYE_CLOSED_PATH = "/images/eye_closed.png";
     
     private final UserAuthenticationService authService = 
             new UserAuthenticationService(new UserRepository());
@@ -46,16 +51,18 @@ public class AccountCreationController {
     @FXML
     public void initialize() {
         createAccountLabel.setText(Message.CREATE_ACCOUNT_MESSAGE);
-        usernameLabel.setText(Message.SIGNUP_ENTER_USERNAME);
-        passwordLabel.setText(Message.SIGNUP_ENTER_PASSWORD);
-        confirmPasswordLabel.setText(Message.SIGNUP_CONFIRM_PASSWORD);
-        fullNameLabel.setText(Message.SIGNUP_ENTER_FULLNAME);
-        roleLabel.setText(Message.SIGNUP_SELECT_ROLE);
-        ministryLabel.setText(Message.SIGNUP_SELECT_DEPARTMENT);
+        usernameField.setPromptText(Message.SIGNUP_ENTER_USERNAME);
+        passwordField.setPromptText(Message.SIGNUP_ENTER_PASSWORD);
+        confirmPasswordField.setPromptText(Message.SIGNUP_CONFIRM_PASSWORD);
+        fullNameField.setPromptText(Message.SIGNUP_ENTER_FULLNAME);
+        roleComboBox.setPromptText(Message.SIGNUP_SELECT_ROLE);
+        ministryComboBox.setPromptText(Message.SIGNUP_SELECT_DEPARTMENT);
         createAccountButton.setText(Message.CREATE_ACCOUNT_BUTTON);
         cancelButton.setText(Message.CANCEL_BUTTON);
         backButton.setText(Message.BACK_BUTTON);
         errorLabel.setText("");
+        passwordField.textProperty().bindBidirectional(visiblePasswordField.textProperty());
+        confirmPasswordField.textProperty().bindBidirectional(confirmVisiblePasswordField.textProperty());
 
         roleComboBox.getItems().setAll(UserRole.values());
         ministryComboBox.getItems().setAll(Ministry.values());
@@ -67,7 +74,6 @@ public class AccountCreationController {
                 return role.getDisplayName(); 
             }
 
-            //Η κλάση StringConverter απαιτεί και την fromString για να λειτουργήσει.
             @Override
             public UserRole fromString(String string) {
                 return null; 
@@ -99,6 +105,67 @@ public class AccountCreationController {
         
         ministryContainer.setVisible(false);
         ministryContainer.setManaged(false);
+    }
+
+    @FXML
+    private void handleShowPassword(MouseEvent event) {
+        visiblePasswordField.requestFocus(); 
+        passwordField.setVisible(false);
+        passwordField.setManaged(false);
+        visiblePasswordField.setVisible(true);
+        visiblePasswordField.setManaged(true);
+        
+        // 1. Δημιουργήστε ένα νέο αντικείμενο Image χρησιμοποιώντας το eye_closed.png
+        // (Η διαδρομή ξεκινά από το resources, π.χ. /images/eye_closed.png)
+        Image closedEye = new Image(getClass().getResourceAsStream(EYE_CLOSED_PATH));
+        
+        // 2. Ορίστε τη νέα εικόνα στο ImageView
+        eyeIconImageView.setImage(closedEye);
+    }
+
+    @FXML
+    private void handleShowConfirmPassword(MouseEvent event) {
+        confirmVisiblePasswordField.requestFocus(); 
+        confirmPasswordField.setVisible(false);
+        confirmPasswordField.setManaged(false);
+        confirmVisiblePasswordField.setVisible(true);
+        confirmVisiblePasswordField.setManaged(true);
+        
+        // 1. Δημιουργήστε ένα νέο αντικείμενο Image χρησιμοποιώντας το eye_closed.png
+        // (Η διαδρομή ξεκινά από το resources, π.χ. /images/eye_closed.png)
+        Image closedEye = new Image(getClass().getResourceAsStream(EYE_CLOSED_PATH));
+        
+        // 2. Ορίστε τη νέα εικόνα στο ImageView
+        confirmEyeIconImageView.setImage(closedEye);
+    }
+
+    @FXML
+    private void handleHidePassword(MouseEvent event) {
+        passwordField.requestFocus(); 
+        visiblePasswordField.setVisible(false);
+        visiblePasswordField.setManaged(false);
+        passwordField.setVisible(true);
+        passwordField.setManaged(true);
+
+        // 1. Δημιουργήστε ένα νέο αντικείμενο Image χρησιμοποιώντας το eye_open.png
+        Image openEye = new Image(getClass().getResourceAsStream(EYE_OPEN_PATH));
+        
+        // 2. Ορίστε τη νέα εικόνα στο ImageView
+        eyeIconImageView.setImage(openEye);
+    }
+
+    @FXML
+    private void handleHideConfirmPassword(MouseEvent event) {
+        confirmPasswordField.requestFocus();
+        confirmVisiblePasswordField.setVisible(false);
+        confirmVisiblePasswordField.setManaged(false);
+        confirmPasswordField.setVisible(true);
+        confirmPasswordField.setManaged(true);
+
+        Image openEye = new Image(getClass().getResourceAsStream(EYE_OPEN_PATH));
+        
+        // 2. Ορίστε τη νέα εικόνα στο ImageView
+        confirmEyeIconImageView.setImage(openEye);
     }
 
     @FXML

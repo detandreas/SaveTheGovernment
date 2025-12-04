@@ -7,11 +7,14 @@ public final class Message {
     private Message() { }
 
     // Common Button Labels
-    public static final String BACK_BUTTON = "Back";
+    public static final String BACK_BUTTON = "Go Back";
     public static final String CANCEL_BUTTON = "Cancel";
+    //Name of the application
+    public static final String APPLICATION_NAME =
+        "Save The Government";
     // Welcome Message
     public static final String WELCOME_MESSAGE = "Welcome"
-        + " to the Government Budget application!";
+        + " to the budget management application";
     // Login Messages
     public static final String LOGIN_BUTTON = "Login";
     
@@ -29,7 +32,7 @@ public final class Message {
     // Create Account Messages
     public static final String CREATE_ACCOUNT_BUTTON = "Create Account";
     public static final String CREATE_ACCOUNT_MESSAGE =
-        "Please fill in your details to create an account.";
+        "Please fill in your credentials to create an account.";
     public static final String SIGNUP_ENTER_USERNAME = "Enter a username:";
     public static final String SIGNUP_ENTER_PASSWORD = "Enter a password:";
     public static final String SIGNUP_CONFIRM_PASSWORD =
