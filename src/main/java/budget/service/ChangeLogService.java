@@ -47,6 +47,11 @@ public class ChangeLogService {
      * @param change  the proposed change
      */
     public void recordChange(PendingChange change) {
+        if (change == null) {
+            throw new IllegalArgumentException(
+                    "PendingChange cannot be null");
+        }
+
         if (change.getStatus() != Status.APPROVED) {
             throw new IllegalStateException("Change is not approved yet");
         }
