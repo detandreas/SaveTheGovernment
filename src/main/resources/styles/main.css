@@ -1,0 +1,13 @@
+/* main.css */
+
+/* 1. Βασικές ρυθμίσεις & Χρώματα */
+@import "application.css";
+
+/* 2. Κείμενα */
+@import "typography.css";
+
+/* 3. Φόρμες & Inputs */
+@import "forms.css";
+
+/* 4. Κουμπιά */
+@import "buttons.css";

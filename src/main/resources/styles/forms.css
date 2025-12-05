@@ -1,0 +1,71 @@
+/* 3. Πεδία Κειμένου (TextField, PasswordField) & ComboBox */
+.text-field, .password-field, .combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 5px; /* Στρογγυλεμένες γωνίες */
+    -fx-border-radius: 5px;
+    -fx-border-color: #cccccc; /* Απαλό περίγραμμα */
+    -fx-border-width: 1px;
+    -fx-padding: 8px;
+}
+
+/* --- Ειδική ρύθμιση για Embedded ComboBox --- */
+
+/* Κάνει το ComboBox διάφανο για να φαίνεται το χρώμα του input-container */
+.combo-box.embedded-text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+}
+
+/* Αφαιρεί το περίγραμμα και το φόντο από το κουμπί με το βελάκι */
+.combo-box.embedded-text-field .arrow-button {
+    -fx-background-color: transparent;
+}
+
+/* Προαιρετικά: Αλλάζει το χρώμα στο βελάκι για να ταιριάζει */
+.combo-box.embedded-text-field .arrow {
+    -fx-background-color: #7f8c8d;
+}
+
+
+/* --- Μοντέρνα Πεδία με Εικονίδια --- */
+
+/* Το "κουτί" που περιέχει το εικονίδιο και το πεδίο */
+.input-container {
+    -fx-background-color: #f1f2f6; /* Απαλό γκρι φόντο όπως στην εικόνα */
+    -fx-background-radius: 30px;   /* Πολύ στρογγυλεμένες γωνίες (pill shape) */
+    -fx-border-radius: 30px;
+    -fx-border-color: transparent;
+    -fx-padding: 5px 15px;         /* "Αέρας" μέσα στο κουτί */
+    -fx-effect: null;              /* Αφαίρεση σκιών αν υπάρχουν */
+}
+
+/* Όταν κάνουμε κλικ στο κουτί */
+.input-container:focused-within {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #3498db; /* Μπλε περίγραμμα στο focus */
+    -fx-effect: dropshadow(three-pass-box, rgba(52,152,219,0.2), 5, 0, 0, 0);
+}
+
+/* Το πεδίο κειμένου μέσα στο κουτί - ΠΡΕΠΕΙ ΝΑ ΕΙΝΑΙ ΔΙΑΦΑΝΟ */
+.embedded-text-field {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 8px;
+    -fx-prompt-text-fill: #a0a0a0; /* Γκρι γράμματα για το placeholder */
+    -fx-text-fill: #333333;
+}
+
+/* Τα εικονίδια αριστερά (χρήστης, λουκέτο) */
+.field-icon {
+    -fx-opacity: 0.5; /* Λίγο αχνά για να μην ενοχλούν */
+}
+
+
+/* 7. ComboBox List Cells (Η λίστα που κατεβαίνει) */
+.combo-box-popup .list-view .list-cell:filled:selected, 
+.combo-box-popup .list-view .list-cell:filled:hover {
+    -fx-background-color: #194f73;
+    -fx-text-fill: white;
+}

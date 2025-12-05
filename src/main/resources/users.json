@@ -1,1 +1,9 @@
-[ ]
+[
+  {
+    "id": "389c1bbf-5f90-4fcd-bf4d-7f2f851bc996",
+    "userName": "andreas",
+    "fullName": "Andreas Papathanasioy",
+    "password": "4a27412e7953eadb2302b7dc9ca237fb40e7026a5842dd4b0e54533a5679006c",
+    "userRole": "CITIZEN"
+  }
+]

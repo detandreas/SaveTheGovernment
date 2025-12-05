@@ -15,9 +15,14 @@ import javafx.scene.image.ImageView;
 
 import budget.ui_fx.util.SceneLoader;
 import budget.constants.Message;
-import budget.constants.Limits;
+import budget.exceptions.ValidationException;
 import budget.model.enums.UserRole;
+import budget.model.domain.user.Citizen;
+import budget.model.domain.user.GovernmentMember;
+import budget.model.domain.user.PrimeMinister;
+import budget.model.domain.user.User;
 import budget.model.enums.Ministry;
+import budget.service.InputValidationService;
 import budget.service.UserAuthenticationService;
 import budget.repository.UserRepository;
 
@@ -48,6 +53,7 @@ public class AccountCreationController {
     private final UserAuthenticationService authService = 
             new UserAuthenticationService(new UserRepository());
 
+
     @FXML
     public void initialize() {
         createAccountLabel.setText(Message.CREATE_ACCOUNT_MESSAGE);
@@ -60,7 +66,6 @@ public class AccountCreationController {
         createAccountButton.setText(Message.CREATE_ACCOUNT_BUTTON);
         cancelButton.setText(Message.CANCEL_BUTTON);
         backButton.setText(Message.BACK_BUTTON);
-        errorLabel.setText("");
         passwordField.textProperty().bindBidirectional(visiblePasswordField.textProperty());
         confirmPasswordField.textProperty().bindBidirectional(confirmVisiblePasswordField.textProperty());
 
@@ -115,11 +120,8 @@ public class AccountCreationController {
         visiblePasswordField.setVisible(true);
         visiblePasswordField.setManaged(true);
         
-        // 1. Δημιουργήστε ένα νέο αντικείμενο Image χρησιμοποιώντας το eye_closed.png
-        // (Η διαδρομή ξεκινά από το resources, π.χ. /images/eye_closed.png)
         Image closedEye = new Image(getClass().getResourceAsStream(EYE_CLOSED_PATH));
         
-        // 2. Ορίστε τη νέα εικόνα στο ImageView
         eyeIconImageView.setImage(closedEye);
     }
 
@@ -131,11 +133,8 @@ public class AccountCreationController {
         confirmVisiblePasswordField.setVisible(true);
         confirmVisiblePasswordField.setManaged(true);
         
-        // 1. Δημιουργήστε ένα νέο αντικείμενο Image χρησιμοποιώντας το eye_closed.png
-        // (Η διαδρομή ξεκινά από το resources, π.χ. /images/eye_closed.png)
         Image closedEye = new Image(getClass().getResourceAsStream(EYE_CLOSED_PATH));
-        
-        // 2. Ορίστε τη νέα εικόνα στο ImageView
+
         confirmEyeIconImageView.setImage(closedEye);
     }
 
@@ -147,10 +146,8 @@ public class AccountCreationController {
         passwordField.setVisible(true);
         passwordField.setManaged(true);
 
-        // 1. Δημιουργήστε ένα νέο αντικείμενο Image χρησιμοποιώντας το eye_open.png
         Image openEye = new Image(getClass().getResourceAsStream(EYE_OPEN_PATH));
         
-        // 2. Ορίστε τη νέα εικόνα στο ImageView
         eyeIconImageView.setImage(openEye);
     }
 
@@ -164,25 +161,54 @@ public class AccountCreationController {
 
         Image openEye = new Image(getClass().getResourceAsStream(EYE_OPEN_PATH));
         
-        // 2. Ορίστε τη νέα εικόνα στο ImageView
         confirmEyeIconImageView.setImage(openEye);
     }
 
     @FXML
     private void handleCreateAccount() {
-        if (!isInputValid()) {
-            return; 
-        }
+        errorLabel.setVisible(false);
+        errorLabel.setText(""); 
+        successLabel.setVisible(false);
+
         String username = usernameField.getText();
         String password = passwordField.getText();
         String fullName = fullNameField.getText();
-        UserRole role = roleComboBox.getValue();
         Ministry ministry = ministryComboBox.getValue();
+        UserRole role = roleComboBox.getValue();
 
-        boolean isCreated = authService.signUp(username, password, fullName, role, ministry);
+        User userToValidate = null;
 
-        if (isCreated) {
-            successLabel.setText(Message.CREATE_ACCOUNT_SUCCESS);
+        if(role == UserRole.CITIZEN ) {
+            userToValidate = new Citizen(username, fullName, password);
+        } else if (role == UserRole.GOVERNMENT_MEMBER) {
+            userToValidate = new GovernmentMember(username, fullName, password, ministry);
+        } else {
+            userToValidate = PrimeMinister.getInstance(username, fullName, password);
+        }
+
+        if (userToValidate != null) {
+            try {
+                InputValidationService validationService = new InputValidationService();
+                validationService.validateNewUser(userToValidate); 
+                boolean isCreated = authService.signUp(username, password, fullName, role, ministry);
+
+                if (isCreated) {
+                    successLabel.setText(Message.CREATE_ACCOUNT_SUCCESS);
+                    successLabel.setVisible(true);
+                    errorLabel.setVisible(false); 
+                } else {
+                    // Το Validation πέρασε, αλλά η βάση απέρριψε την εγγραφή
+                    errorLabel.setText(Message.ERROR_INVALID_INPUT); 
+                    errorLabel.setVisible(true);
+                    successLabel.setVisible(false);
+                }
+
+            } catch (ValidationException e) {
+                // Περίπτωση Γ: Το Validation απέτυχε
+                errorLabel.setText(e.getMessage());
+                errorLabel.setVisible(true);
+                successLabel.setVisible(false);
+            }
         }
     }
 
@@ -194,7 +220,8 @@ public class AccountCreationController {
         fullNameField.clear();
         roleComboBox.setValue(null);
         ministryComboBox.setValue(null);
-        errorLabel.setText("");
+        errorLabel.setVisible(false);
+        successLabel.setVisible(false);
     }
 
     @FXML
@@ -206,36 +233,5 @@ public class AccountCreationController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    private boolean isInputValid() {
-        UserRole selectedRole = roleComboBox.getValue();
-        Ministry selectedMinistry = ministryComboBox.getValue();
-        if (usernameField.getLength() > Limits.MAX_USERNAME_LENGTH ||
-            usernameField.getLength() < Limits.MIN_USERNAME_LENGTH) {
-            errorLabel.setText(Message.USERNAME_LENGTH_LIMITS_MESSAGE);
-            return false;
-        }
-        if (passwordField.getLength() > Limits.MAX_PASSWORD_LENGTH ||
-            passwordField.getLength() < Limits.MIN_PASSWORD_LENGTH) {
-            errorLabel.setText(Message.PASSWORD_LENGTH_LIMITS_MESSAGE);
-            return false;
-        }
-        if (!passwordField.getText().equals(confirmPasswordField.getText())) {
-            errorLabel.setText(Message.ERROR_PASSWORD_MISMATCH);
-            return false;
-        }
-        if (fullNameField.getLength() > Limits.MAX_FULL_NAME_LENGTH) {
-            errorLabel.setText(Message.FULLNAME_LENGTH_LIMITS_MESSAGE);
-            return false;
-        }
-        if (selectedRole == null) {
-            errorLabel.setText(Message.ERROR_ROLE);
-            return false;
-        }
-        if (selectedRole == UserRole.GOVERNMENT_MEMBER && selectedMinistry == null) {
-            errorLabel.setText(Message.ERROR_MINISTRY);
-            return false;
-        }
-        return true;
     }
 }

@@ -1,0 +1,77 @@
+/* 4. Κουμπιά (Buttons) */
+.button {
+    -fx-background-color: #032942; /* Βασικό Μπλε */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand; /* Χεράκι όταν περνάει το ποντίκι */
+    -fx-padding: 8px 15px;
+}
+
+/* Όταν το ποντίκι περνάει πάνω από το κουμπί (Hover) */
+.button:hover {
+    -fx-background-color: #194f73; /* Πιο σκούρο μπλε */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+/* Όταν πατιέται το κουμπί (Pressed) */
+.button:pressed {
+    -fx-background-color: #81918d; /* Πράσινο */
+}
+
+/* 5. Ειδική Κλάση για το Κουμπί "Ματάκι" (.icon-button) 
+   Αντικαθιστά το style="-fx-background-color: transparent..." που είχες στο FXML
+*/
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 4px;
+    -fx-cursor: hand;
+}
+
+.icon-button:hover {
+    -fx-background-color: rgba(0,0,0,0.05); /* Πολύ απαλό γκρι όταν περνάει το ποντίκι */
+    -fx-background-radius: 50%; /* Κυκλικό εφέ */
+}
+
+.link-button {
+    -fx-background-color: transparent; /* Διάφανο φόντο */
+    -fx-border-color: transparent;
+    -fx-text-fill: #161717; /* Γκρι χρώμα κειμένου */
+    -fx-underline: true;    /* Υπογράμμιση */
+    -fx-cursor: hand;       /* Χεράκι στο ποντίκι */
+    -fx-font-size: 13px;    /* Λίγο πιο μικρό από τα κύρια κουμπιά */
+}
+
+.link-button:pressed {
+    -fx-background-color: transparent;
+}
+
+/* Στυλ για το εικονίδιο μέσα στο link button */
+.link-button .image-view {
+    -fx-opacity: 0.7; /* Ελαφρώς πιο αχνό το βελάκι */
+}
+
+.link-button:hover {
+    -fx-text-fill: #555555; /* Απλά λίγο πιο σκούρο γκρι για εφέ, αντί για μπλε */
+    /* Αν θες να μην αλλάζει ΚΑΘΟΛΟΥ, βάλε: -fx-text-fill: #7f8c8d; */
+    -fx-background-color: transparent;
+}
+
+/* Βασική κατάσταση του κουμπιού (HBox) */
+.menu-btn {
+    -fx-background-color: transparent; /* Διάφανο αρχικά */
+    -fx-cursor: hand;                  /* Το ποντίκι γίνεται χεράκι */
+    -fx-background-radius: 5;          /* Στρογγυλεμένες γωνίες (προαιρετικό) */
+    -fx-padding: 5;                    /* Λίγο "αέρας" γύρω γύρω */
+}
+
+/* Κατάσταση όταν το ποντίκι είναι από πάνω (Hover) */
+.menu-btn:hover {
+    -fx-background-color: #e0e0e0;     /* Ανοιχτό Γκρι */
+}
+
+/* Κατάσταση όταν πατιέται (Pressed - Προαιρετικό για εφέ κλικ) */
+.menu-btn:pressed {
+    -fx-background-color: #b0b0b0;     /* Πιο σκούρο γκρι όταν κάνεις κλικ */
+}
