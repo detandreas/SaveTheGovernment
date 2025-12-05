@@ -1,0 +1,177 @@
+package budget.service;
+
+import budget.constants.Limits;
+import budget.constants.Message;
+import budget.exceptions.ValidationException;
+import budget.model.domain.BudgetItem;
+import budget.model.domain.Budget;
+import budget.model.enums.Ministry;
+import budget.repository.BudgetRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class TestBudgetValidationService {
+    private TestBudgetRepository repo;
+    private BudgetValidationService service;
+
+    @BeforeEach
+    void setUp() {
+        repo = new TestBudgetRepository();
+        servic = new TestBudgetValidationService(repo);
+    }
+
+    //Test Stub
+    private static class TestBudgetRepository implements BudgetRepository {
+        private boolean existsById = false;
+        private boolean existsByName = false;
+
+        void setExistsById(boolean x) {
+            this.existsById = x;
+        }
+        void setExistsByName(boolean x) {
+            this.existsByName = x;
+        }
+
+        @Override
+        public boolean existsByItemId(int id, int year) {
+            return existsById;
+        }
+        @Override
+        public boolean existsByName(String name, int year) {
+            return existsByName;
+        }
+    }
+    
+    @Test
+    void TestValidBudgetItemCreation() {
+        // Assuming Constructor: BudgetItem(int id, String name, double value,
+        // boolean isRevenue, int Year, List<Ministry> ministries)
+        BudgetItem newItem = new BudgetItem(1, "Infra", 10000.0, true, 2025, List.of(Ministry(HEALTH)));
+        Budget budget = new Budget(new ArrayList<>(), 0.0); //netResult = 0 : any change allowed
+
+        assertDoesNotThrow(() -> service.validateBudgetItemCreation(newItem, budget),
+            "Failure - valid budget item creation should not throw");
+    }
+
+    @Test
+    void TestDuplicatedThrows() {
+        repo.setExistsById(true);
+        BudgetItem newItem = new BudgetItem(1, "Infra", 10000.0, true, 2025, List.of(Ministry(HEALTH)));
+        Budget budget = new Budget(new ArrayList<>(), 0.0);
+
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateBudgetItemCreation(newItem, budget));
+        assertEquals(message.DUPLICATE_BUDGET_ITEM_ERROR, ex.getMessage());
+    }
+
+    @Test
+    void TestValidateUniqueName() {
+        repo.setExistsById(true);
+        BudgetItem newItem = new BudgetItem(2, "Infra", 10000.0, true, 2025, List.of(Ministry(HEALTH)));
+        Budget budget = new Budget(new ArrayList<>(), 0.0);
+
+        ValidationException ex = assertThrows(ValidationException.class,
+        () -> service.validateBudgetItemCreation(newItem, budget));
+        assertEquals(Message.DUPLICATE_BUDGET_ITEM_ERROR, ex.getMessage());
+    }
+
+    @Test
+    void TestNegativeAmountOnCreate() {
+        repo.setExistsByName(true);
+        BudgetItem newItem = new BudgetItem(3, "Road", -10000.0, true, 2025, List.of(Ministry(HEALTH)));
+        Budget budget = new Budget(new ArrayList<>(), 0.0);
+
+        ValidationException ex = assertThrows(ValidationException.class,
+        () -> service.validateBudgetItemCreation(newItem, budget));
+        assertEquals(Message.NON_NEGATIVE_AMOUNT_ERROR, ex.getMessage());
+    }
+
+    @Test
+    void TestMinistryNullOrEmptyOnCreate() {
+        BudgetItem newItem = new BudgetItem(3, "Road", -10000.0, true, 2025, null);
+        Budget budget = new Budget(new ArrayList<>(), 0.0);
+        
+        ValidationException ex = assertThrows(ValidationException.class,
+        () -> service.validateBudgetItemCreation(newItem, budget));
+        assertEquals(Message.NON_NEGATIVE_AMOUNT_ERROR, ex.getMessage());
+    }
+
+    @Test
+    void TestMinistryContainsNull() {
+        BudgetItem newItem = new BudgetItem(3, "Road", -10000.0, true, 2025, withNull);
+        Budget budget = new Budget(new ArrayList<>(), 0.0);
+
+        ValidationException ex = assertThrows(ValidationException.class,
+        () -> service.validateBudgetItemCreation(newItem, budget));
+        assertEquals("Cannot belong to null ministry", ex.getMessage());
+    }
+
+    @Test
+    void TestValidateBalanceChangeLimit() {
+        BudgetItem newItem = new BudgetItem(7, "BigCut", 1000000.0, false, 2025,
+        List.of(Ministry.HEALTH));
+        Budget budget = new Budget(new ArrayList<>(), 1000.0);
+
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateBudgetItemCreation(newItem, budget));
+
+        String msg = ex.getMessage();
+        assertTrue(msg.contains("exceeds the allowed limit") ||
+                   msg.contains("change the budget balance"),
+                   "Expected message about exceeding allowed change limit, got: " + msg);
+    }
+
+    
+    @Test
+    void TestDeleteProtectedItem() {
+        BudgetItem newItem = new Budget(10, "Health", 5000.0, false, 2025,
+            List.of(Ministry.HEALTH));
+        Budget budget = new Budget(List.of(item), 0.0);
+
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateBudgetItemDeletion(newItem, budget));
+        String msg = ex.getMessage();
+        assertTrue(msg.contains("protected BudgetItem cannot be deleted", ex.getMessage()));
+    }
+
+   @Test
+   void TestDeteleNullItem() {
+        Budget budget = new Budget(List.of(item), 0.0);
+
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateBudgetItemDeletion(null, budget));
+        String msg = ex.getMessage();
+        assertTrue(msg.contains("item to delete cannot be null", ex.getMessage()));
+   }
+
+   @Test
+   void TestDeleteNullBudget() {
+       BudgetItem item = new BudgetItem(11, "Local", 200.0, false, 2025,
+            List.of(Ministry.HEALTH));
+        
+            ValidationException ex = assertThrows(ValidationException.class,
+                () -> service.validateBudgetItemDeletion(null, budget));
+            String msg = ex.getMessage();
+            assertTrue(msg.contains("Budget cannot be null", ex.getMessage()));
+   }
+
+   @Test
+    void TestDeleteExistingItemsNull() {
+        BudgetItem newItem = new BudgetItem(12, "Local", 200.0, false, 2025,
+            List.of(Ministry.HEALTH));
+        Budget budget = new Budget(null, 0.0);
+
+        //expecting specific message because of a null item IN the budget
+
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateBudgetItemDeletion(newItem, budget));
+        String msg = ex.getMessage();
+        assertTrue(msg.contains("Cannot delete:Existing items cannot be null"));
+    }
+
+    
+}
