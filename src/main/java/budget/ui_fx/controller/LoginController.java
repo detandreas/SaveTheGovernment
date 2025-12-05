@@ -9,6 +9,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.animation.PauseTransition; 
+import javafx.util.Duration; 
 
 import budget.constants.Message;
 import budget.service.UserAuthenticationService;
@@ -19,6 +21,7 @@ public class LoginController {
 
     @FXML private Label loginLabel;
     @FXML private Label errorLabel;
+    @FXML private Label successLabel;
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private TextField visiblePasswordField;
@@ -41,6 +44,7 @@ public class LoginController {
         cancelButton.setText(Message.CANCEL_BUTTON);
         backButton.setText(Message.BACK_BUTTON);
         errorLabel.setText("");
+        successLabel.setText("");
         usernameField.setPromptText(Message.USERNAME_PROMPT);
         passwordField.setPromptText(Message.PASSWORD_PROMPT);
         passwordField.textProperty().bindBidirectional(visiblePasswordField.textProperty());
@@ -48,18 +52,41 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
+        // 1. Λήψη στοιχείων
         String username = usernameField.getText();
         String password = passwordField.getText();
 
+        // 2. Έλεγχος στοιχείων
         boolean isAuthenticated = authService.login(username, password);
 
         if (isAuthenticated) {
+            // --- ΕΠΙΤΥΧΙΑ ---
+            // Κρύβουμε τυχόν παλιά μηνύματα λάθους
             errorLabel.setText("");
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            SceneLoader loader = new SceneLoader(stage);
-            loader.load("/view/DashboardView.fxml", "Dashboard"); 
+            successLabel.setText(Message.LOGIN_SUCCESS);
+            
+            try {
+                // Παίρνουμε το τρέχον παράθυρο (Stage)
+                Stage stage = (Stage) loginButton.getScene().getWindow();
+                
+                // Δημιουργούμε τον Loader
+                SceneLoader loader = new SceneLoader(stage);
+                
+                // Φορτώνουμε ΑΜΕΣΩΣ την επόμενη σκηνή
+                // Σημείωση: Εδώ ίσως χρειαστείς έλεγχο ρόλου για να ανοίγεις το σωστό Dashboard
+                loader.load("/views/GovMemberDashboardView.fxml", "Government Member Dashboard");
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Αν κάτι πάει στραβά με τη φόρτωση, το δείχνουμε στο label
+                errorLabel.setText("Σφάλμα κατά τη φόρτωση του Dashboard.");
+                errorLabel.setVisible(true);
+            }
+
         } else {
-            errorLabel.setText(Message.LOGIN_FAILED);
+            // --- ΑΠΟΤΥΧΙΑ ---
+            successLabel.setVisible(false);
+            errorLabel.setText(Message.LOGIN_FAILED); // Το κείμενο έχει οριστεί πιθανώς στο FXML ή μπορείς να βάλεις errorLabel.setText("Invalid credentials");
         }
     }
 
@@ -71,11 +98,8 @@ public class LoginController {
         visiblePasswordField.setVisible(true);
         visiblePasswordField.setManaged(true);
         
-        // 1. Δημιουργήστε ένα νέο αντικείμενο Image χρησιμοποιώντας το eye_closed.png
-        // (Η διαδρομή ξεκινά από το resources, π.χ. /images/eye_closed.png)
         Image closedEye = new Image(getClass().getResourceAsStream(EYE_CLOSED_PATH));
-        
-        // 2. Ορίστε τη νέα εικόνα στο ImageView
+
         eyeIconImageView.setImage(closedEye);
     }
 
@@ -87,10 +111,8 @@ public class LoginController {
         passwordField.setVisible(true);
         passwordField.setManaged(true);
 
-        // 1. Δημιουργήστε ένα νέο αντικείμενο Image χρησιμοποιώντας το eye_open.png
         Image openEye = new Image(getClass().getResourceAsStream(EYE_OPEN_PATH));
         
-        // 2. Ορίστε τη νέα εικόνα στο ImageView
         eyeIconImageView.setImage(openEye);
     }
 
@@ -98,7 +120,7 @@ public class LoginController {
     private void handleCancel() {
         usernameField.clear();
         passwordField.clear();
-        errorLabel.setText("");
+        errorLabel.setVisible(false);
 
         Stage stage = (Stage) cancelButton.getScene().getWindow();
         SceneLoader loader = new SceneLoader(stage);

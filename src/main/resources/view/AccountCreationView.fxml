@@ -18,7 +18,7 @@
       spacing="15" alignment="CENTER">
     
     <stylesheets>
-        <String fx:value="/styles/application.css" />
+        <String fx:value="/styles/main.css" />
     </stylesheets>
 
     <padding>

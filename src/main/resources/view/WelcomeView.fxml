@@ -15,7 +15,7 @@
       maxHeight="Infinity" maxWidth="Infinity">
 
     <stylesheets>
-        <String fx:value="/styles/application.css" />
+        <String fx:value="/styles/main.css" />
     </stylesheets>
     
     <Label fx:id="nameLabel" styleClass="header-label"/>

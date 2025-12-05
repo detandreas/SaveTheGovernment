@@ -56,4 +56,22 @@ public class SceneLoader {
             e.printStackTrace();
         }
     }
+
+    public Parent loadNode(String fxmlPath) {
+        URL fxmlUrl = SceneLoader.class.getResource(fxmlPath);
+
+        if (fxmlUrl == null) {
+            System.err.println("ΣΦΑΛΜΑ: Το αρχείο " + fxmlPath + " δεν βρέθηκε.");
+            return null; // Ή πέταξε exception
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            return loader.load();
+        } catch (IOException e) {
+            System.err.println("ΣΦΑΛΜΑ κατά τη φόρτωση του Node: " + fxmlPath);
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

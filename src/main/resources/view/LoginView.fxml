@@ -19,7 +19,7 @@
       maxHeight="Infinity" maxWidth="Infinity">
 
     <stylesheets>
-        <String fx:value="/styles/application.css" />
+        <String fx:value="/styles/main.css" />
     </stylesheets>
 
     <padding>
@@ -72,9 +72,11 @@
         </HBox>
     </HBox>
 
-     <Label fx:id="errorLabel" styleClass="error-label" />
+    <Label fx:id="errorLabel" styleClass="error-label" />
+    <Label fx:id="successLabel" styleClass="success-label" />
 
-     <HBox spacing="10" alignment="CENTER">
+
+    <HBox spacing="10" alignment="CENTER">
         <Button fx:id="loginButton" onAction="#handleLogin"/>
         <Button fx:id="cancelButton" onAction="#handleCancel"/>
     </HBox>
