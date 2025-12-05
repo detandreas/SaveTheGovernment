@@ -147,6 +147,9 @@ public class ChangeRequestService {
         throws IllegalArgumentException {
         // Σημείωση να έχεις κάνει πρώτα τον User authorize
         // checkCanUserSubmitRequest()
+        if (item == null) {
+            throw new IllegalArgumentException("Null BudgetItem");
+        }
         validateBudgetExists(item.getYear());
 
         Optional<BudgetItem> existingItemOpt = budgetRepository
