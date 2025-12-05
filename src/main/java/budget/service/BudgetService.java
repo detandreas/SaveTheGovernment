@@ -1,272 +1,375 @@
 package budget.service;
 
-import budget.exceptions.UserNotAuthorizedException;
+import budget.constants.Limits;
 import budget.model.domain.Budget;
 import budget.model.domain.BudgetItem;
-import budget.model.domain.user.User;
-import budget.model.enums.Ministry;
-import budget.model.domain.user.PrimeMinister;
-import budget.model.domain.user.GovernmentMember;
 import budget.repository.BudgetRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.List;
-import java.util.Collections;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.chart.XYChart.Series;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.PieChart;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
- * Service class for managing budgets.
+ * Service responsible for budget calculations and operations.
+ * Provides methods for recalculating budget totals
+ *                                  (revenue, expense, net result)
+ * when budget items are modified, and preparing data
+ *                                  for JavaFX charts and tables.
  */
 public class BudgetService {
 
-    private static final Logger LOGGER =
-            Logger.getLogger(BudgetService.class.getName());
-    private static final Object LOCK = new Object();
-
     private final BudgetRepository budgetRepository;
-    private final UserAuthorizationService authorizationService;
-    private final ChangeLogService changeLogService;
-    private final ChangeRequestService changeRequestService;
 
     /**
-     * Constructs a new BudgetService with the necessary dependencies.
-     * @param budgetRepository the repository for budget data operations
-     * @param authorizationService the service used to check user permissions
-     * @param changeLogService the service used to track history of changes
-     * @param changeRequestService the service used to handle pending requests
+     * Constructs a BudgetService with the specified repository.
+     *
+     * @param budgetRepository the repository used for budget data access
      */
     @SuppressFBWarnings(
         value = "EI_EXPOSE_REP2",
-        justification
-        = "This allows testability and shared state across service instances."
+        justification = "This allows testability and shared "
+                                        + "state across service instances."
     )
-    public BudgetService(BudgetRepository budgetRepository,
-                        UserAuthorizationService authorizationService,
-                        ChangeLogService changeLogService,
-                        ChangeRequestService changeRequestService) {
+    public BudgetService(BudgetRepository budgetRepository) {
         this.budgetRepository = budgetRepository;
-        this.authorizationService = authorizationService;
-        this.changeLogService = changeLogService;
-        this.changeRequestService = changeRequestService;
-    }
-    /**
-     * Updates a budget item's value.
-     * If the user can edit directly -> update immediately.
-     * Otherwise, create a pending change request.
-     * @param user the user performing the action
-     * @param budget the budget containing the item
-     * @param item the budget item to update
-     * @param newAmount the new value
-     */
-    public void updateItem(User user, Budget budget,
-            BudgetItem item, double newAmount) {
-        synchronized (LOCK) {
-            if (user == null || budget == null || item == null) {
-                throw new
-                    IllegalArgumentException("User, Budget or"
-                        + "BudgetItem cannot be null");
-            }
-            if (newAmount < 0) {
-                throw new IllegalArgumentException("Value cannot be negative");
-            }
-
-            double oldValue = item.getValue();
-            if (newAmount == oldValue) {
-                LOGGER.
-                    info(String.
-                        format("No change in value for BudgetItem id = %d",
-                        item.getId()));
-                return;
-            }
-
-            if (user instanceof PrimeMinister) {
-                throw new UserNotAuthorizedException("Prime Minister "
-                                    + "cannot edit items directly.");
-            }
-            if (authorizationService.canUserEditBudgetItem(user, item)) {
-                item.setValue(newAmount);
-                recalculateBudgetTotals(budget);
-                budgetRepository.save(budget);
-                LOGGER.info(String.format("Item %d updated directly by %s",
-                    item.getId(), user.getFullName()));
-            } else if (authorizationService.canUserSubmitRequest(user, item)) {
-                LOGGER.
-                    info(String.
-                    format("Pending change request created for item id = %d",
-                    item.getId()));
-            } else {
-                throw new UserNotAuthorizedException(
-                    String.
-                    format("%s is not authorized to edit or"
-                    + "submit change request for item id = %d",
-                    user.getFullName(),
-                    item.getId()));
-            }
-        }
-    }
-    /**
-    * Creates a new budget item and adds it to the given budget.
-    * Only government members of the Finance Ministry can create new items.
-    * @param user the user performing the creation
-    * @param budget the budget to which the item will be added
-    * @param id unique identifier for the new budget item
-    * @param name name of the new budget item
-    * @param value monetary value of the new budget item
-    * @param isRevenue true if the item is revenue, false if expense
-     * @param ministries list of ministries associated with the item
-    */
-    public void createNewBudgetItem(
-        User user,
-        Budget budget,
-        int id,
-        String name,
-        double value,
-        boolean isRevenue,
-        List<Ministry> ministries
-    ) {
-        synchronized (LOCK) {
-            if (user == null) {
-                throw new IllegalArgumentException("User cannot be null");
-            }
-            if (budget == null) {
-                throw new IllegalArgumentException("Budget cannot be null");
-            }
-            if (ministries == null || ministries.isEmpty()) {
-                throw new
-                IllegalArgumentException("Ministries list cannot be empty");
-            }
-            if (value < 0) {
-                throw new IllegalArgumentException("Value cannot be negative");
-            }
-            if (!(user instanceof GovernmentMember gm)) {
-                throw new UserNotAuthorizedException(
-                "Only government members can edit budget items."
-                );
-            }
-            if (gm.getMinistry() != Ministry.FINANCE) {
-                throw new UserNotAuthorizedException(
-                "Only members of the Finance Ministry"
-                + " can directly edit this budget item."
-                );
-            }
-            if (budgetRepository.existsByItemId(id, budget.getYear())) {
-                throw new IllegalArgumentException(
-                    "A BudgetItem with id " + id + " already exists."
-                );
-            }
-
-            BudgetItem newItem = new BudgetItem(
-                id,
-                budget.getYear(),
-                name,
-                value,
-                isRevenue,
-                ministries);
-
-            List<BudgetItem> items = budget.getItems();
-            items.add(newItem);
-            budget.setItems(items);
-
-            recalculateBudgetTotals(budget);
-
-            budgetRepository.save(budget);
-
-            LOGGER.info(String.format(
-                "Created new BudgetItem (id=%d, name=%s) in budget %d by %s",
-                id, name, budget.getYear(), user.getFullName()
-            ));
-        }
-    }
-    /**
-     * Deletes a budget item based on the provided ID.
-     * Only government members of the Finance Ministry can delete items.
-     * @param user the user performing the deletion
-     * @param id unique identifier of the budget item to be deleted
-     * @param year the year of the budget we are deleting the item from.
-     * @throws IllegalArgumentException if the user is null
-     * or the item is not found
-     * @throws UserNotAuthorizedException if the user is not authorized
-     * to delete items
-     */
-    public void deleteBudgetItem(User user, int id, int year) {
-        synchronized (LOCK) {
-            if (user == null) {
-                throw new IllegalArgumentException("User cannot be null");
-            }
-            if (!(user instanceof GovernmentMember gm)
-                || gm.getMinistry() != Ministry.FINANCE) {
-                throw new
-                    UserNotAuthorizedException("Only Finance Ministry"
-                    + "can delete items.");
-            }
-            Optional<Budget> budgetOptional = budgetRepository.findById(year);
-            if (budgetOptional.isEmpty()) {
-                throw new
-                    IllegalArgumentException("Budget with year "
-                    + year + " not found.");
-            }
-            Budget budget = budgetOptional.get();
-            boolean exists = budgetRepository.existsByItemId(id, year);
-            if (!exists) {
-                throw new IllegalArgumentException("Budget item with id: "
-                    + id + " doesn't exists for year: " + year
-                );
-            }
-            boolean remove = budget.getItems().
-                removeIf(item -> item.getId() == id);
-            if (remove) {
-                recalculateBudgetTotals(budget);
-                budgetRepository.save(budget);
-                LOGGER.info(String.format("Item %d deleted by %s",
-                    id, user.getFullName()));
-            }
-        }
     }
 
     /**
-     * Recalculates the financial totals for the specified budget.
-     * Iterates through all budget items to sum up revenues and expenses,
-     * then updates the total revenue, total expense, and net result fields
-     * of the budget object to ensure data consistency.
+     * Recalculates and updates the budget totals
+     *                              (totalRevenue, totalExpense, netResult)
+     * based on the current budget items.
      *
-     * @param budget the budget entity whose totals need to be updated
+     * This method should be called whenever budget items
+     *                                      are added, removed, or modified
+     * to ensure the budget totals remain accurate.
+     *
+     * @param budget the budget to recalculate totals for; must not be null
+     * @throws IllegalArgumentException if budget is null
      */
     public void recalculateBudgetTotals(Budget budget) {
-        double totalRevenue = 0;
-        double totalExpense = 0;
-
-        for (BudgetItem i : budget.getItems()) {
-            if (i.getIsRevenue()) {
-                totalRevenue += i.getValue();
-            } else {
-                totalExpense += i.getValue();
-            }
+        if (budget == null) {
+            throw new IllegalArgumentException("Budget cannot be null");
         }
+
+        double totalRevenue = calculateTotalRevenue(budget);
+        double totalExpense = calculateTotalExpense(budget);
+        double netResult = totalRevenue - totalExpense;
+
         budget.setTotalRevenue(totalRevenue);
         budget.setTotalExpense(totalExpense);
-        budget.setNetResult(totalRevenue - totalExpense);
+        budget.setNetResult(netResult);
     }
-   /**
-     * Retrieves a list of budget items associated with a specific ministry.
-     * Searches across all loaded budgets and filters items that are linked
-     * to the provided ministry. If the input ministry is null, a warning is
-     * logged and an empty list is returned.
-     * @param ministry the ministry to filter by;if null, an empty list
-     * is returned
-     * @return a list of {@link BudgetItem} objects associated with the
-     * given ministry
-     */
-   public List<BudgetItem> getItemsByMinistry(Ministry ministry) {
-    synchronized (LOCK) {
-        if (ministry == null) {
-            LOGGER.warning("Ministry cannot be null");
-            return Collections.emptyList();
-        }
-        return budgetRepository.load().stream()
-            .flatMap(budget -> budget.getItems().stream())
-            .filter(item -> item.getMinistries().contains(ministry))
-            .toList();
-    }
-   }
-}
 
+    /**
+     * Calculates the total revenue by summing all revenue budget items.
+     *
+     * @param budget the budget to calculate revenue from; must not be null
+     * @return the sum of all revenue items (items where isRevenue is true)
+     * @throws IllegalArgumentException if budget is null or items list is null
+     */
+    private double calculateTotalRevenue(Budget budget) {
+        if (budget == null) {
+            throw new IllegalArgumentException("Budget cannot be null");
+        }
+        if (budget.getItems() == null) {
+            throw new IllegalArgumentException("Budget items cannot be null");
+        }
+        return budget.getItems()
+                            .stream()
+                            .filter(budgetItem -> budgetItem != null
+                                && budgetItem.getIsRevenue())
+                            .mapToDouble(budgetItem -> budgetItem.getValue())
+                            .sum();
+    }
+
+    /**
+     * Calculates the total expense by summing all expense budget items.
+     *
+     * @param budget the budget to calculate expenses from; must not be null
+     * @return the sum of all expense items (items where isRevenue is false)
+     * @throws IllegalArgumentException if budget is null or items list is null
+     */
+    private double calculateTotalExpense(Budget budget) {
+        if (budget == null) {
+            throw new IllegalArgumentException("Budget cannot be null");
+        }
+        if (budget.getItems() == null) {
+            throw new IllegalArgumentException("Budget items cannot be null");
+        }
+        return budget.getItems()
+                            .stream()
+                            .filter(budgetItem -> budgetItem != null
+                                && !budgetItem.getIsRevenue())
+                            .mapToDouble(budgetItem -> budgetItem.getValue())
+                            .sum();
+    }
+
+    //  Μέθοδοι για Πίνακες
+
+    /**
+     * Creates an ObservableList of BudgetItems for a specific year
+     * suitable for use in JavaFX TableView.
+     *
+     * @param year the year of the budget to retrieve items from
+     * @return ObservableList containing all budget items for the specified year
+     */
+    public ObservableList<BudgetItem> getBudgetItemsForTable(int year) {
+        return budgetRepository
+        .findById(year)
+        .map(budget -> FXCollections.observableArrayList(budget.getItems()))
+        .orElse(FXCollections.observableArrayList());
+    }
+
+    /**
+     * Creates an ObservableList of BudgetItems sorted by value (descending)
+     * for a specific year.
+     *
+     * @param year the year of the budget
+     * @return ObservableList containing budget items sorted by value
+     */
+    public ObservableList<BudgetItem> getBudgetItemsSortedByValue(int year) {
+        return budgetRepository.findById(year)
+            .map(budget -> budget.getItems().stream()
+                .filter(item -> item != null)
+                .sorted(Comparator.comparingDouble(BudgetItem::getValue)
+                                                                .reversed())
+                .collect(Collectors.toList()))
+            .map(FXCollections::observableArrayList)
+            .orElse(FXCollections.observableArrayList());
+    }
+
+    //  Μέθοδοι για Γραφήματα
+
+    /**
+     * Creates an Series for displaying revenue and expense trends over years.
+     * Suitable for LineChart or AreaChart.
+     *
+     * @param startYear the starting year (inclusive)
+     * @param endYear the ending year (exclusive)
+     * @return Map containing "Revenue" and "Expense" series
+     * @throws IllegalArgumentException if startYear >= endYear or
+     *                                  if years are invalid
+     */
+    public Map<String, Series<Integer, Number>> getRevenueExpenseTrendSeries(
+            int startYear, int endYear) throws IllegalArgumentException {
+        validateYearRange(startYear, endYear);
+
+        Series<Integer, Number> revenueSeries = new Series<>();
+        revenueSeries.setName("Revenue");
+
+        Series<Integer, Number> expenseSeries = new Series<>();
+        expenseSeries.setName("Expenses");
+
+        for (int year = startYear; year < endYear; year++) {
+            Optional<Budget> budgetOpt = budgetRepository.findById(year);
+
+            if (budgetOpt.isEmpty()) {
+                continue;
+            }
+
+            Budget budget = budgetOpt.get();
+            revenueSeries.getData()
+                            .add(new Data<>(year, budget.getTotalRevenue()));
+            expenseSeries.getData()
+                            .add(new Data<>(year, budget.getTotalExpense()));
+        }
+        return Map.of("Revenue", revenueSeries, "Expense", expenseSeries);
+    }
+
+    /**
+     * Creates an Series for displaying net result (balance) over years.
+     * Suitable for LineChart or AreaChart.
+     *
+     * @param startYear the starting year (inclusive)
+     * @param endYear the ending year (exclusive)
+     * @return Series containing net result data
+     * @throws IllegalArgumentException if startYear >= endYear or
+     *                                  if years are invalid
+     */
+    public Series<Integer, Number> getNetResultSeries(
+        int startYear, int endYear) throws IllegalArgumentException {
+        validateYearRange(startYear, endYear);
+
+        Series<Integer, Number> netSeries = new Series<>();
+        netSeries.setName("Net result");
+
+        for (int year = startYear; year < endYear; year++) {
+            Optional<Budget> budgetOpt = budgetRepository.findById(year);
+
+            if (budgetOpt.isEmpty()) {
+                continue;
+            }
+
+            Budget budget = budgetOpt.get();
+            netSeries.getData().add(new Data<>(year, budget.getNetResult()));
+        }
+        return netSeries;
+    }
+
+    /**
+     * Creates an Series for displaying top N budget items by value
+     * for a specific year. Suitable for BarChart.
+     *
+     * @param year the year of the budget
+     * @param topN the number of top items to include (must be > 0)
+     * @param isRevenue true for revenue items, false for expense items
+     * @return Series containing top N items
+     * @throws IllegalArgumentException if budget for the
+     *                                      specified year doesn't exist,
+     *                                      if topN <= 0, or if year is invalid
+     */
+    public Series<String, Number> getTopBudgetItemsSeries(
+                                        int year,
+                                        int topN,
+                                        boolean isRevenue
+    ) throws IllegalArgumentException {
+        validateYear(year);
+        if (topN <= 0) {
+            throw new IllegalArgumentException(
+                "topN must be greater than 0, but was: " + topN);
+        }
+
+        Series<String, Number> series = new Series<>();
+        series.setName(isRevenue ? "Top Revenue" : "Top Expense");
+
+        Optional<Budget> budgetOpt = budgetRepository.findById(year);
+
+        if (budgetOpt.isEmpty()) {
+            throw new IllegalArgumentException("Budget for year: "
+            + year + " doesn't exist");
+        }
+
+        Budget budget = budgetOpt.get();
+        budget.getItems().stream()
+            .filter(item -> item != null
+                && item.getIsRevenue() == isRevenue)
+            .sorted(Comparator.comparingDouble(BudgetItem::getValue).reversed())
+            .limit(topN)
+            .forEach(item -> series.getData().add(
+                new Data<>(item.getName(), item.getValue())
+            ));
+        return  series;
+    }
+
+    /**
+     * Creates an Series for displaying budget items comparison
+     * between two years.
+     *
+     * @param year1 the first year to compare
+     * @param year2 the second year to compare
+     * @param isRevenue true for revenue items, false for expense items
+     * @return Map containing "Year1" and "Year2" series
+     * @throws IllegalArgumentException if year1 equals year2, if budget
+     *                                  for either year doesn't exist,
+     *                                  or if years are invalid
+     */
+    public Map<String, Series<String, Number>> getYearComparisonSeries(
+        int year1, int year2, boolean isRevenue
+    ) throws IllegalArgumentException {
+        if (year1 == year2) {
+            throw new IllegalArgumentException("Can't compare same year");
+        }
+        validateYear(year1);
+        validateYear(year2);
+
+        Series<String, Number> year1Series = new Series<>();
+        year1Series.setName(String.valueOf(year1));
+
+        Series<String, Number> year2Series = new Series<>();
+        year2Series.setName(String.valueOf(year2));
+
+        Map<Integer, Series<String, Number>> years =
+                                Map.of(year1, year1Series, year2, year2Series);
+
+        for (var entry : years.entrySet()) {
+            int year = entry.getKey();
+            var series = entry.getValue();
+
+            Optional<Budget> budgetOpt = budgetRepository.findById(year);
+
+            if (budgetOpt.isEmpty()) {
+                throw new IllegalArgumentException("Budget for year: "
+            + year + " doesn't exist");
+            }
+
+            Budget budget = budgetOpt.get();
+            budget.getItems().stream()
+                .filter(item -> item != null
+                    && item.getIsRevenue() == isRevenue)
+                .forEach(item -> series.getData().add(
+                    new Data<>(item.getName(), item.getValue())
+                ));
+        }
+        return Map.of("Year1", year1Series, "Year2", year2Series);
+    }
+
+    /**
+     * Creates data suitable for PieChart showing
+     *                              revenue vs expense distribution
+     * for a specific year.
+     *
+     * @param year the year of the budget
+     * @return ObservableList of PieChart.Data containing revenue and expense
+     * @throws IllegalArgumentException if budget for the
+     *                                              specified year doesn't exist
+     *                                              or if year is invalid
+     */
+    public ObservableList<PieChart.Data> getRevenueExpensePieData(int year)
+            throws IllegalArgumentException {
+        validateYear(year);
+
+        Optional<Budget> budgetOpt = budgetRepository.findById(year);
+
+        if (budgetOpt.isEmpty()) {
+            throw new IllegalArgumentException("Budget for year: "
+            + year + " doesn't exist");
+        }
+
+        Budget budget = budgetOpt.get();
+        var revenueData = new PieChart.Data(
+                                        "Revenue", budget.getTotalRevenue());
+        var expenseData = new PieChart.Data(
+                                        "Expense", budget.getTotalExpense());
+
+        return FXCollections.observableArrayList(revenueData, expenseData);
+    }
+
+    /**
+     * Validates that a year is within acceptable range.
+     *
+     * @param year the year to validate
+     * @throws IllegalArgumentException if year is less than MIN_BUDGET_YEAR
+     */
+    private void validateYear(int year) {
+        if (year < Limits.MIN_BUDGET_YEAR) {
+            throw new IllegalArgumentException(
+                "Year must be >= " + Limits.MIN_BUDGET_YEAR
+                + ", but was: " + year);
+        }
+    }
+
+    /**
+     * Validates that a year range is valid.
+     *
+     * @param startYear the starting year
+     * @param endYear the ending year
+     * @throws IllegalArgumentException if startYear >= endYear or
+     *                                  if years are invalid
+     */
+    private void validateYearRange(int startYear, int endYear) {
+        validateYear(startYear);
+        validateYear(endYear);
+        if (startYear >= endYear) {
+            throw new IllegalArgumentException(
+                "startYear must be less than endYear, "
+                + "but was: startYear=" + startYear
+                + ", endYear=" + endYear);
+        }
+    }
+}
