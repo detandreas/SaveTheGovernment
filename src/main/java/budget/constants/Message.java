@@ -26,7 +26,7 @@ public final class Message {
         + " option. Please try again.";
     public static final String USERNAME_PROMPT = "Username: ";
     public static final String PASSWORD_PROMPT = "Password: ";
-    public static final String LOGIN_SUCCESS = "Successful login! Welcome, %s ";
+    public static final String LOGIN_SUCCESS = "Successful login!";
     public static final String LOGIN_FAILED = "Login failed."
         + " Invalid username or password.";
     // Create Account Messages

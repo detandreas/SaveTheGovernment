@@ -20,6 +20,13 @@
       "fullName": "NAIS-AGGELOS",
       "password": "2006",
       "userRole": "CITIZEN"
+    },
+    {
+      "id": "9a244a82-35f9-4528-be15-c24cf8d5b3cb",
+      "userName": "Harris",
+      "fullName": "Harris Gay",
+      "password": "b869812a86eaab0fba4818a6a7917ea5a6bf8687f29cb7855c994c8348c8306a",
+      "userRole": "CITIZEN"
     }
   ],
   "governmentMembers": [
@@ -37,6 +44,14 @@
       "userName": "govuser2",
       "fullName": "Government Member",
       "password": "1d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+      "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "EDUCATION",
+      "id": "6b56403e-30f6-4aad-956b-35049968d4bf",
+      "userName": "Johnkol",
+      "fullName": "John Kolaras",
+      "password": "04235d8226e6814f227785f5cf9df06e843ecf7cc009bf3242755756aa8c3332",
       "userRole": "GOVERNMENT_MEMBER"
     }
   ],

@@ -24,7 +24,7 @@ public class GovMemberDashboardController {
 
     @FXML
     public void initialize() {
-        loadCenterView("/views/GovMemberDashboard.fxml");
+        loadCenterView("/view/GovMemberDashboard.fxml");
     }
 
     public void setUserInfo(String username, String role) {
@@ -36,33 +36,33 @@ public class GovMemberDashboardController {
 
     @FXML
     private void handleHome(MouseEvent event) {
-        loadCenterView("/views/HomeView.fxml");
+        loadCenterView("/view/HomeView.fxml");
     }
 
     @FXML
     private void handleViewTotalBudget(MouseEvent event) {
         // Πρέπει να έχεις φτιάξει το αντίστοιχο FXML αρχείο
-        loadCenterView("/views/TotalBudgetView.fxml");
+        loadCenterView("/view/TotalBudgetView.fxml");
     }
 
     @FXML
     private void handleViewChangeHistory(MouseEvent event) {
-        loadCenterView("/views/HistoryView.fxml");
+        loadCenterView("/view/HistoryView.fxml");
     }
 
     @FXML
     private void handleViewStatistics(MouseEvent event) {
-        loadCenterView("/views/StatisticsView.fxml");
+        loadCenterView("/view/StatisticsView.fxml");
     }
 
     @FXML
     private void handleCreateRequest(MouseEvent event) {
-        loadCenterView("/views/CreateRequestView.fxml");
+        loadCenterView("/view/CreateRequestView.fxml");
     }
 
     @FXML
     private void handleRequestHistory(MouseEvent event) {
-        loadCenterView("/views/RequestHistoryView.fxml");
+        loadCenterView("/view/RequestHistoryView.fxml");
     }
 
     private void loadCenterView(String fxmlPath) {
@@ -81,7 +81,7 @@ public class GovMemberDashboardController {
         javafx.stage.Stage currentStage = (javafx.stage.Stage) mainBorderPane.getScene().getWindow();
         
         SceneLoader loginLoader = new SceneLoader(currentStage);
-        loginLoader.load("/views/Login.fxml", "Login - Save The Government");
+        loginLoader.load("/view/Login.fxml", "Login - Save The Government");
     }
 
 }

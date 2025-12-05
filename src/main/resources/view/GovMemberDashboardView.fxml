@@ -11,12 +11,9 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" 
+   
    xmlns="http://javafx.com/javafx" 
    xmlns:fx="http://javafx.com/fxml">
-
-   <stylesheets>
-        <String fx:value="/styles/main.css" />
-   </stylesheets>
 
    <left>
       <VBox maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" BorderPane.alignment="CENTER">
@@ -87,31 +84,8 @@
                   <Label prefHeight="20.0" text="View your Request History" alignment="CENTER" />
                </children>
             </HBox>
-
-            <Region prefHeight="75.0" prefWidth="150.0" VBox.vgrow="ALWAYS" />
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <ImageView fitHeight="39.0" fitWidth="62.0" preserveRatio="true">
-                     <clip>
-                        <Circle centerX="25.0" centerY="25.0" radius="25.0" />
-                     </clip>
-                     <image>
-                        <Image url="@../../../../../../Sxesiako.png" />
-                     </image>
-                  </ImageView>
-                  <Label fx:id="usernameLabel" alignment="CENTER" prefHeight="20.0" prefWidth="154.0" text="Label" />
-                  <Label fx:id="userRoleLabel" alignment="CENTER" prefHeight="20.0" prefWidth="158.0" text="Label">
-                     <padding>
-                        <Insets bottom="20.0" />
-                     </padding>
-                  </Label>
-                  <Button alignment="CENTER" contentDisplay="CENTER" maxHeight="20.0" maxWidth="80.0" mnemonicParsing="false" prefHeight="10.0" prefWidth="153.0" text="Logout" textAlignment="CENTER" />
-               </children>
-               <opaqueInsets>
-                  <Insets left="10.0" />
-               </opaqueInsets>
-            </VBox>
          </children>
       </VBox>
+      
    </left>
 </BorderPane>

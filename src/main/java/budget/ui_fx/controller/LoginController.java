@@ -9,8 +9,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.animation.PauseTransition; 
-import javafx.util.Duration; 
 
 import budget.constants.Message;
 import budget.service.UserAuthenticationService;
@@ -72,9 +70,8 @@ public class LoginController {
                 // Δημιουργούμε τον Loader
                 SceneLoader loader = new SceneLoader(stage);
                 
-                // Φορτώνουμε ΑΜΕΣΩΣ την επόμενη σκηνή
-                // Σημείωση: Εδώ ίσως χρειαστείς έλεγχο ρόλου για να ανοίγεις το σωστό Dashboard
-                loader.load("/views/GovMemberDashboardView.fxml", "Government Member Dashboard");
+                
+                loader.load("/view/GovMemberDashboardView.fxml", "Government Member Dashboard");
                 
             } catch (Exception e) {
                 e.printStackTrace();
