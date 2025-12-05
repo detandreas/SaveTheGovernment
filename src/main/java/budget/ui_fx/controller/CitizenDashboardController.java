@@ -10,8 +10,7 @@ import javafx.event.ActionEvent;
 import budget.ui_fx.util.SceneLoader;
 
 
-public class GovMemberDashboardController {
-
+public class CitizenDashboardController {
     @FXML private BorderPane mainBorderPane;
     @FXML private Label usernameLabel;
     @FXML private Label userRoleLabel;
@@ -20,7 +19,7 @@ public class GovMemberDashboardController {
 
     @FXML
     public void initialize() {
-        loadCenterView("/view/GovMemberDashboardView.fxml");
+        loadCenterView("/view/HomeView.fxml");
     }
 
     public void setUserInfo(String username, String role) {
@@ -49,16 +48,6 @@ public class GovMemberDashboardController {
     @FXML
     private void handleViewStatistics(MouseEvent event) {
         loadCenterView("/view/StatisticsView.fxml");
-    }
-
-    @FXML
-    private void handleCreateRequest(MouseEvent event) {
-        loadCenterView("/view/CreateRequestView.fxml");
-    }
-
-    @FXML
-    private void handleRequestHistory(MouseEvent event) {
-        loadCenterView("/view/RequestHistoryView.fxml");
     }
 
     private void loadCenterView(String fxmlPath) {

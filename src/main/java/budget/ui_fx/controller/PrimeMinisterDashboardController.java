@@ -9,9 +9,7 @@ import javafx.event.ActionEvent;
 
 import budget.ui_fx.util.SceneLoader;
 
-
-public class GovMemberDashboardController {
-
+public class PrimeMinisterDashboardController {
     @FXML private BorderPane mainBorderPane;
     @FXML private Label usernameLabel;
     @FXML private Label userRoleLabel;
@@ -20,7 +18,7 @@ public class GovMemberDashboardController {
 
     @FXML
     public void initialize() {
-        loadCenterView("/view/GovMemberDashboardView.fxml");
+        loadCenterView("/view/PrimeMinisterDashboardView.fxml");
     }
 
     public void setUserInfo(String username, String role) {
@@ -52,13 +50,8 @@ public class GovMemberDashboardController {
     }
 
     @FXML
-    private void handleCreateRequest(MouseEvent event) {
-        loadCenterView("/view/CreateRequestView.fxml");
-    }
-
-    @FXML
-    private void handleRequestHistory(MouseEvent event) {
-        loadCenterView("/view/RequestHistoryView.fxml");
+    private void handleManagePendingChangeRequests(MouseEvent event) {
+        loadCenterView("/view/ManagePendingChangeRequestsView.fxml");
     }
 
     private void loadCenterView(String fxmlPath) {
@@ -79,5 +72,4 @@ public class GovMemberDashboardController {
         SceneLoader loginLoader = new SceneLoader(currentStage);
         loginLoader.load("/view/Login.fxml", "Login - Save The Government");
     }
-
 }

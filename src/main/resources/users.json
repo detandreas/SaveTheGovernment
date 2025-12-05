@@ -27,6 +27,13 @@
       "fullName": "Harris Gay",
       "password": "b869812a86eaab0fba4818a6a7917ea5a6bf8687f29cb7855c994c8348c8306a",
       "userRole": "CITIZEN"
+    },
+    {
+      "id": "05c501f3-9e48-4c8f-b378-242855d995cf",
+      "userName": "Lakis",
+      "fullName": "Nikos Pat",
+      "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+      "userRole": "CITIZEN"
     }
   ],
   "governmentMembers": [
@@ -52,6 +59,14 @@
       "userName": "Johnkol",
       "fullName": "John Kolaras",
       "password": "04235d8226e6814f227785f5cf9df06e843ecf7cc009bf3242755756aa8c3332",
+      "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "FINANCE",
+      "id": "774af675-c7a2-4319-a3c5-e5d31d78c32c",
+      "userName": "Nancy11",
+      "fullName": "Nancy Patatoukaki",
+      "password": "1d78b370ad96e7a8091888d902360187bdea87ab6a4af003ec63c791894513ec",
       "userRole": "GOVERNMENT_MEMBER"
     }
   ],

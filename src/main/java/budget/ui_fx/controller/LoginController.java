@@ -11,6 +11,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import budget.constants.Message;
+import budget.model.domain.user.GovernmentMember;
+import budget.model.domain.user.User;
+import budget.model.enums.Ministry;
+import budget.model.enums.UserRole;
 import budget.service.UserAuthenticationService;
 import budget.repository.UserRepository;
 import budget.ui_fx.util.SceneLoader;
@@ -50,43 +54,79 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
-        // 1. Λήψη στοιχείων
+        System.out.println("--- [1] Ξεκίνησε το handleLogin ---");
+
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        // 2. Έλεγχος στοιχείων
         boolean isAuthenticated = authService.login(username, password);
+        System.out.println("--- [2] Authenticated: " + isAuthenticated);
 
         if (isAuthenticated) {
-            // --- ΕΠΙΤΥΧΙΑ ---
-            // Κρύβουμε τυχόν παλιά μηνύματα λάθους
             errorLabel.setText("");
             successLabel.setText(Message.LOGIN_SUCCESS);
-            
-            try {
-                // Παίρνουμε το τρέχον παράθυρο (Stage)
-                Stage stage = (Stage) loginButton.getScene().getWindow();
-                
-                // Δημιουργούμε τον Loader
-                SceneLoader loader = new SceneLoader(stage);
-                
-                
-                loader.load("/view/GovMemberDashboardView.fxml", "Government Member Dashboard");
-                
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Αν κάτι πάει στραβά με τη φόρτωση, το δείχνουμε στο label
-                errorLabel.setText("Σφάλμα κατά τη φόρτωση του Dashboard.");
-                errorLabel.setVisible(true);
-            }
 
+            try {
+                User user = authService.getCurrentUser();
+                System.out.println("--- [3] User Object: " + user);
+
+                if (user == null) {
+                    System.out.println("!!! ERROR: Ο χρήστης είναι NULL !!!");
+                    return;
+                }
+
+                System.out.println("--- [4] User Role: " + user.getUserRole());
+
+                Stage stage = (Stage) loginButton.getScene().getWindow();
+                SceneLoader loader = new SceneLoader(stage);
+
+                String viewPath = "";
+                String windowTitle = "";
+
+                switch (user.getUserRole()) {
+                    case GOVERNMENT_MEMBER:
+                        GovernmentMember gm = (GovernmentMember) user;
+                        // Προσοχή: Εδώ υποθέτω ότι το getMinistry() δεν είναι null
+                        if (gm.getMinistry() == Ministry.FINANCE) {
+                            viewPath = "/view/FinanceGovMemberDashboardView.fxml";
+                            windowTitle = "Finance Government Member Dashboard";
+                        } else {
+                            viewPath = "/view/GovMemberDashboardView.fxml";
+                            windowTitle = "Government Member Dashboard";
+                        }
+                        break;
+
+                    case CITIZEN:
+                        viewPath = "/view/CitizenDashboardView.fxml";
+                        windowTitle = "Citizen Dashboard";
+                        System.out.println("--- [5] Μπήκαμε στο Case CITIZEN");
+                        break;
+
+                    case PRIME_MINISTER:
+                        viewPath = "/view/PrimeMinisterDashboardView.fxml";
+                        windowTitle = "Prime Minister Dashboard";
+                        break;
+                }
+
+                System.out.println("--- [6] Path που επιλέχθηκε: " + viewPath);
+
+                if (!viewPath.isEmpty()) {
+                    System.out.println("--- [7] Καλώ την loader.load()...");
+                    loader.load(viewPath, windowTitle);
+                    System.out.println("--- [8] Η loader.load() τελείωσε (αν δεν δεις αυτό, έσκασε μέσα στον loader)");
+                } else {
+                    System.out.println("!!! ERROR: Το viewPath είναι κενό! Κανένα case δεν ταίριαξε.");
+                }
+
+            } catch (Exception e) {
+                System.out.println("!!! EXCEPTION CAUGHT IN LOGIN !!!");
+                e.printStackTrace(); // <--- Αυτό είναι το πιο σημαντικό
+                errorLabel.setText("Σφάλμα: Δες την κονσόλα.");
+            }
         } else {
-            // --- ΑΠΟΤΥΧΙΑ ---
-            successLabel.setVisible(false);
-            errorLabel.setText(Message.LOGIN_FAILED); // Το κείμενο έχει οριστεί πιθανώς στο FXML ή μπορείς να βάλεις errorLabel.setText("Invalid credentials");
+            errorLabel.setText("Λάθος στοιχεία.");
         }
     }
-
     @FXML
     private void handleShowPassword(MouseEvent event) {
         visiblePasswordField.requestFocus(); 
