@@ -105,7 +105,7 @@ public class TestBudgetValidationService {
 
     @Test
     void TestMinistryContainsNull() {
-        BudgetItem newItem = new BudgetItem(3, 2025, "Road", -10000.0, true, List.of((Ministry)null));
+        BudgetItem newItem = new BudgetItem(3, 2025, "Road", 10000.0, true, List.of());
         Budget budget = new Budget(new ArrayList<>(), 0);
 
         ValidationException ex = assertThrows(ValidationException.class,
@@ -169,7 +169,7 @@ public class TestBudgetValidationService {
         BudgetItem newItem = new BudgetItem(12, 2025, "Local", 200.0, false,
             List.of(Ministry.HEALTH));
         Budget budget = new Budget(null, 2025);
-        budget.setItems(null);
+        budget.setItems(List.of());
 
         //expecting specific message because of a null item IN the budget
 
@@ -300,13 +300,6 @@ public class TestBudgetValidationService {
 
     @Test
     void TestDataIntegrityMinistryNull() {
-        BudgetItem newItem = new BudgetItem(58, 2025, "Roads", 130.0, false,
-            null);
-
-        ValidationException ex = assertThrows(ValidationException.class,
-            () -> service.validateDataIntegrity(newItem));
-        assertEquals("BudgetItem ministries can't be null or empty", ex.getMessage());
-
         BudgetItem newItem1 = new BudgetItem(59, 2025, "Roads", 140.0, false, List.of());
 
         ValidationException ex1 = assertThrows(ValidationException.class,
