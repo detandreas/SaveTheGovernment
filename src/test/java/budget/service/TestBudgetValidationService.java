@@ -173,5 +173,76 @@ public class TestBudgetValidationService {
         assertTrue(msg.contains("Cannot delete:Existing items cannot be null"));
     }
 
-    
-}
+    @Test
+    void TestUpdateValid() {
+        BudgetItem original = new BudgetItem(20, "Roads", 1000.0, false, 2025,
+            List.of(Ministry.HEALTH));
+        BudgetItem updated = new BudgetItem(20, "Roads", 1100.0, false, 2025,
+            List.of(Ministry.HEALTH));
+
+        assertDoesNotThrow(() -> service.validateBudgetItemUpdate(original, udated),
+        "Valid small change should not throw");
+    }
+
+    @Test
+    void TestUpdateNoChange() {
+        BudgetItem original = new BudgetItem(21, "Roads", 1000.0, false, 2025,
+            List.of(Ministry.HEALTH));
+        BudgetItem updated = new BudgetItem(21, "Roads", 1000.0, false, 2025,
+            List.of(Ministry.HEALTH));
+
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateBudgetItemUpdate(original, updated));
+        String msg = ex.getMessage();
+        assertEquals("update doesn't change BudgetItem value", ex.getMessage());
+    }
+
+    @Test
+    void TestUpdateNegativeValue() {
+        BudgetItem original = new BudgetItem(22, "Roads", 1000.0, false, 2025,
+            List.of(Ministry.HEALTH));
+        BudgetItem updated = new BudgetItem(22, "Roads", -10.0, false, 2025,
+            List.of(Ministry.HEALTH));
+
+        ValidationException ex = assertThrows(ValidationException.class,
+        () -> service.validateBudgetItemUpdate(original, updated));
+        String msg = ex.getMessage();
+        assertEquals(message.NON_NEGATIVE_AMMOUNT_ERROR, ex.getMessage());
+    }
+
+    @Test
+    void TestUpdateLimitExceeded() {
+        BudgetItem original = new BudgetItem(23, "Roads", 1000.0, false, 2025,
+            List.of(Ministry.HEALTH));
+        BudgetItem updated = new BudgetItem(23, "Roads", 100000.0, false, 2025,
+            List.of(Ministry.HEALTH));
+
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateBudgetItemUpdate(original, updated));
+        String msg = ex.getMessage();
+        assertTrue(msg.contains("Additional approval required") ||
+                   msg.contains("exceeds the allowed limit"),
+                   "Expected message about exceeding edit change limit, got: " + msg);
+    }
+
+    @Test
+    void TestUpdateOriginalNull() {
+        BudgetItem updated = new BudgetItem(24, "Roads", 100.0, false, 2025,
+            List.of(Ministry.HEALTH));
+        
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateBudgetItemUpdate(null, updated));
+        String msg = ex.getMessage();
+        assertEquals("Original BudgetItem can't be null", ex.getMessage());
+    }
+
+    @Test
+    void TestUpdateUpdadetNull() {
+        BudgetItem original = new BudgetItem(25, "Roads", 100.0, false, 2025,
+            List.of(Ministry.HEALTH));
+
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateBudgetItemUpdate(original, null));
+        assertEquals("updated BudgetItem can't be null", ex.getMessage());
+    }
+ }
