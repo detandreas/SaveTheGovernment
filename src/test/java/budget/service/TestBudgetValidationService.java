@@ -245,4 +245,78 @@ public class TestBudgetValidationService {
             () -> service.validateBudgetItemUpdate(original, null));
         assertEquals("updated BudgetItem can't be null", ex.getMessage());
     }
+
+    @Test
+    void TestDataIntegrityValid() {
+        BudgetItem newItem = new BudgetItem(30, "Library", 500.0, false, 2025,
+            List.of(Ministry.HEALTH));
+
+        assertDoesNotThrow(() -> service.validateDataIntegrity(newItem),
+            "Valid budget item should pass data integrity validation");
+    }
+
+    @Test
+    void TestDataIntegrityNullItem() {
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateDataIntegrity(null));
+        assertEquals("BudgetItem can't be null", ex.getMessage());
+    }
+
+    @Test
+    void TestDataIntegrityPositiveId() {
+        BudgetItem newItem = new BudgetItem(0, "Library", 500.0, false, 2025,
+            List.of(Ministry.HEALTH));
+        
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateDataIntegrity(newItem));
+        assertEquals("BudgetItem id must be positive", ex.getMessage());
+    }
+
+    @Test
+    void TestDataIntegrityNotNullName() {
+        BudgetItem newItem = new BudgetItem(27, null, 100.0, false, 2025,
+            List.of(Ministry.HEALTH));
+
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateDataIntegrity(newItem));
+        assertEquals("BudgetItem name can't be null or empty", ex.getMessage());
+    }
+
+    @Test
+    void TestDataIntegrityYearAfter2000() {
+        BudgetItem newItem = new BudgetItem(34, "Roads", 120.0, false, 1999,
+            List.of(Ministry.HEALTH));
+
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateDataIntegrity(newItem));
+        assertEquals("BudgetItem year can't be lower than 2000", ex.getMessage());
+    }
+
+    @Test
+    void TestDataIntegrityMinistryNull() {
+        BudgetItem newItem = new BudgetItem(58, "Roads", 130.0, false, 2025,
+            null);
+
+        ValidationExceptionm ex = assertThrows(ValidationException.class,
+            () -> service.validateDataIntegrity(newItem));
+        assertEquals("BudgetItem ministries can't be null or empty", ex.getMessage());
+
+        BudgetItem newItem1 = new BudgetItem(59, "Roads", 140.0, false, 2025, empty.List());
+
+        ValidationException ex1 = assertThrows(ValidationException.class,
+            () -> service.validateDataIntegrity(newItem1));
+        assertEquals("BudgetItem ministries can't be null or empty", ex1.getMessage());
+    }
+
+    @Test
+    void TestValidateNonNegativeAmount() {
+        BudgetItem newItem = new BudgetItem(44, "Infra", -0.01, false, 2025,
+            List.of(Ministry.HEALTH));
+
+
+        ValidationException ex = assertThrows(ValidationException.class,
+            () -> service.validateDataIntegrity(newItem));
+        assertEquals(Message.NON_NEGATIVE_AMOUNT_ERROR, ex.getMessage());
+    }
  }
+ 
