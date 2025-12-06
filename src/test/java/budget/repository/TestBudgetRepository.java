@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -78,6 +79,9 @@ public class TestBudgetRepository {
     }
     @Test
     void testLoadValidBudgetAndMinistriesByIdAndName() throws IOException {
+        // budget.json: two items in 2025:
+        //  - ID 1 (will map to ministry via byId)
+        //  - ID 99 (will map via byName because not present in byId)
         writeBudgetJson("""
             {
               "2025": {
@@ -87,6 +91,10 @@ public class TestBudgetRepository {
             }
             """);
 
+        // bill-ministry-map.json:
+        // byId -> 1 : FINANCE
+        // byName -> HealthItem : HEALTH
+        // include also an invalid ministry name to ensure it's ignored (no exception)
         writeMinistryJson("""
             {
               "byId": { "1": ["FINANCE"] },
@@ -103,6 +111,7 @@ public class TestBudgetRepository {
         assertEquals(700.0, b.getTotalExpense(), 0.0001);
         assertEquals(800.0, b.getNetResult(), 0.0001);
 
+        // confirm ministries mapping
         List<BudgetItem> items = b.getItems();
         assertEquals(2, items.size());
 
@@ -116,6 +125,7 @@ public class TestBudgetRepository {
     }
     @Test
     void testLoadMissingMinistryFile() throws IOException {
+        // write only budget.json and delete ministry file (to simulate missing)
         writeBudgetJson("""
             {
               "2026": {
@@ -123,11 +133,55 @@ public class TestBudgetRepository {
               }
             }
             """);
+        // delete ministry json to simulate missing resource
         Files.deleteIfExists(ministryJson);
 
         List<Budget> budgets = repository.load();
         assertNotNull(budgets);
         assertTrue(budgets.isEmpty());
     }
+
+    // save tests
+
+     @Test
+    void testSaveAndReload() {
+        BudgetItem r = new BudgetItem(10, 2030, "RevenueX", 500.0, true, List.of(Ministry.FINANCE));
+        BudgetItem e = new BudgetItem(11, 2030, "ExpenseY", 200.0, false, List.of(Ministry.HEALTH));
+        Budget b = new Budget(List.of(r, e), 2030, 500.0, 200.0, 300.0);
+
+        repository.save(b);
+
+        // after save, repository.load() should read back the persisted budget.json
+        List<Budget> loaded = repository.load();
+        assertEquals(1, loaded.size(), "After save we should have one budget");
+        Budget read = loaded.get(0);
+        assertEquals(2030, read.getYear());
+        assertEquals(2, read.getItems().size());
+    }
+
+    @Test
+    void testSaveReplaceExistingYear() {
+        BudgetItem r1 = new BudgetItem(20, 2040, "R1", 100, true, List.of());
+        Budget b1 = new Budget(List.of(r1), 2040, 100, 0, 100);
+        repository.save(b1);
+
+        // replace with different content for same year
+        BudgetItem r2 = new BudgetItem(21, 2040, "R2", 200, true, List.of());
+        Budget b2 = new Budget(List.of(r2), 2040, 200, 0, 200);
+        repository.save(b2);
+
+        List<Budget> loaded = repository.load();
+        assertEquals(1, loaded.size(), "Year 2040 should be stored once");
+        Budget read = loaded.get(0);
+        assertEquals(1, read.getItems().size());
+        assertEquals(21, read.getItems().get(0).getId());
+    }
+
+    @Test
+    void testSaveNullDoesNotThrow() {
+        assertDoesNotThrow(() -> repository.save(null), "Saving null must not throw");
+        assertTrue(repository.load().isEmpty(), "No budgets should be present after saving null");
+    }
+
 }
 
