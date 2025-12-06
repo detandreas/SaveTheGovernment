@@ -114,6 +114,20 @@ public class TestBudgetRepository {
         assertEquals(99, expenseItem.getId());
         assertTrue(expenseItem.getMinistries().contains(Ministry.HEALTH));
     }
+    @Test
+    void testLoadMissingMinistryFile() throws IOException {
+        writeBudgetJson("""
+            {
+              "2026": {
+                "esoda": [ { "ID": 2, "BILL": "R2", "VALUE": 100.0 } ]
+              }
+            }
+            """);
+        Files.deleteIfExists(ministryJson);
 
+        List<Budget> budgets = repository.load();
+        assertNotNull(budgets);
+        assertTrue(budgets.isEmpty());
+    }
 }
 
