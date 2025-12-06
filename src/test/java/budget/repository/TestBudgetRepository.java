@@ -41,4 +41,13 @@ public class TestBudgetRepository {
         }
     }
 
+    // helper: write budget.json content
+    private void writeBudgetJson(String json) throws IOException {
+        Files.writeString(budgetJson, json, StandardCharsets.UTF_8);
+    }
+
+    // helper: write bill-ministry-map.json content
+    private void writeMinistryJson(String json) throws IOException {
+        Files.writeString(ministryJson, json, StandardCharsets.UTF_8);
+    }
 }
