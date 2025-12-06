@@ -8,9 +8,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
@@ -181,6 +183,46 @@ public class TestBudgetRepository {
     void testSaveNullDoesNotThrow() {
         assertDoesNotThrow(() -> repository.save(null), "Saving null must not throw");
         assertTrue(repository.load().isEmpty(), "No budgets should be present after saving null");
+    }
+
+    //exist/find tests
+    @Test
+    void testExistsByIdAndFindById() {
+        BudgetItem item = new BudgetItem(30, 2050, "X", 100, true, List.of());
+        Budget b = new Budget(List.of(item), 2050, 100, 0, 100);
+        repository.save(b);
+
+        assertTrue(repository.existsById(2050));
+        Optional<Budget> found = repository.findById(2050);
+        assertTrue(found.isPresent());
+        assertEquals(2050, found.get().getYear());
+    }
+
+    @Test
+    void testExistsByNameAndExistsByItemIdFindItemById() {
+        BudgetItem i1 = new BudgetItem(40, 2060, "IncomeA", 100, true, List.of());
+        BudgetItem i2 = new BudgetItem(41, 2060, "ExpenseB", 50, false, List.of());
+        Budget b = new Budget(List.of(i1, i2), 2060, 100, 50, 50);
+        repository.save(b);
+
+        assertTrue(repository.existsByName("IncomeA", 2060));
+        assertFalse(repository.existsByName("NoSuch", 2060));
+
+        assertTrue(repository.existsByItemId(40, 2060));
+        assertFalse(repository.existsByItemId(999, 2060));
+
+        Optional<BudgetItem> found = repository.findItemById(41, 2060);
+        assertTrue(found.isPresent());
+        assertEquals("ExpenseB", found.get().getName());
+    }
+
+    @Test
+    void testExistsByItemIdInvalidParams() {
+        // invalid id
+        assertFalse(repository.existsByItemId(0, 2060));
+        // invalid year (< limits) - repository uses Limits.MIN_BUDGET_YEAR (= 2000),
+        // pass a year earlier than that to assert false behavior
+        assertFalse(repository.existsByItemId(1, 1900));
     }
 
 }
