@@ -105,7 +105,10 @@ public class TestBudgetValidationService {
 
     @Test
     void TestMinistryContainsNull() {
-        BudgetItem newItem = new BudgetItem(3, 2025, "Road", 10000.0, true, List.of());
+        List<Ministry> listWithNull = new ArrayList<>();
+        listWithNull.add(null);
+
+        BudgetItem newItem = new BudgetItem(3, 2025, "Road", 10000.0, true, listWithNull);
         Budget budget = new Budget(new ArrayList<>(), 0);
 
         ValidationException ex = assertThrows(ValidationException.class,
@@ -168,16 +171,19 @@ public class TestBudgetValidationService {
     void TestDeleteExistingItemsNull() {
         BudgetItem newItem = new BudgetItem(12, 2025, "Local", 200.0, false,
             List.of(Ministry.HEALTH));
-        Budget budget = new Budget(null, 2025);
-        budget.setItems(List.of());
 
-        //expecting specific message because of a null item IN the budget
+        Budget budget = new Budget(new ArrayList<>(), 2025) {
+            @Override
+            public List<BudgetItem> getItems() {
+                return null;
+            }
+        };
 
         ValidationException ex = assertThrows(ValidationException.class,
             () -> service.validateBudgetItemDeletion(newItem, budget));
         String msg = ex.getMessage();
         assertTrue(msg.contains("Cannot delete:Existing items cannot be null"));
-    }
+        }
 
     @Test
     void TestUpdateValid() {
@@ -317,4 +323,4 @@ public class TestBudgetValidationService {
             () -> service.validateDataIntegrity(newItem));
         assertEquals(Message.NON_NEGATIVE_AMOUNT_ERROR, ex.getMessage());
     }
- }
+}
