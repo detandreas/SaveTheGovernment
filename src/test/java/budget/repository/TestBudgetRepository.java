@@ -1,5 +1,6 @@
 package budget.repository;
 
+import budget.constants.Limits;
 import budget.model.domain.Budget;
 import budget.model.domain.BudgetItem;
 import budget.model.enums.Ministry;
@@ -79,6 +80,7 @@ public class TestBudgetRepository {
         assertNotNull(budgets);
         assertTrue(budgets.isEmpty(), "Malformed budget.json should cause empty result");
     }
+
     @Test
     void testLoadValidBudgetAndMinistriesByIdAndName() throws IOException {
         // budget.json: two items in 2025:
@@ -125,6 +127,7 @@ public class TestBudgetRepository {
         assertEquals(99, expenseItem.getId());
         assertTrue(expenseItem.getMinistries().contains(Ministry.HEALTH));
     }
+
     @Test
     void testLoadMissingMinistryFile() throws IOException {
         // write only budget.json and delete ministry file (to simulate missing)
@@ -143,9 +146,50 @@ public class TestBudgetRepository {
         assertTrue(budgets.isEmpty());
     }
 
+    @Test
+    void testLoadMultipleYears() throws IOException {
+        writeBudgetJson("""
+            {
+              "2023": { "esoda": [ { "ID": 1, "BILL": "R1", "VALUE": 100.0 } ] },
+              "2024": { "esoda": [ { "ID": 2, "BILL": "R2", "VALUE": 200.0 } ] },
+              "2025": { "esoda": [ { "ID": 3, "BILL": "R3", "VALUE": 300.0 } ] }
+            }
+            """);
+
+        List<Budget> budgets = repository.load();
+        assertEquals(3, budgets.size());
+        assertTrue(budgets.stream().anyMatch(b -> b.getYear() == 2023));
+        assertTrue(budgets.stream().anyMatch(b -> b.getYear() == 2024));
+        assertTrue(budgets.stream().anyMatch(b -> b.getYear() == 2025));
+    }
+
+    @Test
+    void testLoadRevenueOnly() throws IOException {
+        writeBudgetJson("""
+            { "2025": { "esoda": [ { "ID": 1, "BILL": "Tax", "VALUE": 1000.0 } ] } }
+            """);
+
+        Budget b = repository.load().get(0);
+        assertEquals(1000.0, b.getTotalRevenue(), 0.0001);
+        assertEquals(0.0, b.getTotalExpense(), 0.0001);
+        assertEquals(1000.0, b.getNetResult(), 0.0001);
+    }
+
+    @Test
+    void testLoadExpenseOnly() throws IOException {
+        writeBudgetJson("""
+            { "2025": { "eksoda": [ { "ID": 1, "BILL": "Health", "VALUE": 500.0 } ] } }
+            """);
+
+        Budget b = repository.load().get(0);
+        assertEquals(0.0, b.getTotalRevenue(), 0.0001);
+        assertEquals(500.0, b.getTotalExpense(), 0.0001);
+        assertEquals(-500.0, b.getNetResult(), 0.0001);
+    }
+
     // save tests
 
-     @Test
+    @Test
     void testSaveAndReload() {
         BudgetItem r = new BudgetItem(10, 2030, "RevenueX", 500.0, true, List.of(Ministry.FINANCE));
         BudgetItem e = new BudgetItem(11, 2030, "ExpenseY", 200.0, false, List.of(Ministry.HEALTH));
@@ -185,6 +229,15 @@ public class TestBudgetRepository {
         assertTrue(repository.load().isEmpty(), "No budgets should be present after saving null");
     }
 
+    @Test
+    void testSaveAtMinYear() {
+        BudgetItem item = new BudgetItem(1, Limits.MIN_BUDGET_YEAR, "MinYear", 100, true, List.of());
+        Budget b = new Budget(List.of(item), Limits.MIN_BUDGET_YEAR, 100, 0, 100);
+
+        assertDoesNotThrow(() -> repository.save(b));
+        assertTrue(repository.existsById(Limits.MIN_BUDGET_YEAR));
+    }
+
     //exist/find tests
     @Test
     void testExistsByIdAndFindById() {
@@ -196,6 +249,26 @@ public class TestBudgetRepository {
         Optional<Budget> found = repository.findById(2050);
         assertTrue(found.isPresent());
         assertEquals(2050, found.get().getYear());
+    }
+
+    @Test
+    void testExistsByIdNull() {
+        assertFalse(repository.existsById(null));
+    }
+
+    @Test
+    void testFindByIdNull() {
+        Optional<Budget> found = repository.findById(null);
+        assertTrue(found.isEmpty());
+    }
+
+    @Test
+    void testFindByIdBelowMinYear() {
+        Optional<Budget> found = repository.findById(Limits.MIN_BUDGET_YEAR - 1);
+        assertTrue(found.isEmpty());
+
+        Optional<Budget> found2 = repository.findById(1999);
+        assertTrue(found2.isEmpty());
     }
 
     @Test
@@ -225,5 +298,99 @@ public class TestBudgetRepository {
         assertFalse(repository.existsByItemId(1, 1900));
     }
 
+    @Test
+    void testDeleteExistingAndNonExistingAndNull() {
+        BudgetItem item = new BudgetItem(50, 2050, "D", 10, true, List.of());
+        Budget b = new Budget(List.of(item), 2050, 10, 0, 10);
+        repository.save(b);
+
+        // delete existing
+        repository.delete(b);
+        assertFalse(repository.existsById(2050));
+
+        // delete non-existing (should not throw)
+        assertDoesNotThrow(() -> repository.delete(new Budget(List.of(), 2000, 0, 0, 0)));
+
+        // delete null should not throw
+        assertDoesNotThrow(() -> repository.delete(null));
+    }
+
+    @Test
+    void testFullCrudCycle() {
+        // create
+        BudgetItem item = new BudgetItem(77, 2050, "Full", 111, true, List.of());
+        Budget b = new Budget(List.of(item), 2050, 111, 0, 111);
+        repository.save(b);
+        assertTrue(repository.existsById(2050));
+
+        // read
+        Optional<Budget> read = repository.findById(2050);
+        assertTrue(read.isPresent());
+        assertEquals(1, read.get().getItems().size());
+
+        // update (replace same year)
+        Budget updated = new Budget(List.of(new BudgetItem(78, 2050, "Full2", 222, false, List.of())), 2050, 0, 222, -222);
+        repository.save(updated);
+
+        Optional<Budget> afterUpdate = repository.findById(2050);
+        assertTrue(afterUpdate.isPresent());
+        assertEquals(78, afterUpdate.get().getItems().get(0).getId());
+
+        // delete
+        repository.delete(afterUpdate.get());
+        assertFalse(repository.existsById(2050));
+    }
+
+    @Test
+    void testMultipleBudgets() {
+        repository.save(new Budget(List.of(new BudgetItem(1, 2000, "A", 1, true, List.of())), 2000, 1, 0, 1));
+        repository.save(new Budget(List.of(new BudgetItem(2, 2001, "B", 2, true, List.of())), 2001, 2, 0, 2));
+        repository.save(new Budget(List.of(new BudgetItem(3, 2002, "C", 3, true, List.of())), 2002, 3, 0, 3));
+
+        List<Budget> all = repository.load();
+        assertEquals(3, all.size());
+
+        // delete middle one and ensure others remain
+        repository.delete(new Budget(List.of(), 2001, 0, 0, 0));
+        all = repository.load();
+        assertEquals(2, all.size());
+        assertTrue(repository.existsById(2000));
+        assertFalse(repository.existsById(2001));
+        assertTrue(repository.existsById(2002));
+    }
+
+    @Test
+    void testInvalidMinistryNamesIgnored() throws IOException {
+        writeBudgetJson("""
+            { "2025": { "esoda": [ { "ID": 1, "BILL": "Test", "VALUE": 100.0 } ] } }
+            """);
+        writeMinistryJson("""
+            { "byId": { "1": ["FINANCE", "INVALID_MINISTRY", "FAKE"] }, "byName": { } }
+            """);
+
+        BudgetItem item = repository.load().get(0).getItems().get(0);
+
+        assertEquals(1, item.getMinistries().size(), "Invalid ministries should be ignored");
+        assertTrue(item.getMinistries().contains(Ministry.FINANCE));
+    }
+
+    @Test
+    void testByIdPreferenceOverByName() throws IOException {
+        writeBudgetJson("""
+            { "2025": { "esoda": [ { "ID": 1, "BILL": "Item", "VALUE": 100.0 } ] } }
+            """);
+        writeMinistryJson("""
+            {
+              "byId": { "1": ["FINANCE"] },
+              "byName": { "Item": ["HEALTH"] }
+            }
+            """);
+
+        BudgetItem item = repository.load().get(0).getItems().get(0);
+
+        assertTrue(item.getMinistries().contains(Ministry.FINANCE));
+        assertFalse(item.getMinistries().contains(Ministry.HEALTH));
+    }
 }
+
 
