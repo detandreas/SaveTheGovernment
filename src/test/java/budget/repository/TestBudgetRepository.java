@@ -1,14 +1,20 @@
 package budget.repository;
 
+import budget.model.domain.Budget;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 public class TestBudgetRepository {
+
     private BudgetRepository repository;
     private String originalDataDir;
 
@@ -49,5 +55,22 @@ public class TestBudgetRepository {
     // helper: write bill-ministry-map.json content
     private void writeMinistryJson(String json) throws IOException {
         Files.writeString(ministryJson, json, StandardCharsets.UTF_8);
+    }
+
+    //load tests
+    @Test
+    void testLoadEmpty() {
+        List<Budget> budgets = repository.load();
+        assertNotNull(budgets, "load() should never return null");
+        assertTrue(budgets.isEmpty(), "With empty JSON we expect empty list");
+    }
+
+    @Test
+    void testLoadMalformedBudgetJson() throws IOException {
+        writeBudgetJson("{ invalid json }");
+        // ministry json remains valid (empty map)
+        List<Budget> budgets = repository.load();
+        assertNotNull(budgets);
+        assertTrue(budgets.isEmpty(), "Malformed budget.json should cause empty result");
     }
 }
