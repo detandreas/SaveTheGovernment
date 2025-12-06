@@ -1,12 +1,15 @@
 package budget.repository;
 
 import budget.model.domain.Budget;
+import budget.model.domain.BudgetItem;
+import budget.model.enums.Ministry;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,4 +76,44 @@ public class TestBudgetRepository {
         assertNotNull(budgets);
         assertTrue(budgets.isEmpty(), "Malformed budget.json should cause empty result");
     }
+    @Test
+    void testLoadValidBudgetAndMinistriesByIdAndName() throws IOException {
+        writeBudgetJson("""
+            {
+              "2025": {
+                "esoda": [ { "ID": 1, "BILL": "TaxRevenue", "VALUE": 1500.0 } ],
+                "eksoda": [ { "ID": 99, "BILL": "HealthItem", "VALUE": 700.0 } ]
+              }
+            }
+            """);
+
+        writeMinistryJson("""
+            {
+              "byId": { "1": ["FINANCE"] },
+              "byName": { "HealthItem": ["HEALTH", "UNKNOWN_MINISTRY"] }
+            }
+            """);
+
+        List<Budget> budgets = repository.load();
+        assertEquals(1, budgets.size());
+
+        Budget b = budgets.get(0);
+        assertEquals(2025, b.getYear());
+        assertEquals(1500.0, b.getTotalRevenue(), 0.0001);
+        assertEquals(700.0, b.getTotalExpense(), 0.0001);
+        assertEquals(800.0, b.getNetResult(), 0.0001);
+
+        List<BudgetItem> items = b.getItems();
+        assertEquals(2, items.size());
+
+        BudgetItem revenueItem = items.stream().filter(BudgetItem::getIsRevenue).findFirst().orElseThrow();
+        assertEquals(1, revenueItem.getId());
+        assertTrue(revenueItem.getMinistries().contains(Ministry.FINANCE));
+
+        BudgetItem expenseItem = items.stream().filter(i -> !i.getIsRevenue()).findFirst().orElseThrow();
+        assertEquals(99, expenseItem.getId());
+        assertTrue(expenseItem.getMinistries().contains(Ministry.HEALTH));
+    }
+
 }
+
