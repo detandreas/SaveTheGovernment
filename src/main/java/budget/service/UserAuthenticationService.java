@@ -20,7 +20,7 @@ import java.security.MessageDigest;
 public class UserAuthenticationService {
 
     private final UserRepository userRepository;
-    private static User currentUser;
+    private User currentUser;
     private static final HexFormat HEX_FORMATTER = HexFormat.of();
     private static final byte[] DUMMY_SHA256
                         = HEX_FORMATTER
@@ -38,7 +38,7 @@ public class UserAuthenticationService {
     )
     public UserAuthenticationService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        currentUser = null;
+        this.currentUser = null;
     }
 
     /**
@@ -69,7 +69,7 @@ public class UserAuthenticationService {
                                     = HEX_FORMATTER.parseHex(candidateHex);
 
                     if (MessageDigest.isEqual(storedBytes, candidateBytes)) {
-                        currentUser = user;
+                        this.currentUser = user;
                         return true;
                     }
                 }
@@ -94,8 +94,8 @@ public class UserAuthenticationService {
     /**
      * Logs out the currently authenticated user.
      */
-    public static void logout() {
-        currentUser = null;
+    public void logout() {
+        this.currentUser = null;
     }
 
     /**
@@ -107,8 +107,8 @@ public class UserAuthenticationService {
       value = "EI_EXPOSE_REP",
       justification = "currentUser instance should be accessible."
     )
-    public static User getCurrentUser() {
-        return currentUser;
+    public User getCurrentUser() {
+        return this.currentUser;
     }
 
     /**
@@ -116,8 +116,8 @@ public class UserAuthenticationService {
      *
      * @return true if a user is logged in, false otherwise
      */
-    public static boolean isAuthenticated() {
-        return currentUser != null;
+    public boolean isAuthenticated() {
+        return this.currentUser != null;
     }
 
     /**
