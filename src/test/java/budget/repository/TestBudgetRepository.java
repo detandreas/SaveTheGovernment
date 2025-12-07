@@ -8,17 +8,18 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 public class TestBudgetRepository {
 
@@ -207,7 +208,7 @@ public class TestBudgetRepository {
 
     @Test
     void testSaveNullDoesNotThrow() {
-        assertDoesNotThrow(() -> repository.save(null), "Saving null must not throw");
+        assertDoesNotThrow(() -> repository.save(null), "Saving nul l must not throw");
         assertTrue(repository.load().isEmpty(), "No budgets should be present after saving null");
     }
 
@@ -272,12 +273,43 @@ public class TestBudgetRepository {
     }
 
     @Test
+    void testExistsByNameWithNullName() {
+        assertFalse(repository.existsByName(null, 2025),
+                                "Failure - can't search with null name");
+    }
+
+    @Test
+    void testExistsByNameWhenBudgetForThatYearDoesntExist() {
+        BudgetItem i1 = new BudgetItem(40, 2060, "IncomeA", 100, true, List.of());
+        Budget b = new Budget(List.of(i1), 2060, 100, 50, 50);
+        repository.save(b);
+
+        assertFalse(repository.existsByName("IncomeA", 2025),
+                                "Failure - Item name doesn't exist for year 2025");
+    }
+
+    @Test
     void testExistsByItemIdInvalidParams() {
         // invalid id
         assertFalse(repository.existsByItemId(0, 2060));
+        assertFalse(repository.existsByItemId(1, 2060));
         // invalid year (< limits) - repository uses Limits.MIN_BUDGET_YEAR (= 2000),
         // pass a year earlier than that to assert false behavior
         assertFalse(repository.existsByItemId(1, 1900));
+    }
+
+    @Test
+    void testFindItemById() {
+        List<Optional<BudgetItem>> listOfBudgetItems = new ArrayList<>();
+        var b1 = repository.findItemById(-1, 2025);
+        var b2 = repository.findItemById(1, 1999);
+        var b3 = repository.findItemById(1, 2060);
+
+        listOfBudgetItems.addAll(List.of(b1,b2,b3));
+
+        for (var b : listOfBudgetItems) {
+            assertTrue(b.isEmpty(), "Failure - optional should be empty");
+        }
     }
 
     @Test
