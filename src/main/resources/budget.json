@@ -3,139 +3,129 @@
     "esoda": [
       {
         "ID": 11,
-        "BILL": "Φόροι",
+        "BILL": "Taxes",
         "VALUE": 62055000000.0
       },
       {
         "ID": 12,
-        "BILL": "Κοινωνικές εισφορές",
+        "BILL": "Social Contributions",
         "VALUE": 60000000.0
       },
       {
         "ID": 13,
-        "BILL": "Μεταβιβάσεις",
+        "BILL": "Transfers",
         "VALUE": 8131000000.0
       },
       {
         "ID": 14,
-        "BILL": "Πωλήσεις αγαθών και υπηρεσιών",
+        "BILL": "Sales of goods and services",
         "VALUE": 2405000000.0
       },
       {
         "ID": 15,
-        "BILL": "Λοιπά τρέχοντα έσοδα",
+        "BILL": "Other current revenue",
         "VALUE": 2775000000.0
       },
       {
         "ID": 31,
-        "BILL": "Πάγια Περιουσιακά Στοιχεία",
+        "BILL": "Fixed Assets",
         "VALUE": 37000000.0
       },
       {
         "ID": 43,
-        "BILL": "Χρεωστικοί τίτλοι",
+        "BILL": "Debt Securities",
         "VALUE": 11000000.0
       },
       {
         "ID": 44,
-        "BILL": "Δάνεια",
+        "BILL": "Loans",
         "VALUE": 20000000.0
       },
       {
         "ID": 45,
-        "BILL": "Συμμετοχικοί τίτλοι και μερίδια επενδυτικών",
+        "BILL": "Equity securities and investment fund shares",
         "VALUE": 467000000.0
       },
       {
-        "ID": 52,
-        "BILL": "Υποχρεώσεις από νόμισμα και καταθέσεις",
-        "VALUE": 66000000.0
-      },
-      {
         "ID": 53,
-        "BILL": "Χρεωστικοί τίτλοι (υποχρεώσεις)",
+        "BILL": "Debt Securities (liabilities)",
         "VALUE": 25973000000.0
       },
       {
         "ID": 54,
-        "BILL": "Δάνεια",
+        "BILL": "Loans",
         "VALUE": 1202027000000.0
       },
       {
         "ID": 57,
-        "BILL": "Χρηματοοικονομικά παράγωγα",
+        "BILL": "Financial derivatives",
         "VALUE": 800000000.0
       }
     ],
     "eksoda": [
       {
         "ID": 21,
-        "BILL": "Παροχές σε εργαζομένους",
+        "BILL": "Employee benefits",
         "VALUE": 14889199000.0
       },
       {
         "ID": 22,
-        "BILL": "Κοινωνικές παροχές",
+        "BILL": "Social benefits",
         "VALUE": 425136000.0
       },
       {
         "ID": 23,
-        "BILL": "Μεταβιβάσεις",
+        "BILL": "Transfers",
         "VALUE": 34741365000.0
       },
       {
         "ID": 24,
-        "BILL": "Αγορές αγαθών και υπηρεσιών",
+        "BILL": "Purchases of goods and services",
         "VALUE": 2039542000.0
       },
       {
         "ID": 25,
-        "BILL": "Επιδοτήσεις",
+        "BILL": "Subsidies",
         "VALUE": 80630000.0
       },
       {
         "ID": 26,
-        "BILL": "Τόκοι",
+        "BILL": "Interest",
         "VALUE": 7701101000.0
       },
       {
         "ID": 27,
-        "BILL": "Λοιπές δαπάνες",
+        "BILL": "Other expenses",
         "VALUE": 101553000.0
       },
       {
         "ID": 29,
-        "BILL": "Πιστώσεις υπό κατανομή",
+        "BILL": "Credits under allocation",
         "VALUE": 17283053000.0
       },
       {
         "ID": 31,
-        "BILL": "Πάγια περιουσιακά στοιχεία",
+        "BILL": "Fixed assets",
         "VALUE": 2609600000.0
       },
       {
         "ID": 33,
-        "BILL": "Τιμαλφή",
+        "BILL": "Compensation",
         "VALUE": 85000.0
       },
       {
         "ID": 44,
-        "BILL": "Δάνεια",
+        "BILL": "Loans",
         "VALUE": 3741000000.0
       },
       {
         "ID": 45,
-        "BILL": "Συμμετοχικοί τίτλοι και μερίδια επενδυτικών",
+        "BILL": "Equity securities and investment fund shares",
         "VALUE": 1755112000.0
       },
       {
-        "ID": 53,
-        "BILL": "Χρεωστικοί τίτλοι (υποχρεώσεις)",
-        "VALUE": 19375000000.0
-      },
-      {
         "ID": 54,
-        "BILL": "Δάνεια",
+        "BILL": "Loans",
         "VALUE": 1203165130000.0
       }
     ]
