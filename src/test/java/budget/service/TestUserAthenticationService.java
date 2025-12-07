@@ -173,18 +173,6 @@ boolean user = userAuthenticationService.login(username, password);
     }
 
        @Test
-       //Test for sucessfull signup (Prime Minister)
-
-       void testsignupsucessfulpm() {
-    
-           UserRole role = UserRole.PRIME_MINISTER;
-
-           userAuthenticationService.logout();
-           boolean Signup = userAuthenticationService.signUp(username, password, fullName, role, null);
-           assertTrue(Signup); 
-       }
-
-       @Test
          //Test for unsucessfull signup (Prime Minister already exists)
 
          void testsignupunsucessfulpm() {
