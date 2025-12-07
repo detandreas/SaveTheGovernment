@@ -143,7 +143,7 @@ public class BudgetValidationService {
     throws ValidationException {
         double currentNetResult = Math.abs(budget.getNetResult());
         // Αν το ισοζύγιο ειναι 0 επιτρέπεται οποιαδήποτε αλλαγη
-        if (currentNetResult <= Limits.SMALL_NUMBER) {
+        if (currentNetResult == 0 || currentNetResult <= Limits.SMALL_NUMBER) {
             return;
         }
         double newNetResult = calculateNewNetResult(budget, newItem);
@@ -190,15 +190,11 @@ public class BudgetValidationService {
     * @param finalValue the ending value
     * @param startValue the starting value (must not be zero)
     * @return the absolute percentage change as a decimal (e.g., 0.15 for 15%)
-    * @throws IllegalArgumentException if startValue is zero
     */
     private double calculateChangePercent(
         double finalValue,
         double startValue
     ) {
-        if (startValue == 0) {
-            throw new IllegalArgumentException("Cannot divide by zero");
-        }
         double changePercent = (finalValue - startValue) / startValue;
         return  Math.abs(changePercent);
     }
@@ -224,9 +220,9 @@ public class BudgetValidationService {
             throw new ValidationException("Budget cannot be null");
         }
         List<BudgetItem> existingBudgetItems = budget.getItems();
-        if (existingBudgetItems == null) {
-            throw new ValidationException("Cannot delete:"
-                                    + "Existing items cannot be null");
+        if (existingBudgetItems.isEmpty()) {
+            throw new ValidationException("Cannot delete "
+                                    + "from empty Item list");
         }
 
         validateNotProtectedItem(itemToDelete);
@@ -243,11 +239,11 @@ public class BudgetValidationService {
     */
     private void validateNotProtectedItem(BudgetItem item)
     throws ValidationException {
-        String itemName = item.getName();
-        boolean isProtected = PROTECTED_BUDGET_NAMES
-                                .stream()
-                                .anyMatch(protectedName ->
-                                    itemName.equalsIgnoreCase(protectedName));
+        List<Ministry> ministries = item.getMinistries();
+        boolean isProtected = ministries.stream()
+            .anyMatch(ministry -> PROTECTED_BUDGET_NAMES.stream()
+                .anyMatch(protectedName ->
+                    protectedName.equalsIgnoreCase(ministry.getDisplayName())));
         if (isProtected) {
             throw new ValidationException(
                 "protected BudgetItem cannot be deleted");
