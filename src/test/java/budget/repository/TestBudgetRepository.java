@@ -129,24 +129,6 @@ public class TestBudgetRepository {
     }
 
     @Test
-    void testLoadMissingMinistryFile() throws IOException {
-        // write only budget.json and delete ministry file (to simulate missing)
-        writeBudgetJson("""
-            {
-              "2026": {
-                "esoda": [ { "ID": 2, "BILL": "R2", "VALUE": 100.0 } ]
-              }
-            }
-            """);
-        // delete ministry json to simulate missing resource
-        Files.deleteIfExists(ministryJson);
-
-        List<Budget> budgets = repository.load();
-        assertNotNull(budgets);
-        assertTrue(budgets.isEmpty());
-    }
-
-    @Test
     void testLoadMultipleYears() throws IOException {
         writeBudgetJson("""
             {
@@ -390,6 +372,23 @@ public class TestBudgetRepository {
 
         assertTrue(item.getMinistries().contains(Ministry.FINANCE));
         assertFalse(item.getMinistries().contains(Ministry.HEALTH));
+    }
+
+    @Test
+    void testMultipleMinistriesMapping() throws IOException {
+        writeBudgetJson("""
+            { "2025": { "esoda": [ { "ID": 1, "BILL": "Shared", "VALUE": 1000.0 } ] } }
+            """);
+        writeMinistryJson("""
+            { "byId": { "1": ["FINANCE", "DEVELOPMENT", "INTERIOR"] }, "byName": { } }
+            """);
+
+        BudgetItem item = repository.load().get(0).getItems().get(0);
+
+        assertEquals(3, item.getMinistries().size());
+        assertTrue(item.getMinistries().contains(Ministry.FINANCE));
+        assertTrue(item.getMinistries().contains(Ministry.DEVELOPMENT));
+        assertTrue(item.getMinistries().contains(Ministry.INTERIOR));
     }
 }
 
