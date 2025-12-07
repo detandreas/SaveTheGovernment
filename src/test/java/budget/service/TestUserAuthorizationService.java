@@ -35,7 +35,7 @@ public class TestUserAuthorizationService {
 
     // TESTING checkCanUserSubmitRequests
     @Test
-    void TestNullUser(){
+    void testNullUser(){
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
           () -> service.checkCanUserSubmitRequest(null, item));
 
@@ -44,7 +44,7 @@ public class TestUserAuthorizationService {
     }
 
     @Test
-    void TestNullItem(){
+    void testNullItem(){
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
             () -> service.checkCanUserSubmitRequest(gm, null));
 
@@ -53,7 +53,7 @@ public class TestUserAuthorizationService {
     }
 
     @Test
-    void TestNoMinistries(){
+    void testNoMinistries(){
         BudgetItem wrong_item = new BudgetItem(1, 2025, "Item", 1000, false,List.of());
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,() 
@@ -64,7 +64,7 @@ public class TestUserAuthorizationService {
     }
 
     @Test
-    void TestNotGovernmentMember() {
+    void testNotGovernmentMember() {
         UserNotAuthorizedException ex = assertThrows(UserNotAuthorizedException.class,
                 () -> service.checkCanUserSubmitRequest(pm, item));
 
@@ -73,7 +73,7 @@ public class TestUserAuthorizationService {
     }
 
     @Test
-    void TestWrongMinistry() {
+    void testWrongMinistry() {
         User wrong_gm = new GovernmentMember("u", "Full Name", "Pass123!", Ministry.HEALTH);
 
         UserNotAuthorizedException ex = assertThrows(UserNotAuthorizedException.class,
@@ -86,7 +86,7 @@ public class TestUserAuthorizationService {
     // Testing canUserSubmitRequests
 
     @Test 
-    void TestSubmitRequestValid() {
+    void testSubmitRequestValid() {
         assertDoesNotThrow(() -> service.canUserSubmitRequest(gm, item),
                 "Failure - valid government member should be able to submit request without exception");
     }
@@ -108,13 +108,13 @@ public class TestUserAuthorizationService {
     // Testing CanUserApproveRequests
 
     @Test
-    void TestApproveRequestsTrue(){
+    void testApproveRequestsTrue(){
         assertTrue(service.canUserApproveRequests(pm),
                 "Failure - Prime Minister should be able to approve requests");
     }
 
     @Test
-    void TestApproveRequestsFlase(){
+    void testApproveRequestsFlase(){
         assertFalse(service.canUserApproveRequests(gm),
                 "Failure - Government Member should not be able to approve requests");
     }
@@ -122,7 +122,7 @@ public class TestUserAuthorizationService {
     // Testing checkCanUserEditBudgetItem
 
     @Test
-    void TestUserNull() {
+    void testUserNull() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,() 
             -> service.checkCanUserEditBudgetItem(null, item));
 
@@ -131,7 +131,7 @@ public class TestUserAuthorizationService {
     }
 
     @Test
-    void TestItemNull(){
+    void testItemNull(){
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,() 
             -> service.checkCanUserEditBudgetItem(gm,null));
 
@@ -140,7 +140,7 @@ public class TestUserAuthorizationService {
     }
 
     @Test
-    void Test_NotGovernmentMember(){
+    void test_NotGovernmentMember(){
         User ct = new Citizen("userName", "Full Name", "Pass123!");
 
         UserNotAuthorizedException ex = assertThrows(UserNotAuthorizedException.class,()
@@ -151,7 +151,7 @@ public class TestUserAuthorizationService {
     }
 
     @Test
-    void TestNotMinistry(){
+    void testNotMinistry(){
         User wrong_gm = new GovernmentMember("u", "Full Name", "Pass123!", Ministry.HEALTH);
 
         UserNotAuthorizedException ex = assertThrows(UserNotAuthorizedException.class,()
@@ -162,7 +162,7 @@ public class TestUserAuthorizationService {
     }
 
     @Test 
-    void TestEditBudgetValid(){
+    void testEditBudgetValid(){
         assertDoesNotThrow(() -> service.checkCanUserEditBudgetItem(gm, item),
                 "Failure - valid government member should be able to edit budget item without exception");
     }
@@ -170,13 +170,13 @@ public class TestUserAuthorizationService {
     // Testing canUserEditBudgetItem
 
     @Test
-    void TestCanditTrue(){
+    void testCanditTrue(){
         assertTrue(service.canUserEditBudgetItem(gm, item),
                 "Failure - government member from Finance Ministry should be able to edit budget item");
     }
 
     @Test
-    void TestCanEditFalsse(){
+    void testCanEditFalsse(){
         User wrong_gm = new GovernmentMember("u", "Full Name", "Pass123!", Ministry.HEALTH);
 
         assertFalse(service.canUserEditBudgetItem(wrong_gm, item),
