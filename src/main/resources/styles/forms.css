@@ -1,0 +1,63 @@
+/* TextField, PasswordField & ComboBox */
+.text-field, .password-field, .combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+    -fx-padding: 8px;
+}
+
+/* --- Special setting for Embedded ComboBox --- */
+
+/* Transparent ComboBox */
+.combo-box.embedded-text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+}
+
+/* Removes the border and background from the arrow button */
+.combo-box.embedded-text-field .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box.embedded-text-field .arrow {
+    -fx-background-color: #7f8c8d;
+}
+
+/* The "box" that contains the icon and the field */
+.input-container {
+    -fx-background-color: #f1f2f6;
+    -fx-background-radius: 30px;
+    -fx-border-radius: 30px;
+    -fx-border-color: transparent;
+    -fx-padding: 5px 15px;
+    -fx-effect: null;
+}
+
+.input-container:focused-within {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #3498db;
+    -fx-effect: dropshadow(three-pass-box, rgba(52,152,219,0.2), 5, 0, 0, 0);
+}
+
+.embedded-text-field {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 8px;
+    -fx-prompt-text-fill: #a0a0a0;
+    -fx-text-fill: #333333;
+}
+
+.field-icon {
+    -fx-opacity: 0.5;
+}
+
+/* 7. ComboBox List Cells */
+.combo-box-popup .list-view .list-cell:filled:selected, 
+.combo-box-popup .list-view .list-cell:filled:hover {
+    -fx-background-color: #194f73;
+    -fx-text-fill: white;
+}
