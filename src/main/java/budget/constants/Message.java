@@ -17,7 +17,6 @@ public final class Message {
         + " to the budget management application";
     // Login Messages
     public static final String LOGIN_BUTTON = "Login";
-    
     public static final String SELECT_CHOICE_MESSAGE =
         "Please select an option:";
     public static final String LOGIN_MESSAGE = "Please"
