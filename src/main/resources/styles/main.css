@@ -1,0 +1,16 @@
+/* main.css */
+
+/* Basic Settings */
+@import "application.css";
+
+/* 2. Text */
+@import "typography.css";
+
+/* 3. Forms & Inputs */
+@import "forms.css";
+
+/* 4. Buttons */
+@import "buttons.css";
+
+/* 5. Tables */
+@import "tables.css";
