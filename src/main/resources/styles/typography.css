@@ -1,0 +1,63 @@
+/* Labels */
+.label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+.header-label {
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.error-label {
+    -fx-text-fill: #e74c3c;
+    -fx-font-weight: bold;
+}
+
+.success-label {
+    -fx-text-fill: #237e49;
+    -fx-font-weight: bold;
+}
+
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Inside the Table */
+.table-view .table-cell {
+    -fx-font-size: 16px;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-text-fill: #34495e;
+}
+
+.table-cell.status-revenue {
+    -fx-text-fill: #1e894a;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.table-cell.status-expense {
+    -fx-text-fill: #a52b1e;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* PROFILE CARD TEXT */
+
+.profile-name-label {
+    -fx-text-fill: #333333;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.profile-role-label {
+    -fx-text-fill: #7f8c8d;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+}

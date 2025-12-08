@@ -1,0 +1,102 @@
+/* Buttons */
+.button {
+    -fx-background-color: #032942;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+    -fx-padding: 8px 15px;
+}
+
+/* Hover */
+.button:hover {
+    -fx-background-color: #194f73;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+/* Pressed */
+.button:pressed {
+    -fx-background-color: #81918d;
+}
+
+/*  Special Class for "Eye" Button (.icon-button) */
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 4px;
+    -fx-cursor: hand;
+}
+
+.icon-button:hover {
+    -fx-background-color: rgba(0,0,0,0.05);
+    -fx-background-radius: 50%;
+}
+
+.link-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #161717;
+    -fx-underline: true;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.link-button:pressed {
+    -fx-background-color: transparent;
+}
+
+.link-button .image-view {
+    -fx-opacity: 0.7;
+}
+
+.link-button:hover {
+    -fx-text-fill: #555555;
+    -fx-background-color: transparent;
+}
+
+/* Style for the menu buttons */
+.menu-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #333333;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+    -fx-padding: 12 20 12 20;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+.menu-btn:hover {
+    -fx-background-color: #e6e6e6;
+    -fx-text-fill: #000000;
+}
+
+.menu-btn:pressed {
+    -fx-background-color: #d9d9d9;
+}
+
+/* Menu that is pressed at the moment */
+.menu-btn:focused {
+    -fx-background-color: #e6e6e6;
+    -fx-border-width: 0 0 0 3;
+    -fx-border-color: #032942;
+}
+
+#logoutButton {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #333333;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-effect: null;
+}
+
+#logoutButton:hover {
+    -fx-background-color: #ffebee !important; 
+    -fx-text-fill: #c0392b;
+    -fx-effect: null;
+}
+
+#logoutButton:focused {
+    -fx-background-color: transparent !important;
+    -fx-border-color: transparent;
+}
