@@ -6,10 +6,18 @@ public final class Message {
 
     private Message() { }
 
+    // Common Button Labels
+    public static final String BACK_BUTTON = "Go Back";
+    public static final String CANCEL_BUTTON = "Cancel";
+    //Name of the application
+    public static final String APPLICATION_NAME =
+        "Save The Government";
     // Welcome Message
     public static final String WELCOME_MESSAGE = "Welcome"
-        + " to the Government Budget application!";
+        + " to the budget management application";
     // Login Messages
+    public static final String LOGIN_BUTTON = "Login";
+    
     public static final String SELECT_CHOICE_MESSAGE =
         "Please select an option:";
     public static final String LOGIN_MESSAGE = "Please"
@@ -18,18 +26,21 @@ public final class Message {
         + " option. Please try again.";
     public static final String USERNAME_PROMPT = "Username: ";
     public static final String PASSWORD_PROMPT = "Password: ";
-    public static final String LOGIN_SUCCESS = "Successful login! Welcome, %s ";
+    public static final String LOGIN_SUCCESS = "Successful login!";
     public static final String LOGIN_FAILED = "Login failed."
         + " Invalid username or password.";
     // Create Account Messages
+    public static final String CREATE_ACCOUNT_BUTTON = "Create Account";
     public static final String CREATE_ACCOUNT_MESSAGE =
-        "Please fill in your details to create an account.";
+        "Please fill in your credentials to create an account.";
     public static final String SIGNUP_ENTER_USERNAME = "Enter a username:";
     public static final String SIGNUP_ENTER_PASSWORD = "Enter a password:";
     public static final String SIGNUP_CONFIRM_PASSWORD =
         "Confirm your password:";
     public static final String SIGNUP_ENTER_FULLNAME =
         "Enter your full name:";
+    public static final String SIGNUP_SELECT_ROLE =
+        "Select your role:";
     // Department Selection for Government Members
     public static final String SIGNUP_SELECT_DEPARTMENT =
         "Select your ministry:";
@@ -57,10 +68,10 @@ public final class Message {
         + "one lowercase letter, one digit, and one special character.";
     public static final String FULLNAME_LENGTH_LIMITS_MESSAGE =
         "Full name must not exceed 50 characters.";
-    public static final String ERROR_INVALID_ROLE =
-        "Invalid role selected. Please choose from the list.";
-    public static final String ERROR_INVALID_MINISTRY =
-        "Invalid ministry selected. Please choose from the list.";
+    public static final String ERROR_ROLE =
+        "Please choose a role";
+    public static final String ERROR_MINISTRY =
+        "Please choose a ministry";
     // Success Message for Create Account
     public static final String CREATE_ACCOUNT_SUCCESS =
         "Account created successfully! "
