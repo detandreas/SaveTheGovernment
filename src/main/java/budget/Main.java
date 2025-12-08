@@ -1,23 +1,32 @@
 package budget;
 
-import java.util.Scanner;
-import java.nio.charset.StandardCharsets;
-
+import javafx.application.Application;
+import javafx.stage.Stage;
+import budget.ui_fx.util.SceneLoader;
 /**
- * Entry point της εφαρμογής CLI.
+ * Main class for the Save The Government application.
+ * This class extends JavaFX Application to launch the GUI.
  */
-public final class Main {
-
-    private Main() { }
+public class Main extends Application {
     /**
-     * Main method της εφαρμογής CLI.
-     * @param args ορίσματα γραμμής εντολών
+     * Starts the JavaFX application.
+     * @param primaryStage the primary stage for this application
      */
-    public static void main(final String[] args) {
-        Scanner input = new Scanner(System.in, StandardCharsets.UTF_8);
-        System.out.print("Enter your username: ");
-        String name = input.nextLine();
-        System.out.println("Hello, " + name + "!");
-        input.close();
+    @Override
+    public void start(Stage primaryStage) {
+        try {
+            SceneLoader loader = new SceneLoader(primaryStage);
+            loader.load("/view/WelcomeView.fxml", "Save The Government App - Welcome");
+        } catch (Exception e) {
+            System.err.println("Κρίσιμο σφάλμα κατά την εκκίνηση της εφαρμογής!");
+            e.printStackTrace();
+        }
+    }
+    /**
+     * The main entry point for the application.
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        launch(args);
     }
 }
