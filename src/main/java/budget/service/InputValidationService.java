@@ -25,22 +25,16 @@ public final class InputValidationService {
     public void validateNewUser(User u)
         throws ValidationException {
         if (!InputValidator.isNonNull(u)) {
-            fail("User is null");
+            throw new ValidationException("User is null");
         }
         if (!InputValidator.isUserName(u.getUserName())) {
-            fail("invalid username");
+            throw new ValidationException("invalid username");
         }
         if (!InputValidator.isFullName(u.getFullName())) {
-            fail("invalid fullname");
-        }
-        if (!InputValidator.isValidUserRole(u.getUserRole())) {
-            fail("invalid user role");
+            throw new ValidationException("invalid fullname");
         }
         if (!InputValidator.isNonNull(u.getHashPassword())) {
-            fail("invalid hashed password");
-        }
-        if (!InputValidator.isNonNull(u.getId())) {
-            fail("invalid user id");
+            throw new ValidationException("invalid hashed password");
         }
     }
     /**
@@ -53,19 +47,16 @@ public final class InputValidationService {
     public void validateUserUpdate(User u)
         throws ValidationException {
         if (!InputValidator.isNonNull(u)) {
-            fail("User is null");
+            throw new ValidationException("User is null");
         }
         if (!InputValidator.isUserName(u.getUserName())) {
-            fail("invalid username");
+            throw new ValidationException("invalid username");
         }
         if (!InputValidator.isFullName(u.getFullName())) {
-            fail("invalid fullname");
-        }
-        if (!InputValidator.isValidUserRole(u.getUserRole())) {
-            fail("invalid user role");
+            throw new ValidationException("invalid fullname");
         }
         if (!InputValidator.isNonNull(u.getHashPassword())) {
-            fail("invalid hashed password");
+            throw new ValidationException("invalid hashed password");
         }
     }
     /**
@@ -78,17 +69,7 @@ public final class InputValidationService {
     public void validateRoleChange(UserRole from, UserRole to)
         throws ValidationException {
         if (from == null || to == null) {
-            fail("user roles cannot be null");
+            throw new ValidationException("user roles cannot be null");
         }
-    }
-    /**
-     * Throws a ValidationException with the specified message.
-     *
-     * @param msg the error message
-     * @throws ValidationException always thrown with the provided message
-     */
-    public void fail(String msg)
-    throws ValidationException {
-        throw new ValidationException(msg);
     }
 }

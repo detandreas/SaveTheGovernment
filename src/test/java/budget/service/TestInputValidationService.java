@@ -122,12 +122,4 @@ public class TestInputValidationService {
 
          assertEquals("user roles cannot be null",ex.getMessage());
     }
-
-    @Test
-    void TestFail(){
-        ValidationException ex = assertThrows(ValidationException.class,
-                () -> service.fail("error"));
-
-        assertEquals( "error",ex.getMessage());
-    }
-    }
+}
