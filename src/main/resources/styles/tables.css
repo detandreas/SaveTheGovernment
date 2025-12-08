@@ -1,0 +1,96 @@
+/* TableView Styling */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+/* Header */
+.table-view .column-header-background {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px 5px 0 0;
+    
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-color: #454b52;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-size: 45px;
+    -fx-border-width: 0;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #454b52;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-alignment: CENTER-LEFT;
+}
+
+/* Rows */
+.table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: #f0f2f5;
+    -fx-cell-size: 40px;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #fafbfc;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #ecf0f1;
+}
+
+/* Selected Row */
+.table-row-cell:selected {
+    -fx-background-color: #3c627b;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: white;
+}
+
+/* Scroll Bar Styling */
+
+.table-view .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 12px;
+}
+
+.table-view .scroll-bar:vertical .track,
+.table-view .scroll-bar:vertical .track-background {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0;
+}
+
+.table-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #bdc3c7;
+    -fx-background-radius: 10px;
+    -fx-background-insets: 2;
+}
+
+.table-view .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #95a5a6;
+}
+
+.table-view .scroll-bar:vertical .thumb:pressed {
+    -fx-background-color: #7f8c8d;
+}
+
+/* 4. Hide the up-down arrows (Increment/Decrement Buttons) */
+.table-view .scroll-bar:vertical .increment-button,
+.table-view .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-height: 0;
+    -fx-pref-width: 0;
+}
+
+.table-view .scroll-bar:vertical .increment-arrow,
+.table-view .scroll-bar:vertical .decrement-arrow {
+    -fx-shape: null;
+    -fx-padding: 0;
+}
