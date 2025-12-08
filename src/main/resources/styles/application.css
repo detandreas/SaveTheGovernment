@@ -1,0 +1,27 @@
+/* General Settings (.root) */
+.root {
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #9db0c39a;
+}
+
+/* General Content Container */
+.content-container {
+    -fx-padding: 30;
+    -fx-background-color: #f4f6f7;
+}
+
+/* The VBox containing the Info and Logout */
+.user-info-container {
+    -fx-padding: 20;
+    -fx-background-color: transparent;
+}
+
+/* --- PROFILE CARD CONTAINER --- */
+.profile-card {
+    -fx-background-color: #eaf1f5;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 1);
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 12px;
+}
