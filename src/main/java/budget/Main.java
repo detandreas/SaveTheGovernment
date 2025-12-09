@@ -19,5 +19,6 @@ public final class Main {
         String name = input.nextLine();
         System.out.println("Hello, " + name + "!");
         input.close();
+        System.out.prin("Testing rules");
     }
 }
