@@ -7,7 +7,7 @@ import javafx.scene.input.MouseEvent;
  * Controller for the Citizen Dashboard.
  * Handles navigation and display of various views for citizens.
  */
-public class CitizenDashboardController extends DashBoardController {
+public class CitizenDashboardController extends DashboardController {
 
     /**
      * Initializes the dashboard by loading the TotalBudgetView
