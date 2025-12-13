@@ -1,27 +1,29 @@
 package budget.service;
 
 import java.io.IOException;
-
-import budget.util.PasswordUtils;
-import budget.repository.UserRepository;
-import budget.model.enums.UserRole;
-import budget.model.enums.Ministry;
-import budget.model.domain.user.GovernmentMember;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.io.TempDir;
-
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.charset.StandardCharsets;
 
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import budget.exceptions.UserNotAuthorizedException;
+import budget.exceptions.ValidationException;
+import budget.model.domain.user.GovernmentMember;
+import budget.model.enums.Ministry;
+import budget.model.enums.UserRole;
+import budget.repository.UserRepository;
+import budget.util.PasswordUtils;
 
 class TestUserAthenticationService {
 
@@ -66,17 +68,23 @@ class TestUserAthenticationService {
     }
 
     @Test
-    //Test for a null password /
+    //Test for a null password
     void  testLoginNullPassword() {
-        boolean user = userAuthenticationService.login(username, null);
-        assertFalse(user, "Failure - null password should return false");
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            userAuthenticationService.login(username, null);
+        }, "Failure - null password should throw ValidationException");
+        assertEquals("Ο κωδικός πρόσβασης είναι υποχρεωτικός.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
     //Test for a null username 
     void  testLoginNullUsername() {
-        boolean user = userAuthenticationService.login(null, password);
-        assertFalse(user, "Failure - null username should return false");
+        UserNotAuthorizedException exception = assertThrows(UserNotAuthorizedException.class, () -> {
+            userAuthenticationService.login(null, password);
+        }, "Failure - null username should throw UserNotAuthorizedException");
+        assertEquals("Λάθος στοιχεία.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
@@ -85,24 +93,31 @@ class TestUserAthenticationService {
         userAuthenticationService.signUp(username, password, fullName, role, ministry);
         String password2 = "wrongpassword";
 
-        boolean user = userAuthenticationService.login(username, password2);
-        assertFalse(user, "Failure - invalid password should return false");
+        UserNotAuthorizedException exception = assertThrows(UserNotAuthorizedException.class, () -> {
+            userAuthenticationService.login(username, password2);
+        }, "Failure - invalid password should throw UserNotAuthorizedException");
+        assertEquals("Λάθος στοιχεία.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
     //Test for valid username and valid password
     void testLogInvalidCredentials() {
         userAuthenticationService.signUp(username, password, fullName, role, ministry);
-        boolean user = userAuthenticationService.login(username, password);
-        assertTrue(user, "Failure - valid userName and valid Password should return true");
+        userAuthenticationService.login(username, password);
+        assertNotNull(userAuthenticationService.getCurrentUser(), 
+                    "Failure - valid userName and valid Password should set current user");
     }
 
     @Test
     void testForInvalidHash() {
         gm = new GovernmentMember(username, fullName, password, ministry);
         userRepository.save(gm); // password is not hashed before stored -> this will throw IllegalArgumentException when parsing HEX
-        assertFalse(userAuthenticationService.login(username, password),
-                                    "Failure - invalid HEX should return false");
+        UserNotAuthorizedException exception = assertThrows(UserNotAuthorizedException.class, () -> {
+            userAuthenticationService.login(username, password);
+        }, "Failure - invalid HEX should throw UserNotAuthorizedException");
+        assertEquals("Λάθος στοιχεία.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
@@ -135,57 +150,81 @@ class TestUserAthenticationService {
     @Test
     //Test for empty username during signup
     void testSignUpEmptyUsername() {
-        boolean result = userAuthenticationService.signUp("", password, fullName, role, ministry);
-        assertFalse(result, "Failure - empty userName should return false");
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            userAuthenticationService.signUp("", password, fullName, role, ministry);
+        }, "Failure - empty userName should throw ValidationException");
+        assertEquals("Το όνομα χρήστη είναι υποχρεωτικό.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
     //Test for null username during signup
     void testSignUpNullUserName() {
-        boolean result = userAuthenticationService.signUp(null, password, fullName, role, ministry);
-        assertFalse(result, "Failure - null userName should return false");
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            userAuthenticationService.signUp(null, password, fullName, role, ministry);
+        }, "Failure - null userName should throw ValidationException");
+        assertEquals("Το όνομα χρήστη είναι υποχρεωτικό.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
     //Test for null password during signup
     void testSignUpNullPassword() {
-        boolean result = userAuthenticationService.signUp(username, null, fullName, role, ministry);
-        assertFalse(result, "Failure - null password should return false");
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            userAuthenticationService.signUp(username, null, fullName, role, ministry);
+        }, "Failure - null password should throw ValidationException");
+        assertEquals("Ο κωδικός πρόσβασης είναι υποχρεωτικός.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
     //Test for empty password during signup
     void testSignUpEmptyPassword() {
-        boolean result = userAuthenticationService.signUp(username, "", fullName, role, ministry);
-        assertFalse(result, "Failure - empty password should return false");
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            userAuthenticationService.signUp(username, "", fullName, role, ministry);
+        }, "Failure - empty password should throw ValidationException");
+        assertEquals("Ο κωδικός πρόσβασης είναι υποχρεωτικός.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
     //Test for empty full name during signup
     void testSignUpEmptyFullname() {
-        boolean result = userAuthenticationService.signUp(username, password, "  ", role, ministry);
-        assertFalse(result, "Failure - empty Full Name should return false");
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            userAuthenticationService.signUp(username, password, "  ", role, ministry);
+        }, "Failure - empty Full Name should throw ValidationException");
+        assertEquals("Το πλήρες όνομα είναι υποχρεωτικό.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
     //Test for null full name during signup
     void testSignUpNullFullName() {
-        boolean result = userAuthenticationService.signUp(username, password, null, role, ministry);
-        assertFalse(result, "Failure - null Full Name should return false");
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            userAuthenticationService.signUp(username, password, null, role, ministry);
+        }, "Failure - null Full Name should throw ValidationException");
+        assertEquals("Το πλήρες όνομα είναι υποχρεωτικό.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
     //Test for null role during signup
     void testSignUpNullRole() {
-        boolean result = userAuthenticationService.signUp(username, password, fullName, null, ministry);
-        assertFalse(result, "Failure - null role should return false");
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            userAuthenticationService.signUp(username, password, fullName, null, ministry);
+        }, "Failure - null role should throw ValidationException");
+        assertEquals("Ο ρόλος χρήστη είναι υποχρεωτικός.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
     //Test for null ministry during signup
     void testSignUpNullMinistry() {
-        boolean result = userAuthenticationService.signUp(username, password, fullName, role, null);
-        assertFalse(result, "Failure - null ministry should return false");
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            userAuthenticationService.signUp(username, password, fullName, role, null);
+        }, "Failure - null ministry should throw ValidationException");
+        assertEquals("Το υπουργείο είναι υποχρεωτικό για μέλη κυβέρνησης.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
@@ -194,8 +233,11 @@ class TestUserAthenticationService {
         String username2 = "andreas1";
         String pw = "test";
         userAuthenticationService.signUp(username2, pw, fullName, role, ministry);
-        boolean Signup = userAuthenticationService.signUp("andreas1", password, fullName, role, ministry);
-        assertFalse(Signup, "Failure - signing up with already taken userName should return false");
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            userAuthenticationService.signUp("andreas1", password, fullName, role, ministry);
+        }, "Failure - signing up with already taken userName should throw ValidationException");
+        assertEquals("Το όνομα χρήστη υπάρχει ήδη.", exception.getMessage(),
+                    "Failure - exception message should match");
     }
 
     @Test
@@ -210,23 +252,26 @@ class TestUserAthenticationService {
     //Test for unsucessfull signup (Prime Minister already exists)
     void testSignUpUnsucessfulPm() {
         userAuthenticationService.signUp(username, password, fullName, UserRole.PRIME_MINISTER, null);
-        boolean Signup = userAuthenticationService.signUp("newPM", "newpassword", "New PM", UserRole.PRIME_MINISTER, null);
-        assertFalse(Signup, "Failure - only one Prime Minister allowed"); 
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            userAuthenticationService.signUp("newPM", "newpassword", "New PM", UserRole.PRIME_MINISTER, null);
+        }, "Failure - only one Prime Minister allowed");
+        assertEquals("Υπάρχει ήδη Πρωθυπουργός στο σύστημα.", exception.getMessage(),
+                    "Failure - exception message should match"); 
     }
 
     @Test
     //Test for sucessfull signup (Citizen)
        void testSignUpSucessfulCitizen() {
            userAuthenticationService.logout();
-           boolean Signup = userAuthenticationService.signUp("newCitizen_1", password, fullName, UserRole.CITIZEN, null);
-           assertTrue(Signup, "Failure - valid sign up should return true"); 
+           // If no exception is thrown, the signup was successful
+           userAuthenticationService.signUp("newCitizen_1", password, fullName, UserRole.CITIZEN, null);
     }
 
     @Test
     //Test for sucessfull signup (Government Member)
        void testSignupSucessfulGovernmentMember() {
-           boolean Signup = userAuthenticationService.signUp(username, password, fullName, role, ministry);
-           assertTrue(Signup, "Failure - valid sign up should return true"); 
+           // If no exception is thrown, the signup was successful
+           userAuthenticationService.signUp(username, password, fullName, role, ministry);
     }
 
 }

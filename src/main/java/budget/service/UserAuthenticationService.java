@@ -1,17 +1,20 @@
 package budget.service;
 
-import budget.model.domain.user.User;
+import java.security.MessageDigest;
+import java.util.HexFormat;
+import java.util.Optional;
+
+import budget.exceptions.UserNotAuthorizedException;
+import budget.exceptions.ValidationException;
 import budget.model.domain.user.Citizen;
 import budget.model.domain.user.GovernmentMember;
 import budget.model.domain.user.PrimeMinister;
+import budget.model.domain.user.User;
 import budget.model.enums.Ministry;
 import budget.model.enums.UserRole;
 import budget.repository.UserRepository;
 import budget.util.PasswordUtils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.Optional;
-import java.util.HexFormat;
-import java.security.MessageDigest;
 
 /**
  * Service responsible for user authentication operations.
@@ -46,14 +49,16 @@ public class UserAuthenticationService {
      *
      * @param username the username entered by the user
      * @param password the plain text password entered by the user
-     * @return true if login succeeds, false otherwise
+     * @throws ValidationException if the password is null or empty
+     * @throws UserNotAuthorizedException if authentication fails
      */
-    public boolean login(String username, String password) {
+    public void login(String username, String password) {
         String normalizedUsername = (username == null) ? "" : username.trim();
         if (password == null || password.isEmpty()) {
             // Dummy operation για σταθερό χρόνο
             MessageDigest.isEqual(DUMMY_SHA256, DUMMY_SHA256);
-            return false;
+            throw new ValidationException(
+                                "Ο κωδικός πρόσβασης είναι υποχρεωτικός.");
         }
         String candidateHex = PasswordUtils.hashPassword(password);
         Optional<User> userOpt = userRepository
@@ -70,24 +75,24 @@ public class UserAuthenticationService {
 
                     if (MessageDigest.isEqual(storedBytes, candidateBytes)) {
                         this.currentUser = user;
-                        return true;
+                        return;
                     }
                 }
                 // Dummy compare για σταθερό χρόνο
                 MessageDigest.isEqual(DUMMY_SHA256,
                                     HEX_FORMATTER.parseHex(candidateHex));
-                return false;
+                throw new UserNotAuthorizedException("Λάθος στοιχεία.");
             } else {
                 // Dummy compare για αποφυγή user enumeration
                 MessageDigest.isEqual(DUMMY_SHA256,
                                     HEX_FORMATTER.parseHex(candidateHex));
-                return false;
+                throw new UserNotAuthorizedException("Λάθος στοιχεία.");
             }
         } catch (IllegalArgumentException e) {
             // Invalid hex format - treat as failed login
             // Dummy operation για σταθερό χρόνο
             MessageDigest.isEqual(DUMMY_SHA256, DUMMY_SHA256);
-            return false;
+            throw new UserNotAuthorizedException("Λάθος στοιχεία.");
         }
     }
 
@@ -134,30 +139,32 @@ public class UserAuthenticationService {
      * @param fullName the full name of the user
      * @param role     the role assigned to the user
      * @param ministry the user's ministry
-     * @return true if registration succeeds, false otherwise
+     * @throws ValidationException if any validation fails
      */
-    public boolean signUp(String username,
+    public void signUp(String username,
     String password, String fullName, UserRole role, Ministry ministry) {
         if (username == null || username.trim().isEmpty()) {
-            return false;
+            throw new ValidationException("Το όνομα χρήστη είναι υποχρεωτικό.");
         }
         if (password == null || password.isEmpty()) {
-            return false;
+            throw new ValidationException(
+                                    "Ο κωδικός πρόσβασης είναι υποχρεωτικός.");
         }
         if (fullName == null || fullName.trim().isEmpty()) {
-            return false;
+            throw new ValidationException("Το πλήρες όνομα είναι υποχρεωτικό.");
         }
         if (role == null) {
-            return false;
+            throw new ValidationException("Ο ρόλος χρήστη είναι υποχρεωτικός.");
         }
         if (role == UserRole.GOVERNMENT_MEMBER && ministry == null) {
-            return false;
+            throw new ValidationException(
+                        "Το υπουργείο είναι υποχρεωτικό για μέλη κυβέρνησης.");
         }
         username = username.trim();
         // Validate that the username is not already taken.
         Optional<User> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
-            return false; // Username already exists.
+            throw new ValidationException("Το όνομα χρήστη υπάρχει ήδη.");
         }
 
         // Hash the password before storing it (security requirement).
@@ -167,7 +174,8 @@ public class UserAuthenticationService {
         if (role == UserRole.PRIME_MINISTER) {
             // If PM exists → reject.
             if (userRepository.primeMinisterExists()) {
-                return false;
+                throw new ValidationException(
+                                    "Υπάρχει ήδη Πρωθυπουργός στο σύστημα.");
             }
             // First-time creation of Singleton PrimeMinister.
             PrimeMinister pm = PrimeMinister.getInstance(
@@ -176,27 +184,21 @@ public class UserAuthenticationService {
                 hashedPassword
             );
             userRepository.save(pm);
-            return true;
+            return;
         }
 
         // Create a new User instance according to the provided role.
-        User newUser;
+        User newUser =
         switch (role) {
-            case CITIZEN:
-                newUser = new Citizen(username, fullName, hashedPassword);
-                break;
-            case GOVERNMENT_MEMBER:
-                newUser =
+            case CITIZEN ->
+                new Citizen(username, fullName, hashedPassword);
+            case GOVERNMENT_MEMBER ->
                 new GovernmentMember(username, fullName,
                                     hashedPassword, ministry);
-                break;
-            default:
-                return false; // Unknown or unsupported user role.
-        }
+            default -> null; // Unknown or unsupported user role.
+        };
 
         // Save the new user using the repository (data persistence).
         userRepository.save(newUser);
-
-        return true;
     }
 }
