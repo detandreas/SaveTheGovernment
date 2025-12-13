@@ -20,6 +20,13 @@
       "fullName": "NAIS-AGGELOS",
       "password": "2006",
       "userRole": "CITIZEN"
+    },
+    {
+      "id": "dd0317ee-576e-47ec-9e08-e0202e64ab69",
+      "userName": "lakis",
+      "fullName": "Lakis Gavalas",
+      "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+      "userRole": "CITIZEN"
     }
   ],
   "governmentMembers": [
