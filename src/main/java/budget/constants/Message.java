@@ -64,7 +64,7 @@ public final class Message {
         + " Allowed: A–Z, a–z, 0–9, and @#$%^&+=!";
     public static final String PASSWORD_COMPLEXITY_FAIL_MESSAGE =
         "Password must contain at least one uppercase letter, "
-        + "one lowercase letter, one digit, and one special character.";
+        + "one lowercase letter, one digit and one special character.";
     public static final String FULLNAME_LENGTH_LIMITS_MESSAGE =
         "Full name must not exceed 50 characters.";
     public static final String ERROR_ROLE =
