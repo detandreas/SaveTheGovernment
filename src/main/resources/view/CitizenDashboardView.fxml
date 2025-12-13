@@ -18,7 +18,7 @@
    prefHeight="400.0"
    prefWidth="600.0"
    fx:id="mainBorderPane"
-   fx:controller="budget.ui_fx.controller.CitizenDashboardController"
+   fx:controller="budget.frontend.controller.CitizenDashboardController"
    stylesheets="@/styles/main.css"
    xmlns="http://javafx.com/javafx" 
    xmlns:fx="http://javafx.com/fxml">

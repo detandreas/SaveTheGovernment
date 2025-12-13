@@ -1,0 +1,156 @@
+package budget.backend.service;
+
+import budget.backend.exceptions.UserNotAuthorizedException;
+import budget.backend.model.domain.BudgetItem;
+import budget.backend.model.domain.user.GovernmentMember;
+import budget.backend.model.domain.user.PrimeMinister;
+import budget.backend.model.domain.user.User;
+import budget.backend.model.enums.Ministry;
+/**
+ * Service class to handle user authorization for budget item edits.
+ */
+public class UserAuthorizationService {
+    /**
+     * Checks if a user is authorized to submit
+     * change requests for a budget item (only government members whose ministry
+     * is associated with the budget item are allowed).
+     *
+     * @param user the user attempting to submit the request
+     * @param item the budget item in question
+     * @throws IllegalArgumentException if the user or budget item is null
+     * @throws IllegalArgumentException if the budget item
+     *                                  has no associated ministries
+     * @throws UserNotAuthorizedException if the user is not a Government Member
+     * @throws UserNotAuthorizedException if the user's ministry
+     *                                    is not authorized for the budget item
+     */
+    public void checkCanUserSubmitRequest(User user, BudgetItem item)
+        throws IllegalArgumentException, UserNotAuthorizedException {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
+        if (item == null) {
+            throw new IllegalArgumentException("Budget item cannot be null.");
+        }
+        if (item.getMinistries() == null || item.getMinistries().isEmpty()) {
+            throw new IllegalArgumentException(
+                "Budget item must be associated with at least one ministry."
+            );
+        }
+
+        if (!(user instanceof GovernmentMember gm)) {
+            throw new UserNotAuthorizedException(
+                "Only government members can submit change requests."
+            );
+        }
+
+        if (!item.getMinistries().contains(gm.getMinistry())) {
+            throw new UserNotAuthorizedException(
+                "User's ministry (" + gm.getMinistry()
+                + ") is not authorized to submit change requests "
+                + "for this budget item. Allowed ministries: "
+                + item.getMinistries()
+            );
+        }
+    }
+    /**
+     * Determines if a user can submit a change request
+     * for a budget item (only government members whose ministry
+     * is associated with the budget item are allowed).
+     *
+     * @param user the user attempting to submit the request
+     * @param item the budget item in question
+     * @return true if the user can submit the request, false otherwise
+     */
+    public boolean canUserSubmitRequest(User user, BudgetItem item) {
+        try {
+            checkCanUserSubmitRequest(user, item);
+            return true;
+        } catch (IllegalArgumentException | UserNotAuthorizedException e) {
+            return false;
+        }
+    }
+    /**
+     * Checks if a user is authorized to approve change requests
+     * (only the Prime Minister is allowed).
+     *
+     * @param user the user attempting to approve requests
+     * @throws IllegalArgumentException if the user is null
+     * @throws UserNotAuthorizedException if the user is not the Prime Minister
+     */
+    public void checkCanUserApproveRequests(User user)
+        throws IllegalArgumentException, UserNotAuthorizedException {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        if (!(user instanceof PrimeMinister)) {
+            throw new UserNotAuthorizedException(
+                "Only the Prime Minister can approve change requests."
+            );
+        }
+
+    }
+    /**
+     * Determines if a user can approve change requests
+     * (only the Prime Minister is allowed).
+     *
+     * @param user the user attempting to approve requests
+     * @return true if the user can approve requests, false otherwise
+     */
+    public boolean canUserApproveRequests(User user) {
+        try {
+            checkCanUserApproveRequests(user);
+            return true;
+        } catch (IllegalArgumentException | UserNotAuthorizedException e) {
+            return false;
+        }
+    }
+    /**
+     * Checks if a government member can directly edit a budget item
+     * (only members of the Finance Ministry are allowed).
+     *
+     * @param user the user attempting to edit the budget item
+     * @param item the budget item in question
+     * @throws IllegalArgumentException if the user is null
+     * @throws IllegalArgumentException if the budget item is null
+     * @throws UserNotAuthorizedException if the user is not a Government Member
+     * @throws UserNotAuthorizedException if the user's ministry is not Finance
+     */
+    public void checkCanUserEditBudgetItem(User user, BudgetItem item)
+        throws IllegalArgumentException, UserNotAuthorizedException {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
+        if (item == null) {
+            throw new IllegalArgumentException("Budget item cannot be null.");
+        }
+        if (!(user instanceof GovernmentMember gm)) {
+            throw new UserNotAuthorizedException(
+                "Only government members can edit budget items."
+            );
+        }
+        if (gm.getMinistry() != Ministry.FINANCE) {
+            throw new UserNotAuthorizedException(
+                "Only members of the Finance Ministry "
+                + "can directly edit this budget item."
+            );
+        }
+
+    }
+    /**
+     * Determines if a government member can directly edit a budget item.
+     * (only members of the Finance Ministry are allowed).
+     *
+     * @param user the user attempting to edit the budget item
+     * @param item the budget item in question
+     * @return true if the user can edit the budget item, false otherwise
+     */
+    public boolean canUserEditBudgetItem(User user, BudgetItem item) {
+        try {
+            checkCanUserEditBudgetItem(user, item);
+            return true;
+        } catch (IllegalArgumentException | UserNotAuthorizedException e) {
+            return false;
+        }
+    }
+}

@@ -3,8 +3,9 @@ package budget;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import budget.ui_fx.util.SceneLoader;
-import budget.ui_fx.util.WindowState;
+import budget.frontend.constants.Constants;
+import budget.frontend.util.SceneLoader;
+import budget.frontend.util.WindowState;
 import javafx.application.Application;
 import javafx.stage.Stage;
 /**
@@ -42,7 +43,7 @@ public class Main extends Application {
             });
             SceneLoader.initializeScene(
                 primaryStage,
-                "/view/WelcomeView.fxml",
+                Constants.WELCOME_VIEW,
                 "Save The Government App - Welcome"
             );
         } catch (Exception e) {

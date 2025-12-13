@@ -20,7 +20,7 @@
     stylesheets="@../styles/main.css"
     xmlns="http://javafx.com/javafx"
     xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="budget.ui_fx.controller.LoginController">
+    fx:controller="budget.frontend.controller.LoginController">
 
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />

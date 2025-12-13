@@ -14,7 +14,7 @@
 
 <VBox xmlns="http://javafx.com/javafx" 
       xmlns:fx="http://javafx.com/fxml" 
-      fx:controller="budget.ui_fx.controller.TotalBudgetController"
+      fx:controller="budget.frontend.controller.TotalBudgetController"
       spacing="15.0" 
       styleClass="content-container"
       stylesheets="@../styles/main.css">

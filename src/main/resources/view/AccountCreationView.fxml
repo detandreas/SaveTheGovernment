@@ -17,7 +17,7 @@
     stylesheets="@../styles/main.css"
     xmlns="http://javafx.com/javafx"
     xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="budget.ui_fx.controller.AccountCreationController">
+    fx:controller="budget.frontend.controller.AccountCreationController">
 
     <padding>
         <Insets bottom="30" left="40" right="40" top="30" />
