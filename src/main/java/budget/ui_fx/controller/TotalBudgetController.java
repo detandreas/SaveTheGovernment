@@ -1,5 +1,8 @@
 package budget.ui_fx.controller;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import budget.model.domain.BudgetItem;
 import budget.repository.BudgetRepository;
 import budget.service.BudgetService;
@@ -9,10 +12,9 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import java.text.NumberFormat;
-import java.util.Locale;
 /**
- * Controller class for managing the total budget view in the JavaFX application.
+ * Controller class for managing the total budget view
+ *                                              in the JavaFX application.
  * It initializes the table view and its columns, formats currency values,
  * and applies conditional styling based on budget item types.
  */
@@ -23,7 +25,9 @@ public class TotalBudgetController {
     @FXML private TableColumn<BudgetItem, String> typeColumn;
     @FXML private TableColumn<BudgetItem, Double> valueColumn;
 
-    private BudgetService budgetService = new BudgetService(new BudgetRepository()); 
+    private BudgetService budgetService =
+                                new BudgetService(new BudgetRepository());
+    private static final int CURRENT_YEAR = 2025;
     /**
      * Initializes the controller by setting up table columns and loading data.
      */
@@ -33,7 +37,8 @@ public class TotalBudgetController {
         loadData();
     }
     /**
-     * Configures the table columns, including cell value factories and custom cell factories
+     * Configures the table columns, including cell value factories
+     *                                                 and custom cell factories
      * for formatting and styling.
      */
     private void setupTableColumns() {
@@ -46,9 +51,11 @@ public class TotalBudgetController {
 
         valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
 
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
-        
-        valueColumn.setCellFactory(column -> new TableCell<BudgetItem, Double>() {
+        NumberFormat currencyFormat =
+                            NumberFormat.getCurrencyInstance(Locale.GERMANY);
+
+        valueColumn.setCellFactory(column ->
+            new TableCell<BudgetItem, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
@@ -59,8 +66,9 @@ public class TotalBudgetController {
                 }
             }
         });
-        
-        typeColumn.setCellFactory(column -> new TableCell<BudgetItem, String>() {
+
+        typeColumn.setCellFactory(column ->
+            new TableCell<BudgetItem, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -70,7 +78,7 @@ public class TotalBudgetController {
 
                 if (!empty && item != null) {
                     setText(item);
-                    
+
                     if (item.equals("Revenue")) {
                         getStyleClass().add("status-revenue");
                     } else {
@@ -79,13 +87,12 @@ public class TotalBudgetController {
                 }
             }
         });
-
     }
     /**
      * Loads budget data into the table view for the current year.
      */
     private void loadData() {
-        int currentYear = 2025; 
-        budgetTable.setItems(budgetService.getBudgetItemsForTable(currentYear));
+        budgetTable
+                .setItems(budgetService.getBudgetItemsForTable(CURRENT_YEAR));
     }
 }
