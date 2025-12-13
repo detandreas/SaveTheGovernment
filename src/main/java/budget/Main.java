@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import budget.ui_fx.util.SceneLoader;
+import budget.ui_fx.util.WindowState;
 import javafx.application.Application;
 import javafx.stage.Stage;
 /**
@@ -20,7 +21,17 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            SceneLoader.load(
+            primaryStage.setMaximized(true);
+
+            // Event listener: όταν αλλάζει μέγεθος ο χρήστης
+            primaryStage.widthProperty().addListener((obs, oldVal, newVal) -> {
+                WindowState.setSize(primaryStage.getWidth(), primaryStage.getHeight());
+            });
+
+            primaryStage.heightProperty().addListener((obs, oldVal, newVal) -> {
+                WindowState.setSize(primaryStage.getWidth(), primaryStage.getHeight());
+            });
+            SceneLoader.initializeScene(
                 primaryStage,
                 "/view/WelcomeView.fxml",
                 "Save The Government App - Welcome"
