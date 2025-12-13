@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="budget.ui_fx.controller.WelcomeController"
-      spacing="20" alignment="CENTER"
-      minHeight="400" minWidth="600"
-      maxHeight="Infinity" maxWidth="Infinity">
-
-    <stylesheets>
-        <String fx:value="/styles/main.css" />
-    </stylesheets>
+<VBox alignment="CENTER"
+        maxHeight="Infinity"
+        maxWidth="Infinity"
+        minHeight="400"
+        minWidth="600"
+        spacing="20"
+        stylesheets="@../styles/main.css"
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="budget.ui_fx.controller.WelcomeController">
     
-    <Label fx:id="nameLabel" styleClass="header-label"/>
+    <Label fx:id="nameLabel" styleClass="header-label" text="Save The Government" />
 
-    <Label fx:id="welcomeLabel" styleClass="label"/>
+    <Label fx:id="welcomeLabel" styleClass="label" text="welcome to the budget management application" />
     
     
-    <HBox spacing="15" alignment="CENTER">
-        <Button text="Login" fx:id="loginButton" onAction="#handleLogin" HBox.hgrow="SOMETIMES"/>
-        <Button text="Create Account" fx:id="createAccountButton" onAction="#handleAccountCreation" HBox.hgrow="SOMETIMES"/>
+    <HBox alignment="CENTER" spacing="15">
+        <Button fx:id="loginButton" onAction="#handleLogin" text="Login" HBox.hgrow="SOMETIMES" />
+        <Button fx:id="createAccountButton" onAction="#handleAccountCreation" text="Create Account" HBox.hgrow="SOMETIMES" />
     </HBox>
 
 </VBox>
