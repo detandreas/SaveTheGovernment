@@ -90,7 +90,7 @@ java -Dbudget.data.dir=/var/app/data \
 - **MVC Architecture (Model View Controller):** Για αποτελεσματική διαχείριση του GUI
 
 ## Αλγόριθμοι
-- **SHA-256:** Για password encryption και ασφαλή καταχώρηση στα users.json αρχεία
+- **SHA-256:** Για password hashing και ασφαλή καταχώρηση στα users.json αρχεία
 
 ## Συμβολή
 
