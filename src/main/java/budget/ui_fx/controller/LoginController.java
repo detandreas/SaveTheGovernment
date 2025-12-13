@@ -112,7 +112,7 @@ public class LoginController {
      */
     private boolean validateLoginInput(String username, String password) {
         if (!InputValidator.isUserName(username)) {
-            errorLabel.setText("Μη έγκυρο όνομα χρήστη.");
+            errorLabel.setText("Invalid username.");
             LOGGER.log(
                 Level.WARNING,
                 "Invalid username format: {0}",
@@ -122,7 +122,7 @@ public class LoginController {
         }
 
         if (!InputValidator.isNonNull(password) || password.isEmpty()) {
-            errorLabel.setText("Ο κωδικός πρόσβασης είναι υποχρεωτικός.");
+            errorLabel.setText("The password is mandatory.");
             LOGGER.log(
                 Level.WARNING,
                 "Password is null or empty"
@@ -153,7 +153,7 @@ public class LoginController {
                     "!!! ERROR: Ο χρήστης είναι NULL !!!"
                 );
                 errorLabel
-                    .setText("Προέκυψε σφάλμα κατά την ανάκτηση του χρήστη.");
+                    .setText("An error occurred while retrieving the user.");
                 return;
             }
 
@@ -174,7 +174,7 @@ public class LoginController {
                                                 + "Κανένα case δεν ταίριαξε."
                 );
                 errorLabel
-                .setText("Προέκυψε σφάλμα κατά τον καθορισμό της σελίδας.");
+                .setText("An error occurred while specifying the page.");
             }
 
         } catch (Exception e) {
@@ -183,7 +183,7 @@ public class LoginController {
                 "!!! EXCEPTION CAUGHT IN LOGIN !!!",
                 e
             );
-            errorLabel.setText("Προέκυψε σφάλμα.");
+            errorLabel.setText("Error occured.");
         }
     }
     /**

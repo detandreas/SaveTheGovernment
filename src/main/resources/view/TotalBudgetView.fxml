@@ -49,7 +49,7 @@
         </columnResizePolicy>
         
         <placeholder>
-           <Label text="Δεν υπάρχουν εγγραφές." styleClass="placeholder-label"/>
+           <Label text="No records." styleClass="placeholder-label"/>
         </placeholder>
     </TableView>
 
