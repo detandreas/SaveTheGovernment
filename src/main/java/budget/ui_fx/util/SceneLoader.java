@@ -17,26 +17,30 @@ public final class SceneLoader {
 
     private static final Logger LOGGER =
                                 Logger.getLogger(SceneLoader.class.getName());
-    
+
     // Αποθήκευση ενός μόνο Scene instance για όλη την εφαρμογή
     private static Scene applicationScene;
-    
+
     /**
      * Constructor.
      */
     private SceneLoader() {
         // prevents initialization
     }
-    
+
     /**
-     * Αρχικοποιεί το Scene για πρώτη φορά.
-     * Καλείται μόνο από το Main.java.
+     * Initializes Scene for the first time.
+     * Invoked only from Main.java.
      *
      * @param stage The primary stage.
      * @param fxmlPath The path to the initial FXML file.
      * @param title The title of the window.
      */
-    public static void initializeScene(Stage stage, String fxmlPath, String title) {
+    public static void initializeScene(
+        Stage stage,
+        String fxmlPath,
+        String title
+    ) {
         URL fxmlUrl = SceneLoader.class.getResource(fxmlPath);
 
         if (fxmlUrl == null) {
@@ -52,7 +56,7 @@ public final class SceneLoader {
         try {
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Parent root = loader.load();
-            
+
             configureStage(root, stage, title);
 
         } catch (IOException e) {
@@ -91,23 +95,21 @@ public final class SceneLoader {
             applicationScene = new Scene(root);
             stage.setScene(applicationScene);
         } else {
-            // Αλλάζουμε μόνο το root node - δεν δημιουργούμε νέο Scene
             applicationScene.setRoot(root);
         }
         stage.setTitle(title);
-        
-        // Αν ο χρήστης έχει αλλάξει μέγεθος → χρησιμοποίησέ το
+
         if (WindowState.isStored()) {
             stage.setWidth(WindowState.getWidth());
             stage.setHeight(WindowState.getHeight());
         }
-        
+
         stage.show();
     }
-    
+
     /**
      * Loads a new scene from the specified FXML file and sets it on the stage.
-     * Χρησιμοποιεί το ίδιο Scene instance και αλλάζει μόνο το root node.
+     * It uses the same Scene instance and only changes the root node.
      *
      * @param stage The primary stage where scenes will be loaded.
      * @param fxmlPath The path to the FXML file.
@@ -130,7 +132,7 @@ public final class SceneLoader {
         try {
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Parent root = loader.load();
-            
+
             configureStage(root, stage, title);
 
         } catch (IOException e) {
@@ -154,7 +156,7 @@ public final class SceneLoader {
     /**
     * Loads a new scene from the specified FXML file and sets it on the stage.
     * Returns the controller instance for further configuration.
-    * Χρησιμοποιεί το ίδιο Scene instance και αλλάζει μόνο το root node.
+    * It uses the same Scene instance and only changes the root node.
     *
     * @param <T> The type of the controller to be returned.
     * @param stage The primary stage where scenes will be loaded.

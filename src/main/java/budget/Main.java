@@ -24,14 +24,21 @@ public class Main extends Application {
             primaryStage.setMaximized(true);
             primaryStage.requestFocus();
             primaryStage.toFront();
-            
+
             // Event listener: όταν αλλάζει μέγεθος ο χρήστης
             primaryStage.widthProperty().addListener((obs, oldVal, newVal) -> {
-                WindowState.setSize(primaryStage.getWidth(), primaryStage.getHeight());
+                WindowState.setSize(
+                        primaryStage.getWidth(),
+                        primaryStage.getHeight()
+                    );
             });
 
-            primaryStage.heightProperty().addListener((obs, oldVal, newVal) -> {
-                WindowState.setSize(primaryStage.getWidth(), primaryStage.getHeight());
+            primaryStage.heightProperty().addListener((obs, oldVal, newVal)
+                                                                        -> {
+                WindowState.setSize(
+                        primaryStage.getWidth(),
+                        primaryStage.getHeight()
+                    );
             });
             SceneLoader.initializeScene(
                 primaryStage,
