@@ -1,13 +1,18 @@
 package budget;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import budget.ui_fx.util.SceneLoader;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import budget.ui_fx.util.SceneLoader;
 /**
  * Main class for the Save The Government application.
  * This class extends JavaFX Application to launch the GUI.
  */
 public class Main extends Application {
+    private static final Logger LOGGER =
+                                Logger.getLogger(Main.class.getName());
     /**
      * Starts the JavaFX application.
      * @param primaryStage the primary stage for this application
@@ -15,10 +20,16 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            SceneLoader loader = new SceneLoader(primaryStage);
-            loader.load("/view/WelcomeView.fxml", "Save The Government App - Welcome");
+            SceneLoader.load(
+                primaryStage,
+                "/view/WelcomeView.fxml",
+                "Save The Government App - Welcome"
+            );
         } catch (Exception e) {
-            System.err.println("Κρίσιμο σφάλμα κατά την εκκίνηση της εφαρμογής!");
+            LOGGER.log(
+                Level.SEVERE,
+                "Κρίσιμο σφάλμα κατά την εκκίνηση της εφαρμογής!"
+            );
             e.printStackTrace();
         }
     }
@@ -27,6 +38,6 @@ public class Main extends Application {
      * @param args command line arguments
      */
     public static void main(String[] args) {
-        launch(args);
+        Application.launch(args);
     }
 }
