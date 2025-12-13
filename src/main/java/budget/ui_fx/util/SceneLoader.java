@@ -72,7 +72,7 @@ public final class SceneLoader {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Configures the Stage with the new root node.
      * Creates the Scene instance only on the first call,
@@ -103,6 +103,8 @@ public final class SceneLoader {
         }
         
         stage.show();
+        stage.requestFocus();
+        stage.toFront();
     }
     
     /**
