@@ -103,8 +103,6 @@ public final class SceneLoader {
         }
         
         stage.show();
-        stage.requestFocus();
-        stage.toFront();
     }
     
     /**

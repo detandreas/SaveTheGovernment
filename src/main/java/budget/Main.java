@@ -22,7 +22,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         try {
             primaryStage.setMaximized(true);
-
+            primaryStage.requestFocus();
+            primaryStage.toFront();
+            
             // Event listener: όταν αλλάζει μέγεθος ο χρήστης
             primaryStage.widthProperty().addListener((obs, oldVal, newVal) -> {
                 WindowState.setSize(primaryStage.getWidth(), primaryStage.getHeight());
