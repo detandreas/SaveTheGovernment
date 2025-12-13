@@ -83,6 +83,14 @@ mvn clean package
 java -Dbudget.data.dir=/var/app/data \
      -jar savethegovernment-1.0-SNAPSHOT.jar
 ```
+## Software Patterns
+- **Singleton pattern:** Χρησιμοποιείται για μοναδικότητα Prime Minister
+- **DI (Dependency Injection:** Χρησιμοποιείται κυρίως στην επικοινωνία των Services <-> Repositories
+- **Repository Design Pattern:** Για σαφή διαχωρισμό data απο business logic
+- **MVC Architecture (Model View Controller):** Για αποτελεσματική διαχείριση του GUI
+
+## Αλγόριθμοι
+- **SHA-256:** Για password hashing και ασφαλή καταχώρηση στα users.json αρχεία
 
 ## Συμβολή
 
