@@ -63,7 +63,7 @@ public final class Message {
         "Password contains invalid characters."
         + " Allowed: A–Z, a–z, 0–9, and @#$%^&+=!";
     public static final String PASSWORD_COMPLEXITY_FAIL_MESSAGE =
-        "Password must contain at least one uppercase letter, "
+        "Password must contain at least 8 characters, one uppercase letter, "
         + "one lowercase letter, one digit and one special character.";
     public static final String FULLNAME_LENGTH_LIMITS_MESSAGE =
         "Full name must not exceed 50 characters.";
