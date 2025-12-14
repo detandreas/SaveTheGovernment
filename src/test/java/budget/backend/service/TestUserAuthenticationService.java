@@ -25,7 +25,7 @@ import budget.backend.model.enums.UserRole;
 import budget.backend.repository.UserRepository;
 import budget.backend.util.PasswordUtils;
 
-class TestUserAthenticationService {
+class TestUserAuthenticationService {
 
     private String originalDataDir;
     private Path usersJson;

@@ -33,7 +33,7 @@ public class TestBudgetValidationService {
     private Path budgetJson;
 
     @BeforeEach
-    void setUp1(@TempDir Path tempDir) throws IOException {
+    void initTempDir(@TempDir Path tempDir) throws IOException {
         // backup and set data dir so PathsUtil resolves files from tempDir
         originalDataDir = System.getProperty("budget.data.dir");
         System.setProperty("budget.data.dir", tempDir.toString());
@@ -57,7 +57,7 @@ public class TestBudgetValidationService {
     }
 
     @BeforeAll
-    static void setUp2() {
+    static void initStaticTestData() {
         newItem = new BudgetItem(1, 2025, "Infra", 10000.0, true, List.of(Ministry.HEALTH));
         budget = new Budget(new ArrayList<>(), 2025); //netResult = 0 : any change allowed
     }
@@ -193,7 +193,7 @@ public class TestBudgetValidationService {
     }
 
    @Test
-   void testDeteleNullItem() {
+   void testDeleteNullItem() {
         ValidationException ex = assertThrows(ValidationException.class,
             () -> service.validateBudgetItemDeletion(null, budget),
                             "Failure - deleting null item should throw");
@@ -309,7 +309,7 @@ public class TestBudgetValidationService {
     }
 
     @Test
-    void testUpdateUpdadetNull() {
+    void testUpdateUpdatedNull() {
         BudgetItem original = new BudgetItem(25, 2025, "Roads", 100.0, false,
             List.of(Ministry.HEALTH));
 

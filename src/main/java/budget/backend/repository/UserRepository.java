@@ -138,12 +138,11 @@ implements GenericInterfaceRepository<User, UUID> {
     *         or null if not found or an error occurs
     */
     private PrimeMinister loadPrimeMinister(JsonObject json) {
-        PrimeMinister pm;
         if (json.has("primeMinister")
                 && json.get("primeMinister").isJsonObject()) {
             try {
                 JsonElement element = json.getAsJsonObject("primeMinister");
-                pm = GSON.fromJson(element, PrimeMinister.class);
+                PrimeMinister pm = GSON.fromJson(element, PrimeMinister.class);
                 if (pm != null) {
                     return pm;
                 }

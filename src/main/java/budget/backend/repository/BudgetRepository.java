@@ -232,25 +232,25 @@ public class BudgetRepository
      * Parses expense items (eksoda) from JSON array.
      * Converts each JSON element into a BudgetItem with isRevenue set to false.
      *
-     * @param exepenseData the JSON array containing expense items
+     * @param expenseData the JSON array containing expense items
      * @param year the budget year
      * @param byIdMap the ministry mapping by bill ID
      * @param byNameMap the ministry mapping by bill name
      * @return list of BudgetItem objects representing expense items
      */
     private List<BudgetItem> parseExpenseItems(
-        JsonArray exepenseData,
+        JsonArray expenseData,
         int year,
         JsonObject byIdMap,
         JsonObject byNameMap
     ) {
         List<BudgetItem> items = new ArrayList<>();
-        for (JsonElement element : exepenseData) {
+        for (JsonElement element : expenseData) {
             JsonObject item = element.getAsJsonObject();
-            BudgetItem budegtItem = createBudgetItem(
+            BudgetItem budgetItem = createBudgetItem(
                 item, year, false, byIdMap, byNameMap
             );
-            items.add(budegtItem);
+            items.add(budgetItem);
         }
         return items;
     }
@@ -343,7 +343,7 @@ public class BudgetRepository
     /**
      * Builds a Budget object from a list of BudgetItems, calculating totals.
      * Computes total revenue, total expense,
-     *                              and net result (revenue - expense).s
+     *                              and net result (revenue - expense).
      *
      * @param items the list of BudgetItem objects
      * @param year the budget year

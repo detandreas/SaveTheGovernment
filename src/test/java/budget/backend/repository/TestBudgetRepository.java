@@ -210,7 +210,7 @@ public class TestBudgetRepository {
 
     @Test
     void testSaveNullDoesNotThrow() {
-        assertDoesNotThrow(() -> repository.save(null), "Saving nul l must not throw");
+        assertDoesNotThrow(() -> repository.save(null), "Saving null must not throw");
         assertTrue(repository.load().isEmpty(), "No budgets should be present after saving null");
     }
 

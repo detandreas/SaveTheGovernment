@@ -92,6 +92,23 @@ java -Dbudget.data.dir=/var/app/data \
 ## Αλγόριθμοι
 - **SHA-256:** Για password hashing και ασφαλή καταχώρηση στα users.json αρχεία
 
+## API / Code Documentation (Javadoc)
+
+The project uses standard Javadoc comments for documenting
+its public API.
+
+### Generate Javadoc
+To generate the API documentation, run:
+
+```bash
+./mvnw javadoc:javadoc
+```
+
+### Read API Documentation
+```bash
+open target/site/apidocs/index.html 
+```
+
 ## Συμβολή
 
 Αυτή η εφαρμογή αναπτύχθηκε ως εργασία για το μάθημα **ΠΡΟΓΡΑΜΜΑΤΙΣΜΟΣ ΙΙ**.
