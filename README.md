@@ -85,7 +85,7 @@ java -Dbudget.data.dir=/var/app/data \
 ```
 ## Software Patterns
 - **Singleton pattern:** Χρησιμοποιείται για μοναδικότητα Prime Minister
-- **DI (Dependency Injection:** Χρησιμοποιείται κυρίως στην επικοινωνία των Services <-> Repositories
+- **DI (Dependency Injection):** Χρησιμοποιείται κυρίως στην επικοινωνία των Services <-> Repositories
 - **Repository Design Pattern:** Για σαφή διαχωρισμό data απο business logic
 - **MVC Architecture (Model View Controller):** Για αποτελεσματική διαχείριση του GUI
 
