@@ -6,6 +6,9 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -27,11 +30,28 @@
 
             <HBox alignment="CENTER_RIGHT" spacing="5.0">
                 <children>
-                    <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                            <Image url="@../images/filters_icon.png" /> 
-                        </image>
-                    </ImageView>
+                    <MenuButton mnemonicParsing="false" styleClass="filter-button">
+                        <graphic>
+                            <ImageView fitHeight="18" fitWidth="18" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../images/filters_icon.png" />
+                                </image>
+                            </ImageView>
+                        </graphic>
+                        <items>
+                            <MenuItem text="Sort by Amount: Low to High" onAction="#handleSortAmountAsc" />
+                            <MenuItem text="Sort by Amount: High to Low" onAction="#handleSortAmountDesc" />
+
+                            <SeparatorMenuItem />
+
+                            <MenuItem text="Filter: Expenses" onAction="#handleFilterExpenses" />
+                            <MenuItem text="Filter: Revenue" onAction="#handleFilterRevenue" />
+
+                            <SeparatorMenuItem />
+
+                            <MenuItem text="Clear Filters" onAction="#handleClearFilters" />
+                        </items>
+                    </MenuButton>
                 </children>
             </HBox>
         </children>

@@ -1,9 +1,16 @@
 package budget.frontend.controller;
 
 import java.text.NumberFormat;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 
 import budget.backend.model.domain.BudgetItem;
 import budget.backend.model.domain.Budget;
@@ -14,8 +21,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 /**
  * Controller class for managing the total budget view
  *                                              in the JavaFX application.
@@ -38,6 +43,10 @@ public class TotalBudgetController {
     private static final int CURRENT_YEAR = 2025;
     private final NumberFormat currencyFormat =
                             NumberFormat.getCurrencyInstance(Locale.GERMANY);
+
+    private ObservableList<BudgetItem> allItems;
+    private FilteredList<BudgetItem> filteredItems;
+    private SortedList<BudgetItem> sortedItems;
     /**
      * Initializes the controller by setting up table columns and loading data.
      */
@@ -99,24 +108,29 @@ public class TotalBudgetController {
      * Loads budget data into the table and updates summary labels.
      */
     private void loadData() {
-        budgetTable
-                .setItems(budgetService.getBudgetItemsForTable(CURRENT_YEAR));
+        setupFilters();
 
-        List<BudgetItem> items = budgetService.getBudgetItemsForTable(CURRENT_YEAR);
-
+        List<BudgetItem> items = allItems;
         Budget currentBudget = new Budget(items, CURRENT_YEAR);
+
         budgetService.recalculateBudgetTotals(currentBudget);
-
         updateLabels(currentBudget);
-
         budgetTable.getItems().addListener((ListChangeListener<BudgetItem>) change -> {
+
             List<BudgetItem> updatedItems = budgetTable.getItems();
+
             Budget updatedBudget = new Budget(updatedItems, CURRENT_YEAR);
+
             budgetService.recalculateBudgetTotals(updatedBudget);
+
             updateLabels(updatedBudget);
         });
     }
-
+    /**
+     * Updates the summary labels with the latest budget totals.
+     *
+     * @param budget The budget object containing the totals.
+     */
     private void updateLabels(Budget budget) {
         System.out.println("Total Revenue: " + budget.getTotalRevenue());
         System.out.println("Total Expense: " + budget.getTotalExpense());
@@ -126,4 +140,38 @@ public class TotalBudgetController {
         totalExpensesLabel.setText(currencyFormat.format(budget.getTotalExpense()));
         totalBudgetLabel.setText(currencyFormat.format(budget.getNetResult()));
     }
+
+    private void setupFilters() {
+        allItems = budgetService.getBudgetItemsForTable(CURRENT_YEAR);
+        filteredItems = new FilteredList<>(allItems, p -> true);
+        sortedItems = new SortedList<>(filteredItems);
+        budgetTable.setItems(sortedItems);
+    }
+
+    @FXML
+    private void handleSortAmountAsc() {
+        sortedItems.setComparator(Comparator.comparing(BudgetItem::getValue));
+    }
+
+    @FXML
+    private void handleSortAmountDesc() {
+        sortedItems.setComparator(Comparator.comparing(BudgetItem::getValue).reversed());
+    }
+
+    @FXML
+    private void handleFilterExpenses() {
+        filteredItems.setPredicate(item -> !item.getIsRevenue());
+    }
+
+    @FXML
+    private void handleFilterRevenue() {
+        filteredItems.setPredicate(item -> item.getIsRevenue());
+    }
+
+    @FXML
+    private void handleClearFilters() {
+        filteredItems.setPredicate(p -> true);
+        sortedItems.setComparator(null);
+    }
+
 }
