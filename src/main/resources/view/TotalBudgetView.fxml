@@ -39,17 +39,17 @@
                             </ImageView>
                         </graphic>
                         <items>
-                            <MenuItem text="Sort by Amount: Low to High" onAction="#handleSortAmountAsc" />
-                            <MenuItem text="Sort by Amount: High to Low" onAction="#handleSortAmountDesc" />
+                            <MenuItem text="Sort by Amount: Low to High" onAction="#handleSortAmountAsc" styleClass="filter-item" />
+                            <MenuItem text="Sort by Amount: High to Low" onAction="#handleSortAmountDesc" styleClass="filter-item" />
 
                             <SeparatorMenuItem />
 
-                            <MenuItem text="Filter: Expenses" onAction="#handleFilterExpenses" />
-                            <MenuItem text="Filter: Revenue" onAction="#handleFilterRevenue" />
+                            <MenuItem text="Filter: Expenses" onAction="#handleFilterExpenses" styleClass="filter-item" />
+                            <MenuItem text="Filter: Revenue" onAction="#handleFilterRevenue" styleClass="filter-item" />
 
                             <SeparatorMenuItem />
 
-                            <MenuItem text="Clear Filters" onAction="#handleClearFilters" />
+                            <MenuItem text="Clear Filters" onAction="#handleClearFilters" styleClass="filter-item" />
                         </items>
                     </MenuButton>
                 </children>
