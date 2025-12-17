@@ -115,7 +115,8 @@ public class TotalBudgetController {
 
         budgetService.recalculateBudgetTotals(currentBudget);
         updateLabels(currentBudget);
-        budgetTable.getItems().addListener((ListChangeListener<BudgetItem>) change -> {
+        budgetTable.getItems()
+                   .addListener((ListChangeListener<BudgetItem>) change -> {
 
             List<BudgetItem> updatedItems = budgetTable.getItems();
 
@@ -136,8 +137,12 @@ public class TotalBudgetController {
         System.out.println("Total Expense: " + budget.getTotalExpense());
         System.out.println("Net Result: " + budget.getNetResult());
 
-        totalRevenueLabel.setText(currencyFormat.format(budget.getTotalRevenue()));
-        totalExpensesLabel.setText(currencyFormat.format(budget.getTotalExpense()));
+        totalRevenueLabel.setText(
+            currencyFormat.format(budget.getTotalRevenue())
+        );
+        totalExpensesLabel.setText(
+            currencyFormat.format(budget.getTotalExpense())
+        );
         totalBudgetLabel.setText(currencyFormat.format(budget.getNetResult()));
     }
 
@@ -155,7 +160,9 @@ public class TotalBudgetController {
 
     @FXML
     private void handleSortAmountDesc() {
-        sortedItems.setComparator(Comparator.comparing(BudgetItem::getValue).reversed());
+        sortedItems.setComparator(
+            Comparator.comparing(BudgetItem::getValue).reversed()
+        );
     }
 
     @FXML
