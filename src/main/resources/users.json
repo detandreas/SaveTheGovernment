@@ -45,6 +45,14 @@
       "fullName": "Government Member",
       "password": "1d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
       "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "DEFENSE",
+      "id": "9913c9c5-8e34-48bc-8d3b-481d88aa5334",
+      "userName": "aaa",
+      "fullName": "Nancy Patata",
+      "password": "c2d60d9baf2f747749973d0022e4eb044360bf5945e2385e8b6c51537cf4bc43",
+      "userRole": "GOVERNMENT_MEMBER"
     }
   ],
   "primeMinister": {

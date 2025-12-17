@@ -87,7 +87,7 @@ public class AccountCreationController {
         roleComboBox.getItems().setAll(UserRole.values());
         ministryComboBox.getItems().setAll(Ministry.values());
 
-        // προσθήκη listener γισ handling της περίπτωσης
+        // προσθήκη listener για handling της περίπτωσης
         // που ο χρήστης διαλέγει role govMember
         // και επαναφορά
         roleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
