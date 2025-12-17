@@ -58,7 +58,7 @@ public class UserAuthenticationService {
             // Dummy operation για σταθερό χρόνο
             MessageDigest.isEqual(DUMMY_SHA256, DUMMY_SHA256);
             throw new ValidationException(
-                                "Ο κωδικός πρόσβασης είναι υποχρεωτικός.");
+                                "Password is required.");
         }
         String candidateHex = PasswordUtils.hashPassword(password);
         Optional<User> userOpt = userRepository
@@ -81,18 +81,18 @@ public class UserAuthenticationService {
                 // Dummy compare για σταθερό χρόνο
                 MessageDigest.isEqual(DUMMY_SHA256,
                                     HEX_FORMATTER.parseHex(candidateHex));
-                throw new UserNotAuthorizedException("Λάθος στοιχεία.");
+                throw new UserNotAuthorizedException("Incorrect credentials.");
             } else {
                 // Dummy compare για αποφυγή user enumeration
                 MessageDigest.isEqual(DUMMY_SHA256,
                                     HEX_FORMATTER.parseHex(candidateHex));
-                throw new UserNotAuthorizedException("Λάθος στοιχεία.");
+                throw new UserNotAuthorizedException("Incorrect credentials.");
             }
         } catch (IllegalArgumentException e) {
             // Invalid hex format - treat as failed login
             // Dummy operation για σταθερό χρόνο
             MessageDigest.isEqual(DUMMY_SHA256, DUMMY_SHA256);
-            throw new UserNotAuthorizedException("Λάθος στοιχεία.");
+            throw new UserNotAuthorizedException("Incorrect credentials.");
         }
     }
 
@@ -144,27 +144,27 @@ public class UserAuthenticationService {
     public void signUp(String username,
     String password, String fullName, UserRole role, Ministry ministry) {
         if (username == null || username.trim().isEmpty()) {
-            throw new ValidationException("Το όνομα χρήστη είναι υποχρεωτικό.");
+            throw new ValidationException("Username is required.");
         }
         if (password == null || password.isEmpty()) {
             throw new ValidationException(
-                                    "Ο κωδικός πρόσβασης είναι υποχρεωτικός.");
+                                    "Password is required.");
         }
         if (fullName == null || fullName.trim().isEmpty()) {
-            throw new ValidationException("Το πλήρες όνομα είναι υποχρεωτικό.");
+            throw new ValidationException("Full name is required.");
         }
         if (role == null) {
-            throw new ValidationException("Ο ρόλος χρήστη είναι υποχρεωτικός.");
+            throw new ValidationException("User role is required.");
         }
         if (role == UserRole.GOVERNMENT_MEMBER && ministry == null) {
             throw new ValidationException(
-                        "Το υπουργείο είναι υποχρεωτικό για μέλη κυβέρνησης.");
+            "The ministry field is required for members of the government.");
         }
         username = username.trim();
         // Validate that the username is not already taken.
         Optional<User> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
-            throw new ValidationException("Το όνομα χρήστη υπάρχει ήδη.");
+            throw new ValidationException("The username already exists.");
         }
 
         // Hash the password before storing it (security requirement).
@@ -175,7 +175,7 @@ public class UserAuthenticationService {
             // If PM exists → reject.
             if (userRepository.primeMinisterExists()) {
                 throw new ValidationException(
-                                    "Υπάρχει ήδη Πρωθυπουργός στο σύστημα.");
+                        "There is already a Prime Minister in the system.");
             }
             // First-time creation of Singleton PrimeMinister.
             PrimeMinister pm = PrimeMinister.getInstance(

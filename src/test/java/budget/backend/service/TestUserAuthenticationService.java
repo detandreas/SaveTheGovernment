@@ -73,7 +73,7 @@ class TestUserAuthenticationService {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userAuthenticationService.login(username, null);
         }, "Failure - null password should throw ValidationException");
-        assertEquals("Ο κωδικός πρόσβασης είναι υποχρεωτικός.", exception.getMessage(),
+        assertEquals("Password is required.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -83,7 +83,7 @@ class TestUserAuthenticationService {
         UserNotAuthorizedException exception = assertThrows(UserNotAuthorizedException.class, () -> {
             userAuthenticationService.login(null, password);
         }, "Failure - null username should throw UserNotAuthorizedException");
-        assertEquals("Λάθος στοιχεία.", exception.getMessage(),
+        assertEquals("Incorrect credentials.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -96,7 +96,7 @@ class TestUserAuthenticationService {
         UserNotAuthorizedException exception = assertThrows(UserNotAuthorizedException.class, () -> {
             userAuthenticationService.login(username, password2);
         }, "Failure - invalid password should throw UserNotAuthorizedException");
-        assertEquals("Λάθος στοιχεία.", exception.getMessage(),
+        assertEquals("Incorrect credentials.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -116,7 +116,7 @@ class TestUserAuthenticationService {
         UserNotAuthorizedException exception = assertThrows(UserNotAuthorizedException.class, () -> {
             userAuthenticationService.login(username, password);
         }, "Failure - invalid HEX should throw UserNotAuthorizedException");
-        assertEquals("Λάθος στοιχεία.", exception.getMessage(),
+        assertEquals("Incorrect credentials.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -153,7 +153,7 @@ class TestUserAuthenticationService {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userAuthenticationService.signUp("", password, fullName, role, ministry);
         }, "Failure - empty userName should throw ValidationException");
-        assertEquals("Το όνομα χρήστη είναι υποχρεωτικό.", exception.getMessage(),
+        assertEquals("Username is required.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -163,7 +163,7 @@ class TestUserAuthenticationService {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userAuthenticationService.signUp(null, password, fullName, role, ministry);
         }, "Failure - null userName should throw ValidationException");
-        assertEquals("Το όνομα χρήστη είναι υποχρεωτικό.", exception.getMessage(),
+        assertEquals("Username is required.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -173,7 +173,7 @@ class TestUserAuthenticationService {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userAuthenticationService.signUp(username, null, fullName, role, ministry);
         }, "Failure - null password should throw ValidationException");
-        assertEquals("Ο κωδικός πρόσβασης είναι υποχρεωτικός.", exception.getMessage(),
+        assertEquals("Password is required.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -183,7 +183,7 @@ class TestUserAuthenticationService {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userAuthenticationService.signUp(username, "", fullName, role, ministry);
         }, "Failure - empty password should throw ValidationException");
-        assertEquals("Ο κωδικός πρόσβασης είναι υποχρεωτικός.", exception.getMessage(),
+        assertEquals("Password is required.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -193,7 +193,7 @@ class TestUserAuthenticationService {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userAuthenticationService.signUp(username, password, "  ", role, ministry);
         }, "Failure - empty Full Name should throw ValidationException");
-        assertEquals("Το πλήρες όνομα είναι υποχρεωτικό.", exception.getMessage(),
+        assertEquals("Full name is required.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -203,7 +203,7 @@ class TestUserAuthenticationService {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userAuthenticationService.signUp(username, password, null, role, ministry);
         }, "Failure - null Full Name should throw ValidationException");
-        assertEquals("Το πλήρες όνομα είναι υποχρεωτικό.", exception.getMessage(),
+        assertEquals("Full name is required.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -213,7 +213,7 @@ class TestUserAuthenticationService {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userAuthenticationService.signUp(username, password, fullName, null, ministry);
         }, "Failure - null role should throw ValidationException");
-        assertEquals("Ο ρόλος χρήστη είναι υποχρεωτικός.", exception.getMessage(),
+        assertEquals("User role is required.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -223,7 +223,7 @@ class TestUserAuthenticationService {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userAuthenticationService.signUp(username, password, fullName, role, null);
         }, "Failure - null ministry should throw ValidationException");
-        assertEquals("Το υπουργείο είναι υποχρεωτικό για μέλη κυβέρνησης.", exception.getMessage(),
+        assertEquals("The ministry field is required for members of the government.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -236,7 +236,7 @@ class TestUserAuthenticationService {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userAuthenticationService.signUp("andreas1", password, fullName, role, ministry);
         }, "Failure - signing up with already taken userName should throw ValidationException");
-        assertEquals("Το όνομα χρήστη υπάρχει ήδη.", exception.getMessage(),
+        assertEquals("The username already exists.", exception.getMessage(),
                     "Failure - exception message should match");
     }
 
@@ -255,7 +255,7 @@ class TestUserAuthenticationService {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userAuthenticationService.signUp("newPM", "newpassword", "New PM", UserRole.PRIME_MINISTER, null);
         }, "Failure - only one Prime Minister allowed");
-        assertEquals("Υπάρχει ήδη Πρωθυπουργός στο σύστημα.", exception.getMessage(),
+        assertEquals("There is already a Prime Minister in the system.", exception.getMessage(),
                     "Failure - exception message should match"); 
     }
 
