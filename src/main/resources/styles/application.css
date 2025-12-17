@@ -25,3 +25,28 @@
     -fx-border-color: #e0e0e0;
     -fx-border-radius: 12px;
 }
+
+/* --- SUMMARY CARD CONTAINER --- */
+.summary-card-totalBudget {
+    -fx-background-color: #2c3e50b7;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 1);
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 12px;
+}
+
+.summary-card-totalExpenses {
+    -fx-background-color: #a52c1eb3;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 1);
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 12px;
+}
+
+.summary-card-totalRevenue {
+    -fx-background-color: #1e894bb5;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 1);
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 12px;
+}

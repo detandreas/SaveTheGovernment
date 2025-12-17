@@ -1,13 +1,17 @@
 package budget.frontend.controller;
 
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
+import javafx.collections.ListChangeListener;
 
 import budget.backend.model.domain.BudgetItem;
+import budget.backend.model.domain.Budget;
 import budget.backend.repository.BudgetRepository;
 import budget.backend.service.BudgetService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -20,6 +24,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
  */
 public class TotalBudgetController {
 
+    @FXML private Label totalBudgetLabel;
+    @FXML private Label totalExpensesLabel;
+    @FXML private Label totalRevenueLabel;
+
     @FXML private TableView<BudgetItem> budgetTable;
     @FXML private TableColumn<BudgetItem, String> nameColumn;
     @FXML private TableColumn<BudgetItem, String> typeColumn;
@@ -28,6 +36,8 @@ public class TotalBudgetController {
     private BudgetService budgetService =
                                 new BudgetService(new BudgetRepository());
     private static final int CURRENT_YEAR = 2025;
+    private final NumberFormat currencyFormat =
+                            NumberFormat.getCurrencyInstance(Locale.GERMANY);
     /**
      * Initializes the controller by setting up table columns and loading data.
      */
@@ -38,7 +48,7 @@ public class TotalBudgetController {
     }
     /**
      * Configures the table columns, including cell value factories
-     *                                                 and custom cell factories
+     * and custom cell factories
      * for formatting and styling.
      */
     private void setupTableColumns() {
@@ -50,9 +60,6 @@ public class TotalBudgetController {
         });
 
         valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
-
-        NumberFormat currencyFormat =
-                            NumberFormat.getCurrencyInstance(Locale.GERMANY);
 
         valueColumn.setCellFactory(column ->
             new TableCell<BudgetItem, Double>() {
@@ -89,10 +96,34 @@ public class TotalBudgetController {
         });
     }
     /**
-     * Loads budget data into the table view for the current year.
+     * Loads budget data into the table and updates summary labels.
      */
     private void loadData() {
         budgetTable
                 .setItems(budgetService.getBudgetItemsForTable(CURRENT_YEAR));
+
+        List<BudgetItem> items = budgetService.getBudgetItemsForTable(CURRENT_YEAR);
+
+        Budget currentBudget = new Budget(items, CURRENT_YEAR);
+        budgetService.recalculateBudgetTotals(currentBudget);
+
+        updateLabels(currentBudget);
+
+        budgetTable.getItems().addListener((ListChangeListener<BudgetItem>) change -> {
+            List<BudgetItem> updatedItems = budgetTable.getItems();
+            Budget updatedBudget = new Budget(updatedItems, CURRENT_YEAR);
+            budgetService.recalculateBudgetTotals(updatedBudget);
+            updateLabels(updatedBudget);
+        });
+    }
+
+    private void updateLabels(Budget budget) {
+        System.out.println("Total Revenue: " + budget.getTotalRevenue());
+        System.out.println("Total Expense: " + budget.getTotalExpense());
+        System.out.println("Net Result: " + budget.getNetResult());
+
+        totalRevenueLabel.setText(currencyFormat.format(budget.getTotalRevenue()));
+        totalExpensesLabel.setText(currencyFormat.format(budget.getTotalExpense()));
+        totalBudgetLabel.setText(currencyFormat.format(budget.getNetResult()));
     }
 }
