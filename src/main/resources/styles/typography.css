@@ -48,7 +48,6 @@
 }
 
 /* PROFILE CARD TEXT */
-
 .profile-name-label {
     -fx-text-fill: #333333;
     -fx-font-family: "Segoe UI", sans-serif;
@@ -60,4 +59,24 @@
     -fx-text-fill: #7f8c8d;
     -fx-font-family: "Segoe UI", sans-serif;
     -fx-font-size: 11px;
+}
+
+/* SUMMARY CARDS TEXT */
+.summary-card-title {
+    -fx-font-size: 14px;
+    -fx-text-fill: #FFFFFF;
+    -fx-opacity: 0.9;
+    -fx-font-weight: bold;
+    -fx-text-overrun: CLIP;
+}
+
+.summary-card-value {
+    -fx-font-size: 28px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #FFFFFF;
+}
+
+.summary-card-totalBudget, .summary-card-totalExpenses, .summary-card-totalRevenue {
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 4);
 }

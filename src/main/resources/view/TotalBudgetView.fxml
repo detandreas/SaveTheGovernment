@@ -6,6 +6,9 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -27,13 +30,68 @@
 
             <HBox alignment="CENTER_RIGHT" spacing="5.0">
                 <children>
-                    <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                            <Image url="@../images/filters_icon.png" /> 
-                        </image>
-                    </ImageView>
+                    <MenuButton mnemonicParsing="false" styleClass="filter-button">
+                        <graphic>
+                            <ImageView fitHeight="18" fitWidth="18" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../images/filters_icon.png" />
+                                </image>
+                            </ImageView>
+                        </graphic>
+                        <items>
+                            <MenuItem text="Sort by Amount: Low to High" onAction="#handleSortAmountAsc" styleClass="filter-item" />
+                            <MenuItem text="Sort by Amount: High to Low" onAction="#handleSortAmountDesc" styleClass="filter-item" />
+
+                            <SeparatorMenuItem />
+
+                            <MenuItem text="Filter: Expenses" onAction="#handleFilterExpenses" styleClass="filter-item" />
+                            <MenuItem text="Filter: Revenue" onAction="#handleFilterRevenue" styleClass="filter-item" />
+
+                            <SeparatorMenuItem />
+
+                            <MenuItem text="Clear Filters" onAction="#handleClearFilters" styleClass="filter-item" />
+                        </items>
+                    </MenuButton>
                 </children>
             </HBox>
+        </children>
+    </HBox>
+
+    <!-- Summary Cards -->
+    <HBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS">
+        <children>
+            <VBox spacing="15.0" styleClass="summary-card-totalBudget" 
+                HBox.hgrow="ALWAYS" maxWidth="Infinity" minHeight="120.0" alignment="CENTER">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <children>
+                    <Label text="Total Budget" styleClass="summary-card-title"/>
+                    <Label fx:id="totalBudgetLabel" styleClass="summary-card-value"/>
+                </children>
+            </VBox>
+
+            <VBox spacing="15.0" styleClass="summary-card-totalExpenses" 
+                HBox.hgrow="ALWAYS" maxWidth="Infinity" minHeight="120.0" alignment="CENTER">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <children>
+                    <Label text="Total Expenses" styleClass="summary-card-title"/>
+                    <Label fx:id="totalExpensesLabel" styleClass="summary-card-value"/>
+                </children>
+            </VBox>
+
+            <VBox spacing="15.0" styleClass="summary-card-totalRevenue" 
+                HBox.hgrow="ALWAYS" maxWidth="Infinity" minHeight="120.0" alignment="CENTER">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <children>
+                    <Label text="Total Revenue" styleClass="summary-card-title"/>
+                    <Label fx:id="totalRevenueLabel" styleClass="summary-card-value"/>
+                </children>
+            </VBox>
         </children>
     </HBox>
 
