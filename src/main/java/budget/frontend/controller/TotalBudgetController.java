@@ -4,23 +4,24 @@ import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
-
-import budget.backend.model.domain.BudgetItem;
 import budget.backend.model.domain.Budget;
+import budget.backend.model.domain.BudgetItem;
 import budget.backend.repository.BudgetRepository;
 import budget.backend.service.BudgetService;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 /**
  * Controller class for managing the total budget view
  *                                              in the JavaFX application.
@@ -43,6 +44,8 @@ public class TotalBudgetController {
     private static final int CURRENT_YEAR = 2025;
     private final NumberFormat currencyFormat =
                             NumberFormat.getCurrencyInstance(Locale.GERMANY);
+    private static final Logger LOGGER =
+                            Logger.getLogger(TotalBudgetController.class.getName());
 
     private ObservableList<BudgetItem> allItems;
     private FilteredList<BudgetItem> filteredItems;
@@ -133,9 +136,21 @@ public class TotalBudgetController {
      * @param budget The budget object containing the totals.
      */
     private void updateLabels(Budget budget) {
-        System.out.println("Total Revenue: " + budget.getTotalRevenue());
-        System.out.println("Total Expense: " + budget.getTotalExpense());
-        System.out.println("Net Result: " + budget.getNetResult());
+        LOGGER.log(
+            Level.INFO,
+            "Total Revenue: {0}",
+            budget.getTotalRevenue()
+        );
+        LOGGER.log(
+            Level.INFO,
+            "Total Expense: {0}",
+            budget.getTotalExpense()
+        );
+        LOGGER.log(
+            Level.INFO,
+            "Net Result: {0}",
+            budget.getNetResult()
+        );
 
         totalRevenueLabel.setText(
             currencyFormat.format(budget.getTotalRevenue())
