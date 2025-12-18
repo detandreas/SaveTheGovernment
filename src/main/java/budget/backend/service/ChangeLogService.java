@@ -124,15 +124,20 @@ public class ChangeLogService {
                     ));
         }
     }
-
+    /**
+     * Retrieves all ChangeLog entries sorted by submitted date in
+     * descending order.
+     *
+     * @return observable list of ChangeLog entries sorted by date
+     */
     public ObservableList<ChangeLog> getAllChangeLogsSortedByDate() {
         return changeLogRepository.load().stream()
-                .sorted(Comparator.comparing((ChangeLog log) -> 
+                .sorted(Comparator.comparing((ChangeLog log) ->
                     LocalDateTime.parse(
                         log.submittedDate(),
                         FORMATTER)).reversed())
                 .collect(Collectors.collectingAndThen(
-                    Collectors.toList(), 
+                    Collectors.toList(),
                     FXCollections::observableArrayList
                 ));
     }
