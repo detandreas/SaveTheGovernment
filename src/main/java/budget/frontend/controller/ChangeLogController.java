@@ -46,8 +46,10 @@ public class ChangeLogController {
      */
     private void setupTableColumns() {
         // Because change log is record, we use lamda expressions
-        dateColumn.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().submittedDate()));
+        dateColumn.setCellValueFactory(cellData -> {
+            String originalDate = cellData.getValue().submittedDate();
+            return new SimpleStringProperty(originalDate.replace("T", " "));
+        });
 
         actorColumn.setCellValueFactory(cellData -> 
             new SimpleStringProperty(cellData.getValue().actorName()));

@@ -47,7 +47,7 @@
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
         </columnResizePolicy>
-        
+
         <placeholder>
             <Label text="No changes recorded." styleClass="placeholder-label"/>
         </placeholder>

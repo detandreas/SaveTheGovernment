@@ -24,8 +24,12 @@ public class ChangeLogService {
     private final ChangeLogRepository changeLogRepository;
 
     /** Date-time format used for submitted changes. */
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    //private static final DateTimeFormatter FORMATTER =
+            //DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            
+    // Αντί για το pattern με το κενό, χρησιμοποιούμε το έτοιμο ISO πρότυπο
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     /**
      * Constructs a ChangeLogService.
