@@ -25,7 +25,7 @@
             <HBox alignment="CENTER_RIGHT" spacing="10.0">
                 <children>
                     <Label text="Year:" />
-                    <ComboBox fx:id="yearComboBox" prefWidth="100.0" />
+                    <ComboBox fx:id="yearComboBox" prefHeight="45.0" prefWidth="111.0" />
                     <Label text="Chart Type:" />
                     <ComboBox fx:id="chartTypeComboBox" prefWidth="150.0" />
                 </children>

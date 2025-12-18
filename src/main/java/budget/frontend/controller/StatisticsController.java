@@ -6,7 +6,6 @@ import java.util.Map;
 
 import budget.backend.repository.BudgetRepository;
 import budget.backend.service.BudgetService;
-import budget.constants.Limits;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -33,7 +32,7 @@ public class StatisticsController {
     private final BudgetService budgetService =
                                 new BudgetService(new BudgetRepository());
     private static final int CURRENT_YEAR = 2026;
-    private static final int DEFAULT_START_YEAR = 2015;
+    private static final int DEFAULT_START_YEAR = 2019;
     private static final int DEFAULT_END_YEAR = 2027;
     private static final int TOP_N_ITEMS = 5;
 
@@ -52,7 +51,7 @@ public class StatisticsController {
     private void setupComboBoxes() {
         // Setup year combo box
         ObservableList<Integer> years = FXCollections.observableArrayList();
-        for (int year = Limits.MIN_BUDGET_YEAR; year <= CURRENT_YEAR; year++) {
+        for (int year = CURRENT_YEAR; year >= DEFAULT_START_YEAR; year--) {
             years.add(year);
         }
         yearComboBox.setItems(years);
@@ -103,15 +102,21 @@ public class StatisticsController {
             ObservableList<PieChart.Data> pieData =
                                     budgetService.getRevenueExpensePieData(year);
             
+            double total = pieData.stream()
+                                    .mapToDouble(data -> data.getPieValue())
+                                    .sum();
+
             // Format labels with amounts
             NumberFormat currencyFormat =
                             NumberFormat.getCurrencyInstance(Locale.GERMANY);
-            
+
             for (PieChart.Data data : pieData) {
                 String name = data.getName();
                 double value = data.getPieValue();
+                double pct = (value / total) * 100;
                 String formattedValue = currencyFormat.format(value);
-                data.setName(name + "\n(" + formattedValue + ")");
+                String pctFormatted = String.format("%.2f", pct);
+                data.setName(name + "\n(" + formattedValue + ")" +"\n" + pctFormatted + "%");
             }
             
             revenueExpensePieChart.setData(pieData);
