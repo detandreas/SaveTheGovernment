@@ -32,9 +32,9 @@ public class StatisticsController {
 
     private final BudgetService budgetService =
                                 new BudgetService(new BudgetRepository());
-    private static final int CURRENT_YEAR = 2025;
-    private static final int DEFAULT_START_YEAR = 2020;
-    private static final int DEFAULT_END_YEAR = 2026;
+    private static final int CURRENT_YEAR = 2026;
+    private static final int DEFAULT_START_YEAR = 2015;
+    private static final int DEFAULT_END_YEAR = 2027;
     private static final int TOP_N_ITEMS = 5;
 
     /**

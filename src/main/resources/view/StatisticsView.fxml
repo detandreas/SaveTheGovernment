@@ -55,10 +55,10 @@
             <children>
                 <LineChart fx:id="revenueExpenseLineChart" prefWidth="582.0" title="Revenue &amp; Expense Trends" VBox.vgrow="ALWAYS">
                     <xAxis>
-                        <NumberAxis autoRanging="false" label="Year" lowerBound="2000.0" upperBound="2030.0" />
+                        <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis label="Amount (€)" lowerBound="7.5E11" minorTickCount="0" side="LEFT" upperBound="2.0E12" />
+                        <NumberAxis label="Amount (€)" lowerBound="7.5E12" minorTickCount="0" side="LEFT" tickUnit="5.0E10" upperBound="2.0E11" />
                     </yAxis>
                 </LineChart>
             </children>
@@ -69,7 +69,7 @@
             <children>
                 <LineChart fx:id="netResultLineChart" title="Net Result Trend" VBox.vgrow="ALWAYS">
                     <xAxis>
-                        <NumberAxis autoRanging="false" label="Year" lowerBound="2000.0" upperBound="2030.0" />
+                        <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
                     </xAxis>
                     <yAxis>
                         <NumberAxis label="Amount (€)" />
@@ -83,7 +83,7 @@
             <children>
                 <BarChart fx:id="topItemsBarChart" title="Top Budget Items" VBox.vgrow="ALWAYS">
                     <xAxis>
-                        <CategoryAxis label="Budget Item" />
+                        <CategoryAxis label="Budget Item" tickLabelRotation="45.0" />
                     </xAxis>
                     <yAxis>
                         <NumberAxis label="Amount (€)" />
