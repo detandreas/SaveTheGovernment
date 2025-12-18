@@ -124,6 +124,11 @@
         "VALUE": 1755112000.0
       },
       {
+        "ID": 53,
+        "BILL": "Debt securities (liabilities)",
+        "VALUE": 19375000000.0
+      },
+      {
         "ID": 54,
         "BILL": "Loans",
         "VALUE": 1203165130000.0
