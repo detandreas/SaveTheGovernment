@@ -28,11 +28,12 @@ public class ChangeLogController {
     @FXML private TableColumn<ChangeLog, Double> oldValueColumn;
     @FXML private TableColumn<ChangeLog, Double> newValueColumn;
 
-    private final ChangeLogService changeLogService = 
-                                    new ChangeLogService(new ChangeLogRepository());
+    private final ChangeLogService changeLogService =
+        new ChangeLogService(new ChangeLogRepository());
 
     /**
-     * Initializes the controller by setting up table columns and loading data.
+     * Initializes the controller by setting up
+     * table columns and loading data.
      */
     @FXML
     public void initialize() {
@@ -41,30 +42,39 @@ public class ChangeLogController {
     }
 
     /**
-     * Configures the table columns with cell value factories and 
+     * Configures the table columns with cell value factories and
      * custom cell factories for currency formatting.
      */
     private void setupTableColumns() {
         // Because change log is record, we use lamda expressions
         dateColumn.setCellValueFactory(cellData -> {
             String originalDate = cellData.getValue().submittedDate();
-            return new SimpleStringProperty(originalDate.replace("T", " "));
+            return new SimpleStringProperty(
+                originalDate.replace("T", " ")
+            );
         });
 
-        actorColumn.setCellValueFactory(cellData -> 
+        actorColumn.setCellValueFactory(cellData ->
             new SimpleStringProperty(cellData.getValue().actorName()));
 
-        itemIdColumn.setCellValueFactory(cellData -> 
-            new SimpleIntegerProperty(cellData.getValue().budgetItemId()).asObject());
+        itemIdColumn.setCellValueFactory(cellData ->
+            new SimpleIntegerProperty(
+                cellData.getValue().budgetItemId()).asObject()
+            );
 
-        oldValueColumn.setCellValueFactory(cellData -> 
-            new SimpleDoubleProperty(cellData.getValue().oldValue()).asObject());
+        oldValueColumn.setCellValueFactory(cellData ->
+            new SimpleDoubleProperty(
+                cellData.getValue().oldValue()).asObject()
+            );
 
-        newValueColumn.setCellValueFactory(cellData -> 
-            new SimpleDoubleProperty(cellData.getValue().newValue()).asObject());
+        newValueColumn.setCellValueFactory(cellData ->
+            new SimpleDoubleProperty(
+                cellData.getValue().newValue()).asObject()
+            );
 
         // Currency Formatter (όπως στο TotalBudgetController)
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+        NumberFormat currencyFormat = NumberFormat
+            .getCurrencyInstance(Locale.GERMANY);
 
         // Custom Cell Factory για τις στήλες τιμών
         var currencyCellFactory = createCurrencyCellFactory(currencyFormat);
@@ -74,9 +84,12 @@ public class ChangeLogController {
 
     /**
      * Helper method to create a formatted currency cell.
+     * @param format the NumberFormat instance for currency formatting
+     * @return a Callback for TableCell creation
      */
-    private Callback<TableColumn<ChangeLog, Double>, TableCell<ChangeLog, Double>> 
-    createCurrencyCellFactory(NumberFormat format) {
+    private Callback<TableColumn<ChangeLog, Double>,
+        TableCell<ChangeLog, Double>>
+        createCurrencyCellFactory(NumberFormat format) {
         return column -> new TableCell<ChangeLog, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
@@ -95,6 +108,8 @@ public class ChangeLogController {
      */
     private void loadData() {
         // ObservableList from service layer
-        changeLogTable.setItems(changeLogService.getAllChangeLogsSortedByDate());
+        changeLogTable.setItems(
+            changeLogService.getAllChangeLogsSortedByDate()
+        );
     }
 }
