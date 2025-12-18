@@ -45,7 +45,7 @@ public class TotalBudgetController {
     private final NumberFormat currencyFormat =
                             NumberFormat.getCurrencyInstance(Locale.GERMANY);
     private static final Logger LOGGER =
-                            Logger.getLogger(TotalBudgetController.class.getName());
+                    Logger.getLogger(TotalBudgetController.class.getName());
 
     private ObservableList<BudgetItem> allItems;
     private FilteredList<BudgetItem> filteredItems;
