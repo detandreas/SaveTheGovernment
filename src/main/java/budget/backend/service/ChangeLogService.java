@@ -2,6 +2,9 @@ package budget.backend.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
 
 import budget.backend.model.domain.ChangeLog;
 import budget.backend.model.domain.PendingChange;
@@ -9,6 +12,7 @@ import budget.backend.model.domain.user.User;
 import budget.backend.model.enums.Status;
 import budget.backend.repository.ChangeLogRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import javafx.collections.ObservableList;
 
 /**
  * Service responsible for storing and retrieving {@link ChangeLog}
@@ -119,5 +123,17 @@ public class ChangeLogService {
                             user.getFullName()
                     ));
         }
+    }
+
+    public ObservableList<ChangeLog> getAllChangeLogsSortedByDate() {
+        return changeLogRepository.load().stream()
+                .sorted(Comparator.comparing((ChangeLog log) -> 
+                    LocalDateTime.parse(
+                        log.submittedDate(),
+                        FORMATTER)).reversed())
+                .collect(Collectors.collectingAndThen(
+                    Collectors.toList(), 
+                    FXCollections::observableArrayList
+                ));
     }
 }
