@@ -38,7 +38,7 @@
 
 .input-container:focused-within {
     -fx-background-color: #ffffff;
-    -fx-border-color: #3498db;
+    -fx-border-color: #20445be0;
     -fx-effect: dropshadow(three-pass-box, rgba(52,152,219,0.2), 5, 0, 0, 0);
 }
 

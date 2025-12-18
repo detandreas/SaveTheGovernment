@@ -100,3 +100,44 @@
     -fx-background-color: transparent !important;
     -fx-border-color: transparent;
 }
+
+/* Style for filter MenuButton */
+.filter-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+    -fx-cursor: hand;
+}
+
+.filter-button:hover {
+    -fx-background-color: #cccccc;
+}
+
+.filter-button:showing {
+    -fx-background-color: #bbbbbb;
+}
+
+.filter-button .arrow-button {
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-padding: 0;
+}
+
+.filter-button .arrow {
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+.filter-item {
+    -fx-background-color: transparent;
+}
+
+.filter-item:focused {
+    -fx-background-color: #194f73;
+}
+
+.filter-item:focused .label {
+    -fx-text-fill: white;
+}
