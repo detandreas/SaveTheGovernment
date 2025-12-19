@@ -35,13 +35,13 @@
     -fx-text-fill: #34495e;
 }
 
-.table-cell.status-revenue {
+.table-cell.status-green {
     -fx-text-fill: #1e894a;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
 
-.table-cell.status-expense {
+.table-cell.status-red {
     -fx-text-fill: #a52b1e;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
