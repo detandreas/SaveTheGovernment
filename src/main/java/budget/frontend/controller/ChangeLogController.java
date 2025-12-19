@@ -81,9 +81,9 @@ public class ChangeLogController {
                 cellData.getValue().newValue()).asObject()
             );
 
-        
         valueDifferenceColumn.setCellValueFactory(cellData -> {
-            double difference = cellData.getValue().newValue() - cellData.getValue().oldValue();
+            double difference =
+                cellData.getValue().newValue() - cellData.getValue().oldValue();
             return new SimpleDoubleProperty(difference).asObject();
         });
 
@@ -94,7 +94,9 @@ public class ChangeLogController {
         var currencyCellFactory = createCurrencyCellFactory(currencyFormat);
         oldValueColumn.setCellFactory(currencyCellFactory);
         newValueColumn.setCellFactory(currencyCellFactory);
-        valueDifferenceColumn.setCellFactory(createStyledCurrencyCellFactory(currencyFormat));
+        valueDifferenceColumn.setCellFactory(
+            createStyledCurrencyCellFactory(currencyFormat)
+        );
     }
 
     /**
@@ -119,7 +121,8 @@ public class ChangeLogController {
     }
 
     /**
-     * Helper method to create a formatted currency cell with conditional styling.
+     * Helper method to create a formatted currency cell
+     * with conditional styling.
      * @param format the NumberFormat instance for currency formatting
      * @return a Callback for TableCell creation
      */
@@ -162,32 +165,48 @@ public class ChangeLogController {
 
     @FXML
     private void  handleSortAmountAsc() {
-        sortedItems.setComparator(Comparator.comparingDouble(changeLog -> Math.abs(changeLog.newValue() - changeLog.oldValue())));
+        sortedItems.setComparator(
+            Comparator.comparingDouble(changeLog ->
+                Math.abs(changeLog.newValue() - changeLog.oldValue())
+            )
+        );
     }
 
     @FXML
     private void handleSortAmountDesc() {
-        sortedItems.setComparator(Comparator.comparingDouble(changeLog -> -Math.abs(changeLog.newValue() - changeLog.oldValue())));
+        sortedItems.setComparator(
+            Comparator.comparingDouble((ChangeLog c) ->
+                Math.abs(c.newValue() - c.oldValue())
+            ).reversed()
+        );
     }
 
     @FXML
     private void handleFilterIncreasesOnly() {
-        filteredItems.setPredicate(changeLog -> (changeLog.newValue() - changeLog.oldValue()) > 0);
+        filteredItems.setPredicate(
+            changeLog -> (changeLog.newValue() - changeLog.oldValue()) > 0
+        );
     }
 
     @FXML
     private void handleFilterDecreasesOnly() {
-        filteredItems.setPredicate(changeLog -> (changeLog.newValue() - changeLog.oldValue()) < 0);
+        filteredItems.setPredicate(
+            changeLog -> (changeLog.newValue() - changeLog.oldValue()) < 0
+        );
     }
 
     @FXML
     private void handleSortByNameAsc() {
-        sortedItems.setComparator(Comparator.comparing(ChangeLog::actorName));
+        sortedItems.setComparator(
+            Comparator.comparing(ChangeLog::actorName)
+        );
     }
 
     @FXML
     private void handleSortByNameDesc() {
-        sortedItems.setComparator(Comparator.comparing(ChangeLog::actorName).reversed());
+        sortedItems.setComparator(
+            Comparator.comparing(ChangeLog::actorName).reversed()
+        );
     }
 
     @FXML
