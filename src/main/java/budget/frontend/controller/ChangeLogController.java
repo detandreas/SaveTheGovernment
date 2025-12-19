@@ -27,6 +27,7 @@ public class ChangeLogController {
     @FXML private TableColumn<ChangeLog, Integer> itemIdColumn;
     @FXML private TableColumn<ChangeLog, Double> oldValueColumn;
     @FXML private TableColumn<ChangeLog, Double> newValueColumn;
+    @FXML private TableColumn<ChangeLog, Double> valueDifferenceColumn;
 
     private final ChangeLogService changeLogService =
         new ChangeLogService(new ChangeLogRepository());
@@ -71,8 +72,12 @@ public class ChangeLogController {
             new SimpleDoubleProperty(
                 cellData.getValue().newValue()).asObject()
             );
+        
+        valueDifferenceColumn.setCellValueFactory(cellData -> {
+            double difference = Math.abs(cellData.getValue().newValue() - cellData.getValue().oldValue());
+            return new SimpleDoubleProperty(difference).asObject();
+        });
 
-        // Currency Formatter (όπως στο TotalBudgetController)
         NumberFormat currencyFormat = NumberFormat
             .getCurrencyInstance(Locale.GERMANY);
 
@@ -80,6 +85,7 @@ public class ChangeLogController {
         var currencyCellFactory = createCurrencyCellFactory(currencyFormat);
         oldValueColumn.setCellFactory(currencyCellFactory);
         newValueColumn.setCellFactory(currencyCellFactory);
+        valueDifferenceColumn.setCellFactory(currencyCellFactory);
     }
 
     /**
