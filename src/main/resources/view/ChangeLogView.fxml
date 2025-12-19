@@ -6,6 +6,9 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -25,11 +28,33 @@
 
             <HBox alignment="CENTER_RIGHT" spacing="5.0">
                 <children>
-                    <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                            <Image url="@../images/filters_icon.png" /> 
-                        </image>
-                    </ImageView>
+                    <MenuButton mnemonicParsing="false" styleClass="filter-button">
+                        <graphic>
+                            <ImageView fitHeight="18" fitWidth="18" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../images/filters_icon.png" />
+                                </image>
+                            </ImageView>
+                        </graphic>
+                        <items>
+                            <MenuItem text="Sort by Difference Amount: Low to High" onAction="#handleSortAmountAsc" styleClass="filter-item" />
+                            <MenuItem text="Sort by Difference Amount: High to Low" onAction="#handleSortAmountDesc" styleClass="filter-item" />
+
+                            <SeparatorMenuItem />
+
+                            <MenuItem text="Filter: Increases Only" onAction="#handleFilterIncreasesOnly" styleClass="filter-item" />
+                            <MenuItem text="Filter: Decreases Only" onAction="#handleFilterDecreasesOnly" styleClass="filter-item" />
+
+                            <SeparatorMenuItem />
+
+                            <MenuItem text="Sort by User Name: A-Z" onAction="#handleSortByNameAsc" styleClass="filter-item" />
+                            <MenuItem text="Sort by User Name: Z-A" onAction="#handleSortByNameDesc" styleClass="filter-item" />
+
+                            <SeparatorMenuItem />
+
+                            <MenuItem text="Clear Filters" onAction="#handleClearFilters" styleClass="filter-item" />
+                        </items>
+                    </MenuButton>
                 </children>
             </HBox>
         </children>
@@ -42,6 +67,7 @@
             <TableColumn fx:id="itemIdColumn" text="Item ID" prefWidth="80" styleClass="center-aligned-cell"/>
             <TableColumn fx:id="oldValueColumn" text="Old Value (€)" prefWidth="120" styleClass="center-aligned-cell"/>
             <TableColumn fx:id="newValueColumn" text="New Value (€)" prefWidth="120" styleClass="center-aligned-cell"/>
+            <TableColumn fx:id="valueDifferenceColumn" text="Difference (€)" prefWidth="120" styleClass="center-aligned-cell"/>
         </columns>
         
         <columnResizePolicy>
