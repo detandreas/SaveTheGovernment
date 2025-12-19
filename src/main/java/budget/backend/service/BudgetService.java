@@ -157,14 +157,14 @@ public class BudgetService {
      * @throws IllegalArgumentException if startYear >= endYear or
      *                                  if years are invalid
      */
-    public Map<String, Series<Integer, Number>> getRevenueExpenseTrendSeries(
+    public Map<String, Series<Number, Number>> getRevenueExpenseTrendSeries(
             int startYear, int endYear) throws IllegalArgumentException {
         validateYearRange(startYear, endYear);
 
-        Series<Integer, Number> revenueSeries = new Series<>();
+        Series<Number, Number> revenueSeries = new Series<>();
         revenueSeries.setName("Revenue");
 
-        Series<Integer, Number> expenseSeries = new Series<>();
+        Series<Number, Number> expenseSeries = new Series<>();
         expenseSeries.setName("Expenses");
 
         for (int year = startYear; year < endYear; year++) {
@@ -193,11 +193,11 @@ public class BudgetService {
      * @throws IllegalArgumentException if startYear >= endYear or
      *                                  if years are invalid
      */
-    public Series<Integer, Number> getNetResultSeries(
+    public Series<Number, Number> getNetResultSeries(
         int startYear, int endYear) throws IllegalArgumentException {
         validateYearRange(startYear, endYear);
 
-        Series<Integer, Number> netSeries = new Series<>();
+        Series<Number, Number> netSeries = new Series<>();
         netSeries.setName("Net result");
 
         for (int year = startYear; year < endYear; year++) {

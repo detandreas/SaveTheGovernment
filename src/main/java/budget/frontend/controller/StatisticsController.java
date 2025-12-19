@@ -11,9 +11,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
+import javafx.util.StringConverter;
 
 /**
  * Controller for the Statistics View.
@@ -129,34 +131,56 @@ public class StatisticsController {
     }
 
     /**
+     * Sets up the X-axis formatter for LineChart to display years
+     *                                          without decimal separators.
+     *
+     * @param chart the LineChart to configure
+     */
+    private void setupYearAxisFormatter(LineChart<Number, Number> chart) {
+        NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+        xAxis.setTickLabelFormatter(new StringConverter<Number>() {
+            @Override
+            public String toString(Number object) {
+                if (object == null) {
+                    return "";
+                }
+                // Convert to int and format as string
+                // to avoid decimal formatting
+                return String.valueOf(object.intValue());
+            }
+
+            @Override
+            public Number fromString(String string) {
+                try {
+                    return Integer.parseInt(string);
+                } catch (NumberFormatException e) {
+                    return 0;
+                }
+            }
+        });
+    }
+
+    /**
      * Loads the revenue and expense trend line chart.
      */
     private void loadRevenueExpenseTrendChart() {
         revenueExpenseLineChart.getData().clear();
+        setupYearAxisFormatter(revenueExpenseLineChart);
 
         try {
-            Map<String, XYChart.Series<Integer, Number>> seriesMap =
+            Map<String, XYChart.Series<Number, Number>> seriesMap =
                 budgetService.getRevenueExpenseTrendSeries(
                     DEFAULT_START_YEAR, DEFAULT_END_YEAR);
 
-            XYChart.Series<Integer, Number> revenueSeries =
+            XYChart.Series<Number, Number> revenueSeries =
                                             seriesMap.get("Revenue");
-            XYChart.Series<Integer, Number> expenseSeries =
+            XYChart.Series<Number, Number> expenseSeries =
                                             seriesMap.get("Expense");
 
-            if (revenueSeries != null) {
-                XYChart.Series<Number, Number> convertedRevenueSeries =
-                                                convertSeries(revenueSeries);
-                revenueExpenseLineChart.getData().add(convertedRevenueSeries);
-            }
-
-            if (expenseSeries != null) {
-                XYChart.Series<Number, Number> convertedExpenseSeries =
-                                                convertSeries(expenseSeries);
-                revenueExpenseLineChart.getData().add(convertedExpenseSeries);
-            }
+                revenueExpenseLineChart.getData().add(revenueSeries);
+                revenueExpenseLineChart.getData().add(expenseSeries);
         } catch (IllegalArgumentException e) {
-            revenueExpenseLineChart.getData().clear();
+                revenueExpenseLineChart.getData().clear();
         }
     }
 
@@ -165,17 +189,14 @@ public class StatisticsController {
      */
     private void loadNetResultTrendChart() {
         netResultLineChart.getData().clear();
+        setupYearAxisFormatter(netResultLineChart);
 
         try {
-            XYChart.Series<Integer, Number> netSeries =
+            XYChart.Series<Number, Number> netSeries =
                 budgetService.getNetResultSeries(
                     DEFAULT_START_YEAR, DEFAULT_END_YEAR);
 
-            if (netSeries != null) {
-                XYChart.Series<Number, Number> convertedSeries =
-                                                    convertSeries(netSeries);
-                netResultLineChart.getData().add(convertedSeries);
-            }
+                netResultLineChart.getData().add(netSeries);
         } catch (IllegalArgumentException e) {
             netResultLineChart.getData().clear();
         }
@@ -206,28 +227,6 @@ public class StatisticsController {
         } catch (IllegalArgumentException e) {
             topItemsBarChart.getData().clear();
         }
-    }
-
-    /**
-     * Converts a Series with Integer X values to Number X values
-     * for compatibility with NumberAxis.
-     *
-     * @param series the series to convert
-     * @return the converted series
-     */
-    private XYChart.Series<Number, Number> convertSeries(
-            XYChart.Series<Integer, Number> series) {
-        XYChart.Series<Number, Number> convertedSeries =
-                                        new XYChart.Series<>();
-        convertedSeries.setName(series.getName());
-
-        for (XYChart.Data<Integer, Number> data : series.getData()) {
-            convertedSeries.getData().add(
-                new XYChart.Data<>(data.getXValue(), data.getYValue())
-            );
-        }
-
-        return convertedSeries;
     }
 
     /**
