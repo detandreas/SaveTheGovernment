@@ -1,11 +1,11 @@
 package budget.frontend.controller;
-
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Map;
 
 import budget.backend.repository.BudgetRepository;
 import budget.backend.service.BudgetService;
+import budget.constants.Limits;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -100,8 +100,8 @@ public class StatisticsController {
 
         try {
             ObservableList<PieChart.Data> pieData =
-                                    budgetService.getRevenueExpensePieData(year);
-            
+                                budgetService.getRevenueExpensePieData(year);
+
             double total = pieData.stream()
                                     .mapToDouble(data -> data.getPieValue())
                                     .sum();
@@ -113,12 +113,15 @@ public class StatisticsController {
             for (PieChart.Data data : pieData) {
                 String name = data.getName();
                 double value = data.getPieValue();
-                double pct = (value / total) * 100;
+                double pct = (value / total) * Limits.NUMBER_ONE_HUNDRED;
                 String formattedValue = currencyFormat.format(value);
                 String pctFormatted = String.format("%.2f", pct);
-                data.setName(name + "\n(" + formattedValue + ")" +"\n" + pctFormatted + "%");
+                data.setName(name + "\n("
+                    + formattedValue + ")" + "\n"
+                    + pctFormatted + "%"
+                );
             }
-            
+
             revenueExpensePieChart.setData(pieData);
         } catch (IllegalArgumentException e) {
             revenueExpensePieChart.getData().clear();
@@ -143,13 +146,13 @@ public class StatisticsController {
 
             if (revenueSeries != null) {
                 XYChart.Series<Number, Number> convertedRevenueSeries =
-                                                        convertSeries(revenueSeries);
+                                                convertSeries(revenueSeries);
                 revenueExpenseLineChart.getData().add(convertedRevenueSeries);
             }
 
             if (expenseSeries != null) {
                 XYChart.Series<Number, Number> convertedExpenseSeries =
-                                                        convertSeries(expenseSeries);
+                                                convertSeries(expenseSeries);
                 revenueExpenseLineChart.getData().add(convertedExpenseSeries);
             }
         } catch (IllegalArgumentException e) {
@@ -170,7 +173,7 @@ public class StatisticsController {
 
             if (netSeries != null) {
                 XYChart.Series<Number, Number> convertedSeries =
-                                                        convertSeries(netSeries);
+                                                    convertSeries(netSeries);
                 netResultLineChart.getData().add(convertedSeries);
             }
         } catch (IllegalArgumentException e) {
