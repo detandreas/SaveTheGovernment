@@ -42,6 +42,7 @@
             <TableColumn fx:id="itemIdColumn" text="Item ID" prefWidth="80" styleClass="center-aligned-cell"/>
             <TableColumn fx:id="oldValueColumn" text="Old Value (€)" prefWidth="120" styleClass="center-aligned-cell"/>
             <TableColumn fx:id="newValueColumn" text="New Value (€)" prefWidth="120" styleClass="center-aligned-cell"/>
+            <TableColumn fx:id="valueDifferenceColumn" text=" Difference (€)" prefWidth="120" styleClass="center-aligned-cell"/>
         </columns>
         
         <columnResizePolicy>
