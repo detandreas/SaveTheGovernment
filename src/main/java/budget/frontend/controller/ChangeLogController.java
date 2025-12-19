@@ -72,9 +72,10 @@ public class ChangeLogController {
             new SimpleDoubleProperty(
                 cellData.getValue().newValue()).asObject()
             );
+
         
         valueDifferenceColumn.setCellValueFactory(cellData -> {
-            double difference = Math.abs(cellData.getValue().newValue() - cellData.getValue().oldValue());
+            double difference = cellData.getValue().newValue() - cellData.getValue().oldValue();
             return new SimpleDoubleProperty(difference).asObject();
         });
 
@@ -85,7 +86,7 @@ public class ChangeLogController {
         var currencyCellFactory = createCurrencyCellFactory(currencyFormat);
         oldValueColumn.setCellFactory(currencyCellFactory);
         newValueColumn.setCellFactory(currencyCellFactory);
-        valueDifferenceColumn.setCellFactory(currencyCellFactory);
+        valueDifferenceColumn.setCellFactory(createStyledCurrencyCellFactory(currencyFormat));
     }
 
     /**
@@ -104,6 +105,34 @@ public class ChangeLogController {
                     setText(null);
                 } else {
                     setText(format.format(item));
+                }
+            }
+        };
+    }
+
+    /**
+     * Helper method to create a formatted currency cell with conditional styling.
+     * @param format the NumberFormat instance for currency formatting
+     * @return a Callback for TableCell creation
+     */
+    private Callback<TableColumn<ChangeLog, Double>,
+        TableCell<ChangeLog, Double>>
+        createStyledCurrencyCellFactory(NumberFormat format) {
+        return column -> new TableCell<ChangeLog, Double>() {
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("status-green", "status-red");
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    double absValue = Math.abs(item);
+                    setText(format.format(absValue));
+                    if (item > 0) {
+                        getStyleClass().add("status-green");
+                    } else if (item < 0) {
+                        getStyleClass().add("status-red");
+                    }
                 }
             }
         };

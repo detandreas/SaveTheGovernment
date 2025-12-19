@@ -92,16 +92,16 @@ public class TotalBudgetController {
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
 
-                getStyleClass().removeAll("status-revenue", "status-expense");
+                getStyleClass().removeAll("status-green", "status-red");
                 setText(null);
 
                 if (!empty && item != null) {
                     setText(item);
 
                     if (item.equals("Revenue")) {
-                        getStyleClass().add("status-revenue");
+                        getStyleClass().add("status-green");
                     } else {
-                        getStyleClass().add("status-expense");
+                        getStyleClass().add("status-red");
                     }
                 }
             }
