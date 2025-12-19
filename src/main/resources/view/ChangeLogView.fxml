@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+
+<VBox xmlns="http://javafx.com/javafx" 
+      xmlns:fx="http://javafx.com/fxml" 
+      fx:controller="budget.frontend.controller.ChangeLogController"
+      spacing="15.0" 
+      styleClass="content-container"
+      stylesheets="@../styles/main.css">
+
+    <HBox alignment="CENTER_LEFT" spacing="10.0">
+        <children>
+            <Label text="Change Log History" styleClass="page-title"/>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <HBox alignment="CENTER_RIGHT" spacing="5.0">
+                <children>
+                    <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../images/filters_icon.png" /> 
+                        </image>
+                    </ImageView>
+                </children>
+            </HBox>
+        </children>
+    </HBox>
+
+    <TableView fx:id="changeLogTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="dateColumn" text="Date &amp; Time" prefWidth="180"/>
+            <TableColumn fx:id="actorColumn" text="User" prefWidth="150"/>
+            <TableColumn fx:id="itemIdColumn" text="Item ID" prefWidth="80" styleClass="center-aligned-cell"/>
+            <TableColumn fx:id="oldValueColumn" text="Old Value (€)" prefWidth="120" styleClass="center-aligned-cell"/>
+            <TableColumn fx:id="newValueColumn" text="New Value (€)" prefWidth="120" styleClass="center-aligned-cell"/>
+        </columns>
+        
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+
+        <placeholder>
+            <Label text="No changes recorded." styleClass="placeholder-label"/>
+        </placeholder>
+    </TableView>
+
+</VBox>

@@ -27,6 +27,13 @@
       "fullName": "Lakis Gavalas",
       "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
       "userRole": "CITIZEN"
+    },
+    {
+      "id": "aab28b53-051b-4d83-b51e-487edd35aafd",
+      "userName": "maroik",
+      "fullName": "Maria Ikonomopoulou",
+      "password": "0e9a2a449067c768e68acad7bc10489045a32ee3130f828712931840072ee0c2",
+      "userRole": "CITIZEN"
     }
   ],
   "governmentMembers": [
@@ -52,6 +59,14 @@
       "userName": "aaa",
       "fullName": "Nancy Patata",
       "password": "c2d60d9baf2f747749973d0022e4eb044360bf5945e2385e8b6c51537cf4bc43",
+      "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "FINANCE",
+      "id": "fa82c130-4de5-42b3-9dd8-7ff199605fc6",
+      "userName": "nancoula",
+      "fullName": "Athanasia Patatoukaki",
+      "password": "91dbd533a6e089b17afbefcde1033b52850a9224a054dbead115e1b0a114b2f0",
       "userRole": "GOVERNMENT_MEMBER"
     }
   ],

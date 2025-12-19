@@ -36,6 +36,6 @@ public final class Constants {
     public static final String TOTAL_BUDGET_VIEW =
                                             "/view/TotalBudgetView.fxml";
     public static final String HOME_VIEW = "/view/HomeView.fxml";
-    public static final String HISTORY_VIEW = "/view/HistoryView.fxml";
+    public static final String HISTORY_VIEW = "/view/ChangeLogView.fxml";
     public static final String STATISTICS_VIEW = "/view/StatisticsView.fxml";
 }

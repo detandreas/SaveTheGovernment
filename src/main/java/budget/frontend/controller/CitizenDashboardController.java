@@ -1,8 +1,8 @@
 package budget.frontend.controller;
 
 import budget.frontend.constants.Constants;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.input.MouseEvent;
 
 /**
  * Controller for the Citizen Dashboard.
@@ -26,10 +26,10 @@ public class CitizenDashboardController extends DashboardController {
      * Handles the click event for the Home menu item.
      * Loads the HomeView in the center section of the dashboard.
      *
-     * @param event the mouse event that was triggered
+     * @param event the action event that was triggered
      */
     @FXML
-    private void handleHome(MouseEvent event) {
+    private void handleHome(ActionEvent event) {
         loadCenterView(Constants.HOME_VIEW);
     }
 
@@ -37,10 +37,10 @@ public class CitizenDashboardController extends DashboardController {
      * Handles the click event for the Total Budget menu item.
      * Loads the TotalBudgetView in the center section of the dashboard.
      *
-     * @param event the mouse event that was triggered
+     * @param event the action event that was triggered
      */
     @FXML
-    private void handleTotalBudget(MouseEvent event) {
+    private void handleTotalBudget(ActionEvent event) {
         loadCenterView(Constants.TOTAL_BUDGET_VIEW);
     }
 
@@ -48,10 +48,10 @@ public class CitizenDashboardController extends DashboardController {
      * Handles the click event for the History menu item.
      * Loads the HistoryView in the center section of the dashboard.
      *
-     * @param event the mouse event that was triggered
+     * @param event the action event that was triggered
      */
     @FXML
-    private void handleHistory(MouseEvent event) {
+    private void handleHistory(ActionEvent event) {
         loadCenterView(Constants.HISTORY_VIEW);
     }
 
@@ -59,10 +59,10 @@ public class CitizenDashboardController extends DashboardController {
      * Handles the click event for the Statistics menu item.
      * Loads the StatisticsView in the center section of the dashboard.
      *
-     * @param event the mouse event that was triggered
+     * @param event the action event that was triggered
      */
     @FXML
-    private void handleStatistics(MouseEvent event) {
+    private void handleStatistics(ActionEvent event) {
         loadCenterView(Constants.STATISTICS_VIEW);
     }
 }
