@@ -1,7 +1,11 @@
 package budget.frontend.controller;
 
 import java.text.NumberFormat;
+import java.util.Comparator;
 import java.util.Locale;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.util.Callback;
 
 import budget.backend.model.domain.ChangeLog;
@@ -31,6 +35,10 @@ public class ChangeLogController {
 
     private final ChangeLogService changeLogService =
         new ChangeLogService(new ChangeLogRepository());
+
+    private ObservableList<ChangeLog> allItems;
+    private FilteredList<ChangeLog> filteredItems;
+    private SortedList<ChangeLog> sortedItems;
 
     /**
      * Initializes the controller by setting up
@@ -142,9 +150,49 @@ public class ChangeLogController {
      * Loads change log history into the table view.
      */
     private void loadData() {
-        // ObservableList from service layer
-        changeLogTable.setItems(
-            changeLogService.getAllChangeLogsSortedByDate()
-        );
+        setupFilters();
+    }
+
+    private void setupFilters() {
+        allItems = changeLogService.getAllChangeLogsSortedByDate();
+        filteredItems = new FilteredList<>(allItems, p -> true);
+        sortedItems = new SortedList<>(filteredItems);
+        changeLogTable.setItems(sortedItems);
+    }
+
+    @FXML
+    private void  handleSortAmountAsc() {
+        sortedItems.setComparator(Comparator.comparingDouble(changeLog -> Math.abs(changeLog.newValue() - changeLog.oldValue())));
+    }
+
+    @FXML
+    private void handleSortAmountDesc() {
+        sortedItems.setComparator(Comparator.comparingDouble(changeLog -> -Math.abs(changeLog.newValue() - changeLog.oldValue())));
+    }
+
+    @FXML
+    private void handleFilterIncreasesOnly() {
+        filteredItems.setPredicate(changeLog -> (changeLog.newValue() - changeLog.oldValue()) > 0);
+    }
+
+    @FXML
+    private void handleFilterDecreasesOnly() {
+        filteredItems.setPredicate(changeLog -> (changeLog.newValue() - changeLog.oldValue()) < 0);
+    }
+
+    @FXML
+    private void handleSortByNameAsc() {
+        sortedItems.setComparator(Comparator.comparing(ChangeLog::actorName));
+    }
+
+    @FXML
+    private void handleSortByNameDesc() {
+        sortedItems.setComparator(Comparator.comparing(ChangeLog::actorName).reversed());
+    }
+
+    @FXML
+    private void handleClearFilters() {
+        filteredItems.setPredicate(p -> true);
+        sortedItems.setComparator(null);
     }
 }
