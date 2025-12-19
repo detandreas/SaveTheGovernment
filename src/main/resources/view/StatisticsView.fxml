@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15.0" styleClass="content-container" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budget.frontend.controller.StatisticsController">
+
+    <HBox alignment="CENTER_LEFT" spacing="10.0">
+        <children>
+            <Label styleClass="page-title" text="Statistics" />
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                <children>
+                    <Label text="Year:" />
+                    <ComboBox fx:id="yearComboBox" prefHeight="45.0" prefWidth="111.0" />
+                    <Label text="Chart Type:" />
+                    <ComboBox fx:id="chartTypeComboBox" prefWidth="150.0" />
+                </children>
+            </HBox>
+        </children>
+    </HBox>
+
+    <GridPane hgap="15.0" vgap="15.0" VBox.vgrow="ALWAYS">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="400.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="400.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="300.0" vgrow="ALWAYS" />
+            <RowConstraints minHeight="300.0" vgrow="ALWAYS" />
+        </rowConstraints>
+
+        <!-- Top Left: Revenue vs Expense Pie Chart -->
+        <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <children>
+                <PieChart fx:id="revenueExpensePieChart" title="Revenue vs Expense Distribution" VBox.vgrow="ALWAYS" />
+            </children>
+        </VBox>
+
+        <!-- Top Right: Revenue/Expense Trend Line Chart -->
+        <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <children>
+                <LineChart fx:id="revenueExpenseLineChart" prefWidth="582.0" title="Revenue &amp; Expense Trends" VBox.vgrow="ALWAYS">
+                    <xAxis>
+                        <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Amount (€)" lowerBound="7.5E12" minorTickCount="0" side="LEFT" tickUnit="5.0E10" upperBound="2.0E11" />
+                    </yAxis>
+                </LineChart>
+            </children>
+        </VBox>
+
+        <!-- Bottom Left: Net Result Line Chart -->
+        <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <children>
+                <LineChart fx:id="netResultLineChart" title="Net Result Trend" VBox.vgrow="ALWAYS">
+                    <xAxis>
+                        <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Amount (€)" />
+                    </yAxis>
+                </LineChart>
+            </children>
+        </VBox>
+
+        <!-- Bottom Right: Top Budget Items Bar Chart -->
+        <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <children>
+                <BarChart fx:id="topItemsBarChart" title="Top Budget Items" VBox.vgrow="ALWAYS">
+                    <xAxis>
+                        <CategoryAxis label="Budget Item" tickLabelRotation="45.0" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Amount (€)" />
+                    </yAxis>
+                </BarChart>
+            </children>
+        </VBox>
+    </GridPane>
+
+</VBox>
