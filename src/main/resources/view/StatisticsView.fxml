@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="15.0" styleClass="content-container" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budget.frontend.controller.StatisticsController">
+<VBox spacing="15.0" styleClass="content-container" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budget.frontend.controller.StatisticsController">
 
     <HBox alignment="CENTER_LEFT" spacing="10.0">
         <children>
@@ -58,7 +58,7 @@
                         <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis label="Amount (€)" lowerBound="7.5E12" minorTickCount="0" side="LEFT" tickUnit="5.0E10" upperBound="2.0E11" />
+                        <NumberAxis label="Amount (€)" lowerBound="2.0E11" minorTickCount="0" side="LEFT" tickUnit="5.0E10" upperBound="7.5E12" />
                     </yAxis>
                 </LineChart>
             </children>
