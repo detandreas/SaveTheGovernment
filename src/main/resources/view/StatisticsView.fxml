@@ -11,7 +11,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox spacing="15.0" styleClass="content-container" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budget.frontend.controller.StatisticsController">
@@ -39,32 +38,33 @@
             <ColumnConstraints hgrow="ALWAYS" minWidth="400.0" />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints minHeight="300.0" vgrow="ALWAYS" />
-            <RowConstraints minHeight="300.0" vgrow="ALWAYS" />
+            <RowConstraints minHeight="250.0" vgrow="ALWAYS" />
+            <RowConstraints minHeight="250.0" vgrow="ALWAYS" />
+            <RowConstraints minHeight="250.0" vgrow="ALWAYS" />
         </rowConstraints>
 
-        <!-- Top Left: Revenue vs Expense Pie Chart -->
+        <!-- Row 0, Column 0: Revenue vs Expense Pie Chart -->
         <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
             <children>
                 <PieChart fx:id="pieChart" title="Revenue vs Expense Distribution" VBox.vgrow="ALWAYS" />
             </children>
         </VBox>
 
-        <!-- Top Right: Revenue/Expense Trend Line Chart -->
+        <!-- Row 0, Column 1: Revenue/Expense Trend Line Chart -->
         <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <children>
-                <LineChart fx:id="revenueExpenseLineChart" prefWidth="582.0" title="Revenue &amp; Expense Trends" VBox.vgrow="ALWAYS">
+                <LineChart fx:id="revenueExpenseLineChart" title="Revenue &amp; Expense Trends" VBox.vgrow="ALWAYS">
                     <xAxis>
                         <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis label="Amount (€)" lowerBound="7.5E12" minorTickCount="0" side="LEFT" tickUnit="5.0E10" upperBound="2.0E11" />
+                        <NumberAxis label="Amount (€)" />
                     </yAxis>
                 </LineChart>
             </children>
         </VBox>
 
-        <!-- Bottom Left: Net Result Line Chart -->
+        <!-- Row 1, Column 0: Net Result Line Chart -->
         <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
             <children>
                 <LineChart fx:id="netResultLineChart" title="Net Result Trend" VBox.vgrow="ALWAYS">
@@ -78,7 +78,7 @@
             </children>
         </VBox>
 
-        <!-- Bottom Right: Top Budget Items Bar Chart -->
+        <!-- Row 1, Column 1: Top Budget Items Bar Chart -->
         <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <children>
                 <BarChart fx:id="topItemsBarChart" title="Top Budget Items" VBox.vgrow="ALWAYS">
@@ -89,6 +89,34 @@
                         <NumberAxis label="Amount (€)" />
                     </yAxis>
                 </BarChart>
+            </children>
+        </VBox>
+
+        <!-- Row 2, Column 0: Placeholder for future chart -->
+        <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <children>
+                <LineChart fx:id="trendLineChart1" title="Top Revenue Items Trend" VBox.vgrow="ALWAYS">
+                    <xAxis>
+                        <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Amount (€)" />
+                    </yAxis>
+                </LineChart>
+            </children>
+        </VBox>
+
+        <!-- Row 2, Column 1: Placeholder for future chart -->
+        <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <children>
+                <LineChart fx:id="trendLineChart2" title="Top Expense Items Trend" VBox.vgrow="ALWAYS">
+                    <xAxis>
+                        <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Amount (€)" />
+                    </yAxis>
+                </LineChart>
             </children>
         </VBox>
     </GridPane>

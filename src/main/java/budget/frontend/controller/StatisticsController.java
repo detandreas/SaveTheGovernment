@@ -23,7 +23,7 @@ import javafx.scene.chart.XYChart.Series;
  * Handles display of various budget statistics and charts.
  */
 public class StatisticsController {
-
+    
     @FXML private ComboBox<Integer> yearComboBox;
     @FXML private ComboBox<String> chartTypeComboBox;
 
@@ -31,6 +31,8 @@ public class StatisticsController {
     @FXML private LineChart<Number, Number> revenueExpenseLineChart;
     @FXML private LineChart<Number, Number> netResultLineChart;
     @FXML private BarChart<String, Number> topItemsBarChart;
+    @FXML private LineChart<Number, Number> trendLineChart1;
+    @FXML private LineChart<Number, Number> trendLineChart2;
 
     private final BudgetService budgetService =
                                 new BudgetService(new BudgetRepository());
