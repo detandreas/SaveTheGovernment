@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="15.0" styleClass="content-container" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budget.frontend.controller.StatisticsController">
+<VBox spacing="15.0" styleClass="content-container" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budget.frontend.controller.StatisticsController">
 
     <HBox alignment="CENTER_LEFT" spacing="10.0">
         <children>
@@ -67,35 +67,32 @@
         <!-- Row 0, Column 1: Revenue/Expense Trend Line Chart -->
         <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <children>
-                <LineChart fx:id="revenueExpenseLineChart" minHeight="420.0" title="Revenue &amp; Expense Trends" VBox.vgrow="ALWAYS">
+                <LineChart fx:id="revenueExpenseLineChart" prefWidth="582.0" title="Revenue &amp; Expense Trends" VBox.vgrow="ALWAYS">
                     <xAxis>
                         <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis label="Amount (€)" />
+                        <NumberAxis label="Amount (€)" lowerBound="2.0E11" minorTickCount="0" side="LEFT" tickUnit="5.0E10" upperBound="7.5E12" />
                     </yAxis>
                 </LineChart>
             </children>
         </VBox>
 
-        <!-- Row 1, Column 0: Net Result Line Chart -->
+        <!-- Bottom Left: Net Result Line Chart -->
         <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
             <children>
-                <LineChart fx:id="netResultLineChart" minHeight="420.0" title="Net Result Trend" VBox.vgrow="ALWAYS">
+                <LineChart fx:id="netResultLineChart" title="Net Result Trend" VBox.vgrow="ALWAYS">
                     <xAxis>
                         <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
                     </xAxis>
                     <yAxis>
                         <NumberAxis label="Amount (€)" />
                     </yAxis>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
                 </LineChart>
             </children>
         </VBox>
 
-        <!-- Row 1, Column 1: Top Budget Items Bar Chart -->
+        <!-- Bottom Right: Top Budget Items Bar Chart -->
         <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <children>
                 <BarChart fx:id="topItemsBarChart" minHeight="420.0" title="Top Budget Items" VBox.vgrow="ALWAYS">
