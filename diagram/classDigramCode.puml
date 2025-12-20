@@ -1,0 +1,515 @@
+@startuml
+skinparam linetype ortho
+skinparam nodesep 80
+skinparam ranksep 80
+skinparam rankdir TB
+skinparam {
+    DefaultFontSize 16
+    ClassFontSize 20
+    ClassFontStyle bold
+    Nodesep 100
+    Ranksep 100
+}
+
+' ** 1. Core Definitions Package (Enums) (budget.backend.model.enums) **
+package "main.budget.backend.model.enums" {
+    enum Ministry {
+        HEALTH
+        EDUCATION
+        DEFENSE
+        FINANCE
+        INFRASTRUCTURE
+        FOREIGN_AFAIRS
+        INTERIOR
+        DEVELOPMENT
+        LABOUR
+        JUSTICE
+        AGRICULTURE
+    }
+    enum UserRole {
+      CITIZEN
+      GOVΕRΝΜΕΝΤ_MEMBER
+      PRIME_MINISTER
+    }
+    enum Status {
+      PENDING
+      APPROVED
+      REJECTED
+    }
+}
+
+' ** 2. User Sub-Package (budget.backend.model.domain.user) **
+package "main.budget.backend.model.domain.user" {
+
+    abstract class User {
+      - id: UUID
+      - userName: String
+      - fullName: String
+      - password: String
+      - userRole: UserRole
+      ..
+      + {abstract} canEdit(BudgetItem): boolean
+      + {abstract} canApprove(): boolean
+      + {abstract} canSubmitChangeRequest(): boolean
+    }
+    
+    class Citizen {
+      - userRole: UserRole = CITIZEN
+      ..
+      + canEdit(BudgetItem): false
+      + canApprove(): false
+      + canSubmitChangeRequest(): false
+    }
+
+    class GovernmentMember {
+      - ministry: Ministry
+      - userRole: UserRole = GOVERNMENT_MEMBER
+      ..
+      + canEdit(BudgetItem): (ministry == FINANCE)
+      + canApprove(): false
+      + canSubmitChangeRequest(): true
+    }
+
+    class PrimeMinister << Singleton >> {
+      - userRole: UserRole = PRIME_MINISTER
+      ..
+      {static} - instance: PrimeMinister
+      {static} + getInstance(...): PrimeMinister
+      ..
+      + canEdit(BudgetItem): false
+      + canApprove(): true
+      + canSubmitChangeRequest(): false
+    }
+}
+
+' ** 3. Main Domain Package (budget.backend.model.domain) **
+package "main.budget.backend.model.domain" {
+    
+    class BudgetItem {
+      - id: int
+      - year: int
+      - name: String
+      - value: double
+      - isRevenue: boolean
+      - ministries: List<Ministry>
+    }
+
+    class Budget {
+      - items: List<BudgetItem>
+      - year: int
+      - totalRevenue: double
+      - totalExpense: double
+      - netResult: double
+    }
+    
+    note right of Budget
+      **Plain Old Java Object (POJO)**.
+      Used as a Data Transfer Object (DTO).
+    end note
+    
+    class PendingChange {
+      - id: int
+      - budgetItemId: int
+      - budgetItemYear: int
+      - budgetItemName: String
+      - requestByName: String
+      - requestById: UUID
+      - oldValue: double
+      - newValue: double
+      - status: Status = PENDING
+      -submittedDate: String
+      ..
+      + reject(): void
+      + approve(): void
+    }
+    
+    record ChangeLog {
+      - id: int
+      - budgetItemId: int
+      - oldValue: double
+      - newValue: double
+      - submittedDate: String
+      - actorName: String
+      - actorId: UUID
+    }
+}
+
+' ** 4. Data Access Layer (budget.backend.repository) **
+package "main.budget.backend.repository" {
+    interface "GenericInterfaceRepository<T, ID>" {
+        .. CRUD & Query Methods ..
+        + load(): List<T>
+        + save(entity: T): void
+        + delete(entity: T): void
+        + findById(id: ID): Optional<T>
+        + existsById(id: ID): boolean
+    }
+    class BudgetRepository {
+        {static} - GSON: Gson
+        {static} - LOGGER: Logger
+        {static} - LOCK: Object
+        .. Public Methods (Override/Implement) ..
+        + load(): List<Budget>
+        + save(budget: Budget): void
+        + delete(budget: Budget): void
+        + findById(year: Integer): Optional<Budget>
+        + existsById(year: Integer): boolean
+        .. Public Methods (Extra Functionality) ..
+        + existsByName(itemName: String, year: int): boolean
+        + existsByItemId(itemId: int, year: int): boolean
+        + findItemById(id: int, year: int): Optional<BudgetItem>
+        .. Private Persistence Methods ..
+        - saveToFile(budgets: List<Budget>): void
+        - findIndexByYear(budgets: List<Budget>, year: int): OptionalInt
+
+    }
+    class ChangeLogRepository {
+        {static} - GSON: Gson
+        {static} - LOGGER: Logger
+        {static} - LOCK: Object
+        .. Public Methods (Override/Implement) ..
+        + load(): List<ChangeLog>
+        + save(entity: ChangeLog): void
+        + delete(entity: ChangeLog): void
+        + findById(id: Integer): OptionalInt
+        + existsById(id: Integer): boolean
+        .. Private Persistence Methods ..
+        - findIndexById(changes: List<ChangeLog>, id: int): OptionalInt
+        - saveListToFile(logs: List<ChangeLog>): void
+        - generateId(logs: List<ChangeLog>): int
+    }
+    class ChangeRequestRepository {
+        {static} - GSON: Gson
+        {static} - LOGGER: Logger
+        {static} - LOCK: Object
+        .. Public Methods (Override/Implement) ..
+        + load(): List<PendingChange>
+        + save(change: PendingChange): void
+        + delete(change: PendingChange): void
+        + findById(id: Integer): Optional<PendingChange>
+        + existsById(id: Integer): boolean
+        .. Private Persistence Methods ..
+        - findIndexById(changes: List<PendingChange>, id: int): OptionalInt
+        - saveToFile(pendingChanges: List<PendingChange>): void
+    }
+    
+    class UserRepository {
+        {static} - GSON: Gson
+        {static} - LOGGER: Logger
+        {static} - LOCK: Object
+        .. Public Methods (Override/Implement) ..
+        + load(): List<User>
+        + save(user: User): void
+        + delete(user: User): void
+        + findById(id: UUID): Optional<User>
+        + existsById(id: UUID): boolean
+        .. Public Methods (Extra Functionality) ..
+        + findByUsername(username: String): Optional<User>
+        + usernameExists(username: String): boolean
+        + primeMinisterExists(): boolean
+        .. Private Persistence Methods ..
+        - loadCitizens(json: JsonObject): List<Citizen>
+        - loadGovernmentMembers(json: JsonObject): List<GovernmentMember>
+        - loadPrimeMinister(json: JsonObject): PrimeMinister
+        - findIndexById(users: List<User>, id: UUID): OptionalInt
+        - saveToFile(users: List<User>): void
+    }
+}
+
+' ** 5. Business Logic Layer (budget.backend.service) **
+package "main.budget.backend.service" {
+    class BudgetService {
+        - budgetRepository: BudgetRepository
+        .. Public Methods ..
+        + recalculateBudgetTotals(budget: Budget): void
+        .. Table Data Methods ..
+        + getBudgetItemsForTable(year: int): ObservableList<BudgetItem>
+        + getBudgetItemsSortedByValue(year: int): ObservableList<BudgetItem>
+        .. Chart Data Methods ..
+        + getRevenueExpenseTrendSeries(start: int, end: int): Map<String, Series>
+        + getNetResultSeries(start: int, end: int): Series
+        + getTopBudgetItemsSeries(year: int, topN: int, isRev: bool): Series
+        + getYearComparisonSeries(y1: int, y2: int, isRev: bool): Map<String, Series>
+        + getRevenueExpensePieData(year: int): ObservableList<PieChart.Data>
+        .. Private Persistence Methods ..
+        - calculateTotalRevenue(budget: Budget): double
+        - calculateTotalExpense(budget: Budget): double
+        - validateYear(year: int): void
+        - validateYearRange(start: int, end: int): void
+        
+    }
+    class BudgetValidationService {
+        - budgetRepository: BudgetRepository
+        {static} - PROTECTED_BUDGET_NAMES: Set<String>
+        .. Public Validation Entry Points ..
+        + validateBudgetItemCreation(newItem: BudgetItem, budget: Budget): void
+        + validateBudgetItemDeletion(item: BudgetItem, budget: Budget): void
+        + validateBudgetItemUpdate(original: BudgetItem, updated: BudgetItem): void
+        + validateDataIntegrity(item: BudgetItem): void
+        .. Private Validation Logic ..
+        - validateUniqueId(id: int, year: int): void
+        - validateUniqueName(name: String, year: int): void
+        - validateNonNegativeAmount(value: double): void
+        - validateMinistry(ministries: List<Ministry>): void
+        - validateBalanceChangeLimit(newItem: BudgetItem, budget: Budget): void
+        - validateNotProtectedItem(item: BudgetItem): void
+        - validateEditChangeLimit(original: BudgetItem, updated: BudgetItem): void
+        .. Private Calculation Helpers ..
+        - calculateNewNetResult(budget: Budget, newItem: BudgetItem): double
+        - calculateChangePercent(finalVal: double, startVal: double): double
+    }
+    class ChangeLogService {
+        - changeLogRepository: ChangeLogRepository
+        {static} - FORMATTER: DateTimeFormatter
+        .. Public Business Logic ..
+        + recordChange(change: PendingChange, user: User): void
+        + getAllChangeLogsSortedByDate(): ObservableList<ChangeLog>
+        .. Private Validation ..
+        - validateRecordChangeInputs(change: PendingChange, user: User): void
+    }
+    class ChangeRequestService {
+        - changeRequestRepository: ChangeRequestRepository
+        - budgetRepository: BudgetRepository
+        - userRepository: UserRepository
+        - budgetValidationService: BudgetValidationService
+        - changeLogService: ChangeLogService
+        - budgetService: BudgetService
+        .. Public Business Logic ..
+        + submitChangeRequest(user: User, item: BudgetItem, newValue: double): void
+        + approveRequest(pm: PrimeMinister, change: PendingChange): void
+        + rejectRequest(pm: PrimeMinister, change: PendingChange): void
+        .. Private Request Logic ..
+        - updateChangeStatus(pm: PrimeMinister, change: PendingChange, newStatus: Status): void
+        - updateExistingBudgetItem(item: BudgetItem, val: double, budget: Budget): void
+        - processApprovedChange(change: PendingChange, budget: Budget, user: User): void
+        .. Private Validation Logic ..
+        - validateBudgetExists(year: int): void
+        - validateBudgetItemChange(existing: BudgetItem, updated: BudgetItem): void
+        - validatePendingChange(change: PendingChange): void
+        - validateRequestStatus(change: PendingChange): void
+        - validatePrimeMinister(pm: PrimeMinister): void
+        .. Private Object Creation ..
+        - createUpdatedItem(existing: BudgetItem, newValue: double): BudgetItem
+        - createPendingChange(...): PendingChange
+        .. Private Helpers ..
+        - findBudget(year: int): Budget
+        - findUser(userId: UUID): User
+        - findBudgetItem(budget: Budget, itemId: int): Optional<BudgetItem>
+    }
+    class InputValidationService {
+        .. Public Validation Methods  ..
+        + validateNewUser(u: User): void
+        + validateUserUpdate(u: User): void
+        + validateRoleChange(from: UserRole, to: UserRole): void
+    }
+    class UserAuthenticationService {
+        - userRepository: UserRepository
+        - currentUser: User
+        {static} - HEX_FORMATTER: HexFormat
+        {static} - DUMMY_SHA256: byte[]
+        .. Public Session Managment Methods  ..
+        + login (username: String, password: String): void
+        + logout (): void
+        + isAuthenticated(): boolean
+        + signUp(...): void
+    }
+    class UserAuthorizationService {
+        .. Strict Authorization Enforcement ..
+        + checkCanUserSubmitRequest(user: User, item: BudgetItem): void
+        + checkCanUserApproveRequests(user: User): void
+        + checkCanUserEditBudgetItem (user: User, item: BudgetItem): void
+        .. Boolean Authorization Queries (UI/Logic Helpers) ..
+        + canUserSubmitRequest(user: User, item: BudgetItem): boolean
+        + canUserApproveRequests(user:User): boolean
+        + canUserEditBudgetItem(user: User, item: BudgetItem): boolean
+    }
+    
+}
+
+' ** 6. Utility Package (budget.backend.util) **
+package "main.budget.backend.util" {
+    class PathsUtil {
+        {static} - LOGGER: Logger
+        {static} - DATA_DIR_PROPERTY: String = "budget.data.dir"
+        .. File Names ..
+        {static} - BUDGET_FILE: String = "budget.json"
+        {static} - BILL_MINISTRY_MAP_FILE: String = "bill-ministry-map.json"
+        {static} - USERS_FILE: String = "users.json"
+        {static} - PENDING_CHANGES_FILE: String = "pending-changes.json"
+        {static} - BUDGET_CHANGES_FILE: String = "budget-changes.json"
+        .. Resources ..
+        {static} + BUDGET_RESOURCE: String
+        {static} + USERS_RESOURCE: String
+        {static} + PENDING_CHANGES_RESOURCE: String
+        .. Internal Path Resolution ..
+        {static} + resolveDataFile(fileName: String): Path
+        {static} + openDataStream(fileName: String, resourcePath: String): InputStream
+    }
+    
+    note right of PathsUtil
+      **Resource Utility Class**.
+      All resource-specific getters exist
+      but are not explicitly listed for brevity.
+    end note
+    
+    class PasswordUtils {
+        .. Security Logic Uses **SHA-256** hashing ..
+        {static} + hashPassword(password: String): String
+    }
+    
+    class InputValidator {
+        {static} - MIN_FULL_NAME_LENGTH: int = 7
+        {static} - MIN_PASSWORD_LENGTH: int = 8
+        .. String Validation ..
+        {static} + isUUID(s: String): boolean
+        {static} + isUserName(userName: String): boolean
+        {static} + isFullName(fullName: String): boolean
+        {static} + isPasswordStrong(pw: String): boolean
+        .. Object & Enum Validation ..
+        {static} + isNonNull(o: Object): boolean
+        {static} + isValidUserRole(role: UserRole): boolean
+    }
+    
+    note right of InputValidator
+      **Input Filtering Utility**.
+      Uses **Regular Expressions** to enforce 
+      data formats before processing.
+    end note
+    
+}
+
+package "main.resources" {
+    class Users << (F, firebrick) JSON Data >>
+    class Budget <<(F, firebrick) JSON Data >>
+    class PendingChanges <<(F, firebrick) JSON Data >>
+    class BudgetChanges <<(F, firebrick) JSON Data >>
+    class BillMinistry <<(F, firebrick) JSON Data >>
+} 
+
+' ====================================================================
+' ** Relationships **
+' ====================================================================
+
+' A. Domain Relationships (Conceptual Relationships)
+
+' 1. User Inheritance Relationships
+User <|-- Citizen
+User <|-- GovernmentMember
+User <|-- PrimeMinister
+
+' 2. Structural Relationships (Composition/Association)
+' A BudgetItem is related to one or more Ministries.
+BudgetItem "0..*" *-- "1..*" Ministry : ministries
+
+' 3. Workflow/Change Associations
+' A PendingChange is associated with a specific BudgetItem.
+PendingChange "0..*" --> "1" BudgetItem : targets item
+' The ChangeLog records a change in a BudgetItem.
+ChangeLog "0..*" --> "1" BudgetItem : logs item
+' The PendingChange is requested by a User.
+PendingChange "0..*" --> "1" User : requested by requestById
+
+' 4. Dependencies
+PendingChange ..> Status : uses
+User ..> UserRole : uses
+GovernmentMember ..> Ministry : uses
+
+' B. Architectural Dependencies (Layered Dependencies)
+
+' 1. The Business Logic Layer (Service) calls the Data Access Layer (Repository)
+"main.budget.backend.service" ..> "main.budget.backend.repository" : accesses / calls
+' 2. The Business Logic Layer (Service) manipulates the Domain Objects
+"main.budget.backend.service" ..> "main.budget.backend.model.domain" : manipulates / returns
+' 3. The Data Access Layer (Repository) knows and persists the Domain Objects
+"main.budget.backend.repository" ..> "main.budget.backend.model.domain" : persists / loads
+' 4. The concrete implementation (UserRepository) depends on the Generic Type (Generic Interface)
+"GenericInterfaceRepository<T, ID>" <|.. BudgetRepository : implements
+"GenericInterfaceRepository<T, ID>" <|.. ChangeLogRepository : implements
+"GenericInterfaceRepository<T, ID>" <|.. ChangeRequestRepository : implements
+"GenericInterfaceRepository<T, ID>" <|.. UserRepository : implements
+UserRepository ..> Users : reads/writes
+BudgetRepository ..> "main.resources.Budget" : reads/writes
+ChangeLogRepository ..> BudgetChanges : reads/writes
+ChangeRequestRepository ..> PendingChanges : reads/writes
+BudgetService ..> "main.resources.BillMinistry": reads
+
+' C. Service Layer Dependencies (Detailed Logic Flow)
+
+' 1. Workflow Orchestration
+' The ChangeRequestService acts as the central coordinator for the modification process.
+' It delegates specific tasks: checking business rules, recording history, and updating totals.
+ChangeRequestService --> BudgetValidationService : delegates validation
+ChangeRequestService --> ChangeLogService : triggers logging
+ChangeRequestService --> BudgetService : triggers recalc
+
+' 2. Security Delegation
+' The UserAuthenticationService keeps logic clean by offloading low-level security tasks.
+' It relies on Utility classes for password hashing and input format verification.
+UserAuthenticationService ..> PasswordUtils : uses hashing
+UserAuthenticationService ..> InputValidator : validates credentials
+
+' 3. Access Control & Policy Enforcement
+' The UserAuthorizationService acts as a stateless guard.
+' It inspects Domain Objects against UserRoles to grant or deny access without modifying data.
+UserAuthorizationService ..> User : inspects permissions
+UserAuthorizationService ..> BudgetItem : checks ownership
+UserAuthorizationService ..> UserRole : validates role
+
+' D. Utility Dependencies 
+
+' 1. PathsUtil: Connects Repositories with JSON (Resources)
+"main.budget.backend.repository" ..> "main.budget.backend.util.PathsUtil" : uses for file paths
+' 2. PasswordUtils: For hashing during login/signup
+"main.budget.backend.service.UserAuthenticationService" ..> "main.budget.backend.util.PasswordUtils" : uses for hashing
+' 3. InputValidator: For pre-check of the data (Regex)
+"main.budget.backend.service.UserAuthenticationService" ..> "main.budget.backend.util.InputValidator" : validates input
+"main.budget.backend.service.InputValidationService" ..> "main.budget.backend.util.InputValidator" : delegates basic checks
+' Checks validation of UserRole
+"main.budget.backend.util.InputValidator" ..> "main.budget.backend.model.enums.UserRole" : validates
+
+' ====================================================================
+' ** AGGRESSIVE VERTICAL STACKING (Force Narrow Layout) **
+' ====================================================================
+
+' 1. Στοίχιση των ENUMS (Κάθετα)
+main.budget.backend.model.enums.Ministry -[hidden]down-> main.budget.backend.model.enums.UserRole
+main.budget.backend.model.enums.UserRole -[hidden]down-> main.budget.backend.model.enums.Status
+
+' 2. Στοίχιση των DOMAIN Objects (Κάθετα)
+main.budget.backend.model.domain.BudgetItem -[hidden]down-> main.budget.backend.model.domain.Budget
+main.budget.backend.model.domain.Budget -[hidden]down-> main.budget.backend.model.domain.PendingChange
+main.budget.backend.model.domain.PendingChange -[hidden]down-> main.budget.backend.model.domain.ChangeLog
+
+' 3. Στοίχιση των USERS (Κάθετα αντί για δέντρο)
+main.budget.backend.model.domain.user.Citizen -[hidden]down-> main.budget.backend.model.domain.user.GovernmentMember
+main.budget.backend.model.domain.user.GovernmentMember -[hidden]down-> main.budget.backend.model.domain.user.PrimeMinister
+
+' 4. Στοίχιση των SERVICES
+main.budget.backend.service.BudgetService -[hidden]down-> main.budget.backend.service.ChangeRequestService
+main.budget.backend.service.ChangeRequestService -[hidden]down-> main.budget.backend.service.ChangeLogService
+main.budget.backend.service.ChangeLogService -[hidden]down-> main.budget.backend.service.UserAuthenticationService
+main.budget.backend.service.UserAuthenticationService -[hidden]down-> main.budget.backend.service.UserAuthorizationService
+
+' 5. Στοίχιση των REPOSITORIES
+main.budget.backend.repository.BudgetRepository -[hidden]down-> main.budget.backend.repository.ChangeLogRepository
+main.budget.backend.repository.ChangeLogRepository -[hidden]down-> main.budget.backend.repository.ChangeRequestRepository
+main.budget.backend.repository.ChangeRequestRepository -[hidden]down-> main.budget.backend.repository.UserRepository
+
+' 7. Στοίχιση των UTIL Classes 
+main.budget.backend.util.PathsUtil -[hidden]down-> main.budget.backend.util.PasswordUtils
+main.budget.backend.util.PasswordUtils -[hidden]down-> main.budget.backend.util.InputValidator
+
+' 8. Στοίχιση των RESOURCES 
+main.resources.Users -[hidden]down-> main.resources.Budget
+main.resources.Budget -[hidden]down-> main.resources.PendingChanges
+main.resources.PendingChanges -[hidden]down-> main.resources.BudgetChanges
+main.resources.BudgetChanges -[hidden]down-> main.resources.BillMinistry
+
+' 9. Επαναφορά της Ραχοκοκαλιάς Πακέτων
+main.budget.backend.model.enums -[hidden]down-> main.budget.backend.model.domain.user
+main.budget.backend.model.domain.user -[hidden]down-> main.budget.backend.model.domain
+main.budget.backend.model.domain -[hidden]down-> main.budget.backend.service
+main.budget.backend.service -[hidden]down-> main.budget.backend.repository
+main.budget.backend.repository -[hidden]down-> main.budget.backend.util
+
+@enduml
