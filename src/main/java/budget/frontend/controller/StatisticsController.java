@@ -26,7 +26,7 @@ public class StatisticsController {
     @FXML private ComboBox<Integer> yearComboBox;
     @FXML private ComboBox<String> chartTypeComboBox;
 
-    @FXML private PieChart revenueExpensePieChart;
+    @FXML private PieChart pieChart;
     @FXML private LineChart<Number, Number> revenueExpenseLineChart;
     @FXML private LineChart<Number, Number> netResultLineChart;
     @FXML private BarChart<String, Number> topItemsBarChart;
@@ -62,13 +62,11 @@ public class StatisticsController {
 
         // Setup chart type combo box (for future use)
         ObservableList<String> chartTypes = FXCollections.observableArrayList(
-            "All Charts",
-            "Revenue vs Expense",
-            "Trends",
-            "Top Items"
+            "Top Items",
+            "Budget Results"
         );
         chartTypeComboBox.setItems(chartTypes);
-        chartTypeComboBox.setValue("All Charts");
+        chartTypeComboBox.setValue("Top Items");
         chartTypeComboBox.setOnAction(e -> loadAllCharts());
     }
 
@@ -98,7 +96,7 @@ public class StatisticsController {
      * @param year the year to display data for
      */
     private void loadRevenueExpensePieChart(int year) {
-        revenueExpensePieChart.getData().clear();
+        pieChart.getData().clear();
 
         try {
             ObservableList<PieChart.Data> pieData =
@@ -124,9 +122,9 @@ public class StatisticsController {
                 );
             }
 
-            revenueExpensePieChart.setData(pieData);
+            pieChart.setData(pieData);
         } catch (IllegalArgumentException e) {
-            revenueExpensePieChart.getData().clear();
+            pieChart.getData().clear();
         }
     }
 
@@ -229,11 +227,23 @@ public class StatisticsController {
         }
     }
 
+    private void loadTop5Pie(int year, boolean isRevenue) {
+        ObservableList<PieChart.Data> pieData =
+                                budgetService.getBudgetItemsforPie(year, isRevenue);
+
+        pieChart.setData(pieData);
+        pieChart.setTitle(isRevenue ?
+                                    "Top revenue budget items" :
+                                    "Top expense budget items"
+                                    );
+        
+    }
+
     /**
      * Clears all charts when data is not available.
      */
     private void clearAllCharts() {
-        revenueExpensePieChart.getData().clear();
+        pieChart.getData().clear();
         revenueExpenseLineChart.getData().clear();
         netResultLineChart.getData().clear();
         topItemsBarChart.getData().clear();

@@ -111,6 +111,53 @@ public class BudgetService {
                             .sum();
     }
 
+    public ObservableList<PieChart.Data> getBudgetItemsforPie(
+                                                            int year,
+                                                            boolean isRevenue
+    ) {
+        Series<String, Number> series =
+                                getTopBudgetItemsSeries(year, 5, isRevenue);
+        Optional<Budget> budgetOpt = budgetRepository.findById(year);
+
+        if (budgetOpt.isEmpty()) {
+            throw new IllegalArgumentException("Budget for year " + year + "doesn't exist");
+        }
+        Budget budget = budgetOpt.get();
+
+        double total;
+        if (isRevenue) {
+            total = calculateTotalRevenue(budget);
+        } else {
+            total = calculateTotalExpense(budget);
+        }
+
+        double topSum = series.getData().stream()
+                        .mapToDouble(data -> data.getYValue().doubleValue())
+                        .sum();
+        double others = total - topSum;
+
+        ObservableList<PieChart.Data> pieData =
+                                        FXCollections.observableArrayList();
+        double pct;
+        for (var data : series.getData()) {
+            pct = (data.getYValue().doubleValue() / total) * 100;
+
+            pieData.add(
+                new PieChart.Data(
+                    data.getXValue() + "/n" + pct + "%",
+                    data.getYValue().doubleValue()
+                ));
+        }
+
+        if (others > Limits.SMALL_NUMBER) {
+            pieData.add(new PieChart.Data(
+                "Others",
+                others
+            ));
+        }
+        return pieData;
+    }
+
     //  Μέθοδοι για Πίνακες
 
     /**
