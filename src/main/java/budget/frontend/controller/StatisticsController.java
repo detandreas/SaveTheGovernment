@@ -1,11 +1,14 @@
 package budget.frontend.controller;
+
+import budget.frontend.constants.Constants;
+import budget.backend.repository.BudgetRepository;
+import budget.backend.service.BudgetService;
+import budget.constants.Limits;
+
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Map;
 
-import budget.backend.repository.BudgetRepository;
-import budget.backend.service.BudgetService;
-import budget.constants.Limits;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -40,7 +43,6 @@ public class StatisticsController {
     private static final int CURRENT_YEAR = 2026;
     private static final int DEFAULT_START_YEAR = 2019;
     private static final int DEFAULT_END_YEAR = 2027;
-    private static final int TOP_N_ITEMS = 5;
 
     /**
      * Initializes the controller by setting up combo boxes and loading charts.
@@ -62,40 +64,16 @@ public class StatisticsController {
         }
         yearComboBox.setItems(years);
         yearComboBox.setValue(CURRENT_YEAR);
-        yearComboBox.setOnAction(e -> {
-            String selectedType = chartTypeComboBox.getValue();
-            if (selectedType != null) {
-                switch (selectedType) {
-                    case "Top Items" ->
-                        loadTopItems();
-                    case "Budget Results" ->
-                        loadBudgetCharts();
-                    default ->
-                        loadTopItems();
-                }
-            }
-        });
+        yearComboBox.setOnAction(e -> loadSelectedType());
 
-        // Setup chart type combo box (for future use)
+        // Setup chart type combo box
         ObservableList<String> chartTypes = FXCollections.observableArrayList(
             "Top Items",
             "Budget Results"
         );
         chartTypeComboBox.setItems(chartTypes);
         chartTypeComboBox.setValue("Top Items");
-        chartTypeComboBox.setOnAction(e -> {
-            String selectedType = chartTypeComboBox.getValue();
-            if (selectedType != null) {
-                switch (selectedType) {
-                    case "Top Items" ->
-                        loadTopItems();
-                    case "Budget Results" ->
-                        loadBudgetCharts();
-                    default ->
-                        loadTopItems();
-                }
-            }
-        });
+        chartTypeComboBox.setOnAction(e -> loadSelectedType());
 
         // Setup category combo box
         ObservableList<String> categories = FXCollections.observableArrayList(
@@ -130,6 +108,27 @@ public class StatisticsController {
         } catch (IllegalArgumentException e) {
             pieChart.getData().clear();
             pieChart.setTitle("No data available");
+        }
+    }
+
+    /**
+     * Loads the appropriate charts based on the selected chart type
+     * from the chart type combo box.
+     * If "Top Items" is selected, loads the top items view.
+     * If "Budget Results" is selected, loads the budget charts view.
+     * Defaults to loading top items if the selection is null or unrecognized.
+     */
+    private void loadSelectedType() {
+        String selectedType = chartTypeComboBox.getValue();
+        if (selectedType != null) {
+            switch (selectedType) {
+                case "Top Items" ->
+                    loadTopItems();
+                case "Budget Results" ->
+                    loadBudgetCharts();
+                default ->
+                    loadTopItems();
+            }
         }
     }
 
@@ -428,7 +427,7 @@ public class StatisticsController {
                                                 year,
                                                 DEFAULT_START_YEAR,
                                                 DEFAULT_END_YEAR,
-                                                TOP_N_ITEMS,
+                                                Constants.TOP_N_ITEMS,
                                                 true
                                             );
             for (var valueSeries : seriesMap.values()) {
@@ -454,7 +453,7 @@ public class StatisticsController {
                                                 year,
                                                 DEFAULT_START_YEAR,
                                                 DEFAULT_END_YEAR,
-                                                TOP_N_ITEMS,
+                                                Constants.TOP_N_ITEMS,
                                                 false
                                             );
             for (var valueSeries : seriesMap.values()) {
@@ -495,7 +494,7 @@ public class StatisticsController {
             // Load top revenue items
             XYChart.Series<String, Number> revenueSeries =
                 budgetService.getTopBudgetItemsSeries(
-                    year, TOP_N_ITEMS, true, false);
+                    year, Constants.TOP_N_ITEMS, true, false);
             if (revenueSeries != null && !revenueSeries.getData().isEmpty()) {
                 topItemsBarChart.getData().add(revenueSeries);
             }
@@ -503,7 +502,7 @@ public class StatisticsController {
             // Load top expense items
             XYChart.Series<String, Number> expenseSeries =
                 budgetService.getTopBudgetItemsSeries(
-                    year, TOP_N_ITEMS, false, false);
+                    year, Constants.TOP_N_ITEMS, false, false);
             if (expenseSeries != null && !expenseSeries.getData().isEmpty()) {
                 topItemsBarChart.getData().add(expenseSeries);
             }
