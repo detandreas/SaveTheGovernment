@@ -34,6 +34,7 @@ public class TotalBudgetController {
     @FXML private Label totalBudgetLabel;
     @FXML private Label totalExpensesLabel;
     @FXML private Label totalRevenueLabel;
+    @FXML private Label budgetLabel;
 
     @FXML private TableView<BudgetItem> budgetTable;
     @FXML private TableColumn<BudgetItem, String> nameColumn;
@@ -47,7 +48,6 @@ public class TotalBudgetController {
                                 new BudgetService(budgetRepository);
     private static final int CURRENT_YEAR = 2026;
     private static final int DEFAULT_START_YEAR = 2019;
-    private static final int DEFAULT_END_YEAR = 2027;
     private final NumberFormat currencyFormat =
                             NumberFormat.getCurrencyInstance(Locale.GERMANY);
     private static final Logger LOGGER =
@@ -144,7 +144,7 @@ public class TotalBudgetController {
                 String.format("No data available for year %d", selectedYear));
             }
             Budget budget = budgetOpt.get();
-
+            budgetLabel.setText(String.format("Budget %d", selectedYear));
             allItems = budgetService.getBudgetItemsForTable(selectedYear);
             setupFilters(selectedYear);
 

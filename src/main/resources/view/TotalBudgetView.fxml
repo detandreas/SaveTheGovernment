@@ -18,7 +18,7 @@
 
     <HBox alignment="CENTER_LEFT" spacing="10.0">
         <children>
-            <Label styleClass="page-title" text="Budget 2025" />
+            <Label fx:id="budgetLabel" styleClass="page-title" text="Budget 2025" />
 
             <Region HBox.hgrow="ALWAYS" />
          <Label text="Year :" />
