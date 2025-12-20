@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
@@ -50,6 +51,15 @@
         <!-- Row 0, Column 0: Revenue vs Expense Pie Chart -->
         <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
             <children>
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <Label text="Category:">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin></Label>
+                        <ComboBox fx:id="categoryComboBox" prefWidth="150.0" />
+                    </children>
+                </HBox>
                 <PieChart fx:id="pieChart" minHeight="420.0" title="Revenue vs Expense Distribution" VBox.vgrow="ALWAYS" />
             </children>
         </VBox>
@@ -78,6 +88,9 @@
                     <yAxis>
                         <NumberAxis label="Amount (€)" />
                     </yAxis>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
                 </LineChart>
             </children>
         </VBox>
@@ -99,7 +112,7 @@
         <!-- Row 2, Column 0: Placeholder for future chart -->
         <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
             <children>
-                <LineChart fx:id="trendLineChart1" minHeight="420.0" title="Top Revenue Items Trend" VBox.vgrow="ALWAYS">
+                <LineChart fx:id="trendLineChart1" minHeight="420.0" title="Loan Revenue Trend" VBox.vgrow="ALWAYS">
                     <xAxis>
                         <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
                     </xAxis>
@@ -113,7 +126,7 @@
         <!-- Row 2, Column 1: Placeholder for future chart -->
         <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
             <children>
-                <LineChart fx:id="trendLineChart2" minHeight="420.0" title="Top Expense Items Trend" VBox.vgrow="ALWAYS">
+                <LineChart fx:id="trendLineChart2" minHeight="420.0" title="Loan Expense Trend" VBox.vgrow="ALWAYS">
                     <xAxis>
                         <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
                     </xAxis>

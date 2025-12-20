@@ -26,6 +26,7 @@ public class StatisticsController {
     
     @FXML private ComboBox<Integer> yearComboBox;
     @FXML private ComboBox<String> chartTypeComboBox;
+    @FXML private ComboBox<String> categoryComboBox;
 
     @FXML private PieChart pieChart;
     @FXML private LineChart<Number, Number> revenueExpenseLineChart;
@@ -88,17 +89,42 @@ public class StatisticsController {
             String selectedType = chartTypeComboBox.getValue();
             if (selectedType != null) {
                 switch (selectedType) {
-                    case "Top Items":
+                    case "Top Items" ->
                         loadTopItems();
-                        break;
-                    case "Budget Results":
+                    case "Budget Results" ->
                         loadAllCharts();
-                        break;
-                    default:
-                        break;
                 }
             }
         });
+
+        // Setup category combo box
+        ObservableList<String> categories = FXCollections.observableArrayList(
+            "Revenue",
+            "Expense"
+        );
+        categoryComboBox.setItems(categories);
+        categoryComboBox.setValue("Revenue");
+        categoryComboBox.setOnAction(e -> updateTop5PieChart());
+    }
+    private void updateTop5PieChart() {
+        Integer selectedYear = yearComboBox.getValue();
+        if (selectedYear == null) {
+            selectedYear = CURRENT_YEAR;
+        }
+        
+        String selectedCategory = categoryComboBox.getValue();
+        if (selectedCategory == null) {
+            selectedCategory = "Revenue";
+        }
+        
+        boolean isRevenue = "Revenue".equals(selectedCategory);
+        
+        try {
+            loadTop5Pie(selectedYear, isRevenue, selectedCategory);
+        } catch (IllegalArgumentException e) {
+            pieChart.getData().clear();
+            pieChart.setTitle("No data available");
+        }
     }
 
     /**
@@ -111,6 +137,10 @@ public class StatisticsController {
         }
 
         try {
+            pieChart.setTitle("Revenue vs Expense Distribution");
+            revenueExpenseLineChart.setTitle("Revenue & Expense Trend");
+            netResultLineChart.setTitle("Net Result Trend");
+            topItemsBarChart.setTitle("Year Comparison");
             trendLineChart1.setVisible(false);
             trendLineChart1.setManaged(false);
             trendLineChart2.setVisible(false);
@@ -130,18 +160,33 @@ public class StatisticsController {
         if (selectedYear == null) {
             selectedYear = CURRENT_YEAR;
         }
+        
+        String selectedCategory = categoryComboBox.getValue();
+        if (selectedCategory == null) {
+            selectedCategory = "Revenue";
+        }
+        
+        boolean isRevenue = "Revenue".equals(selectedCategory);
+        
         try {
             trendLineChart1.setVisible(true);
             trendLineChart1.setManaged(true);
             trendLineChart2.setVisible(true);
             trendLineChart2.setManaged(true);
+            
+            pieChart.setTitle(String.format("Top 5 %s Distribution", selectedCategory));
+            netResultLineChart.setTitle("Top 5 Expenses Trend");
+            revenueExpenseLineChart.setTitle("Top 5 Revenues Trend");
+            topItemsBarChart.setTitle("Top 5 Expenses & Revenues");
+            
             loadTop5ExpenseTrend(selectedYear);
             loadTop5RevenueTrend(selectedYear);
-            loadTop5Pie(selectedYear, true);
+            loadTop5Pie(selectedYear, isRevenue, selectedCategory);
             loadTopItemsBarChart(selectedYear);
             loadLoansExpenseSeries();
             loadLoansRevenueSeries();
         } catch (IllegalArgumentException e) {
+            clearAllCharts();
         }
     }
     private void loadLoansRevenueSeries() {
@@ -389,16 +434,27 @@ public class StatisticsController {
         }
     }
 
-    private void loadTop5Pie(int year, boolean isRevenue) {
-        ObservableList<PieChart.Data> pieData =
-                        budgetService.getBudgetItemsforPie(year, isRevenue);
-
-        pieChart.setData(pieData);
-        pieChart.setTitle(isRevenue
-                            ? "Top revenue budget items"
-                            : "Top expense budget items"
-                        );
-
+    private void loadTop5Pie(int year, boolean isRevenue, String categoryName) {
+        pieChart.getData().clear();
+        
+        try {
+            ObservableList<PieChart.Data> pieData =
+                budgetService.getBudgetItemsforPie(year, isRevenue);
+            
+            if (pieData.isEmpty()) {
+                pieChart.setTitle(String.format(
+                    "Top 5 %s Distribution - No data available", categoryName));
+                return;
+            }
+            
+            pieChart.setData(pieData);
+            pieChart.setTitle(String.format(
+                "Top 5 %s Distribution", categoryName));
+        } catch (IllegalArgumentException e) {
+            pieChart.setTitle(String.format(
+                "Top 5 %s Distribution - Year %d not found", categoryName, year));
+            pieChart.getData().clear();
+        }
     }
 
     /**
