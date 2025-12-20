@@ -2,8 +2,8 @@ package budget.frontend.controller;
 
 import java.text.NumberFormat;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,11 +12,12 @@ import budget.backend.model.domain.BudgetItem;
 import budget.backend.repository.BudgetRepository;
 import budget.backend.service.BudgetService;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ListChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -39,9 +40,14 @@ public class TotalBudgetController {
     @FXML private TableColumn<BudgetItem, String> typeColumn;
     @FXML private TableColumn<BudgetItem, Double> valueColumn;
 
-    private BudgetService budgetService =
-                                new BudgetService(new BudgetRepository());
-    private static final int CURRENT_YEAR = 2025;
+    @FXML private ComboBox<Integer> budgetYearComboBox;
+
+    private final BudgetRepository budgetRepository = new BudgetRepository();
+    private final BudgetService budgetService =
+                                new BudgetService(budgetRepository);
+    private static final int CURRENT_YEAR = 2026;
+    private static final int DEFAULT_START_YEAR = 2019;
+    private static final int DEFAULT_END_YEAR = 2027;
     private final NumberFormat currencyFormat =
                             NumberFormat.getCurrencyInstance(Locale.GERMANY);
     private static final Logger LOGGER =
@@ -56,6 +62,7 @@ public class TotalBudgetController {
     @FXML
     public void initialize() {
         setupTableColumns();
+        setUpComboBox();
         loadData();
     }
     /**
@@ -108,27 +115,44 @@ public class TotalBudgetController {
         });
     }
     /**
+    * Sets up the year combo box with available years and configures
+    * the action handler to reload data when the year changes.
+    */
+    private void setUpComboBox() {
+        ObservableList<Integer> years = FXCollections.observableArrayList();
+        for (int year = CURRENT_YEAR; year >= DEFAULT_START_YEAR; year--) {
+            years.add(year);
+        }
+
+        budgetYearComboBox.setItems(years);
+        budgetYearComboBox.setValue(CURRENT_YEAR);
+        budgetYearComboBox.setOnAction(e -> loadData());
+    }
+    /**
      * Loads budget data into the table and updates summary labels.
      */
     private void loadData() {
-        setupFilters();
+        Integer selectedYear = budgetYearComboBox.getValue();
+        if (selectedYear == null) {
+            selectedYear = CURRENT_YEAR;
+        }
+        try {
+            Optional<Budget> budgetOpt =
+                                budgetRepository.findById(selectedYear);
+            if (budgetOpt.isEmpty()) {
+                throw new IllegalArgumentException(
+                String.format("No data available for year %d", selectedYear));
+            }
+            Budget budget = budgetOpt.get();
 
-        List<BudgetItem> items = allItems;
-        Budget currentBudget = new Budget(items, CURRENT_YEAR);
+            allItems = budgetService.getBudgetItemsForTable(selectedYear);
+            setupFilters(selectedYear);
 
-        budgetService.recalculateBudgetTotals(currentBudget);
-        updateLabels(currentBudget);
-        budgetTable.getItems()
-                   .addListener((ListChangeListener<BudgetItem>) change -> {
-
-            List<BudgetItem> updatedItems = budgetTable.getItems();
-
-            Budget updatedBudget = new Budget(updatedItems, CURRENT_YEAR);
-
-            budgetService.recalculateBudgetTotals(updatedBudget);
-
-            updateLabels(updatedBudget);
-        });
+            budgetService.recalculateBudgetTotals(budget);
+            updateLabels(budget);
+        } catch (IllegalArgumentException e) {
+            clearTable();
+        }
     }
     /**
      * Updates the summary labels with the latest budget totals.
@@ -161,8 +185,12 @@ public class TotalBudgetController {
         totalBudgetLabel.setText(currencyFormat.format(budget.getNetResult()));
     }
 
-    private void setupFilters() {
-        allItems = budgetService.getBudgetItemsForTable(CURRENT_YEAR);
+    /**
+     * Sets up the filtered and sorted lists for the budget table.
+     *
+     * @param year the year to load budget items for
+     */
+    private void setupFilters(int year) {
         filteredItems = new FilteredList<>(allItems, p -> true);
         sortedItems = new SortedList<>(filteredItems);
         budgetTable.setItems(sortedItems);
@@ -194,6 +222,16 @@ public class TotalBudgetController {
     private void handleClearFilters() {
         filteredItems.setPredicate(p -> true);
         sortedItems.setComparator(null);
+    }
+
+    /**
+     * Clears the budget table and resets all labels when data is not available.
+     */
+    private void clearTable() {
+        budgetTable.getItems().clear();
+        totalBudgetLabel.setText(currencyFormat.format(0.0));
+        totalExpensesLabel.setText(currencyFormat.format(0.0));
+        totalRevenueLabel.setText(currencyFormat.format(0.0));
     }
 
 }
