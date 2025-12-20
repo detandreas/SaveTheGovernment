@@ -3,7 +3,17 @@ skinparam linetype ortho
 skinparam nodesep 80
 skinparam ranksep 80
 skinparam rankdir TB
-scale 0.5
+skinparam {
+    ' Γενικό μέγεθος γραμμάτων (Default είναι 11-12, το πάμε 16)
+    DefaultFontSize 16
+    ' Μέγεθος γραμμάτων για τα ονόματα των κλάσεων (το κάνουμε Bold και μεγάλο)
+    ClassFontSize 20
+    ClassFontStyle bold
+    
+    ' Αυξάνουμε τις αποστάσεις μεταξύ των κουτιών
+    Nodesep 100
+    Ranksep 100
+}
 
 ' ** 1. Core Definitions Package (Enums) (budget.backend.model.enums) **
 package "main.budget.backend.model.enums" {
@@ -460,5 +470,52 @@ UserAuthorizationService ..> UserRole : validates role
 "main.budget.backend.service.InputValidationService" ..> "main.budget.backend.util.InputValidator" : delegates basic checks
 ' Checks validation of UserRole
 "main.budget.backend.util.InputValidator" ..> "main.budget.backend.model.enums.UserRole" : validates
+
+' ====================================================================
+' ** AGGRESSIVE VERTICAL STACKING (Force Narrow Layout) **
+' ====================================================================
+
+' 1. Στοίχιση των ENUMS (Κάθετα)
+main.budget.backend.model.enums.Ministry -[hidden]down-> main.budget.backend.model.enums.UserRole
+main.budget.backend.model.enums.UserRole -[hidden]down-> main.budget.backend.model.enums.Status
+
+' 2. Στοίχιση των DOMAIN Objects (Κάθετα)
+main.budget.backend.model.domain.BudgetItem -[hidden]down-> main.budget.backend.model.domain.Budget
+main.budget.backend.model.domain.Budget -[hidden]down-> main.budget.backend.model.domain.PendingChange
+main.budget.backend.model.domain.PendingChange -[hidden]down-> main.budget.backend.model.domain.ChangeLog
+
+' 3. Στοίχιση των USERS (Κάθετα αντί για δέντρο)
+' (Αυτό είναι προαιρετικό, αν θες τα παιδιά του User να είναι κάθετα)
+main.budget.backend.model.domain.user.Citizen -[hidden]down-> main.budget.backend.model.domain.user.GovernmentMember
+main.budget.backend.model.domain.user.GovernmentMember -[hidden]down-> main.budget.backend.model.domain.user.PrimeMinister
+
+' 4. Στοίχιση των SERVICES (Το πιο σημαντικό για το πλάτος)
+main.budget.backend.service.BudgetService -[hidden]down-> main.budget.backend.service.ChangeRequestService
+main.budget.backend.service.ChangeRequestService -[hidden]down-> main.budget.backend.service.ChangeLogService
+main.budget.backend.service.ChangeLogService -[hidden]down-> main.budget.backend.service.UserAuthenticationService
+main.budget.backend.service.UserAuthenticationService -[hidden]down-> main.budget.backend.service.UserAuthorizationService
+
+' 5. Στοίχιση των REPOSITORIES
+main.budget.backend.repository.BudgetRepository -[hidden]down-> main.budget.backend.repository.ChangeLogRepository
+main.budget.backend.repository.ChangeLogRepository -[hidden]down-> main.budget.backend.repository.ChangeRequestRepository
+main.budget.backend.repository.ChangeRequestRepository -[hidden]down-> main.budget.backend.repository.UserRepository
+
+' 7. Στοίχιση των UTIL Classes (Κάθετα)
+main.budget.backend.util.PathsUtil -[hidden]down-> main.budget.backend.util.PasswordUtils
+main.budget.backend.util.PasswordUtils -[hidden]down-> main.budget.backend.util.InputValidator
+
+' 8. Στοίχιση των RESOURCES (JSON Files) (Κάθετα)
+' Επειδή είναι πολλά, αν τα αφήσεις ελεύθερα θα ανοίξουν πολύ το πλάτος.
+main.resources.Users -[hidden]down-> main.resources.Budget
+main.resources.Budget -[hidden]down-> main.resources.PendingChanges
+main.resources.PendingChanges -[hidden]down-> main.resources.BudgetChanges
+main.resources.BudgetChanges -[hidden]down-> main.resources.BillMinistry
+
+' 9. Επαναφορά της Ραχοκοκαλιάς Πακέτων
+main.budget.backend.model.enums -[hidden]down-> main.budget.backend.model.domain.user
+main.budget.backend.model.domain.user -[hidden]down-> main.budget.backend.model.domain
+main.budget.backend.model.domain -[hidden]down-> main.budget.backend.service
+main.budget.backend.service -[hidden]down-> main.budget.backend.repository
+main.budget.backend.repository -[hidden]down-> main.budget.backend.util
 
 @enduml
