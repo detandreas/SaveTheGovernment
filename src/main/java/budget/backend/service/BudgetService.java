@@ -121,7 +121,8 @@ public class BudgetService {
         Series<String, Number> series =
                                 getTopBudgetItemsSeries(year,
                                                         TOP_N_ITEMS,
-                                                        isRevenue
+                                                        isRevenue,
+                                                        true
                                                     );
         validateYear(year);
         Optional<Budget> budgetOpt = budgetRepository.findById(year);
@@ -402,6 +403,7 @@ public class BudgetService {
      * @param year the year of the budget
      * @param topN the number of top items to include (must be > 0)
      * @param isRevenue true for revenue items, false for expense items
+     * @param includeLoans true to include loan items, false to exclude them
      * @return Series containing top N items
      * @throws IllegalArgumentException if budget for the
      *                                      specified year doesn't exist,
@@ -410,7 +412,8 @@ public class BudgetService {
     public Series<String, Number> getTopBudgetItemsSeries(
                                         int year,
                                         int topN,
-                                        boolean isRevenue
+                                        boolean isRevenue,
+                                        boolean includeLoans
     ) throws IllegalArgumentException {
         validateYear(year);
         if (topN <= 0) {
@@ -431,7 +434,8 @@ public class BudgetService {
         Budget budget = budgetOpt.get();
         budget.getItems().stream()
             .filter(item -> item != null
-                && item.getIsRevenue() == isRevenue)
+                && item.getIsRevenue() == isRevenue
+                && (includeLoans || !item.getName().equals("Loans")))
             .sorted(Comparator.comparingDouble(BudgetItem::getValue).reversed())
             .limit(topN)
             .forEach(item -> series.getData().add(
@@ -441,19 +445,19 @@ public class BudgetService {
     }
 
     /**
-     * Creates an Series for displaying budget items comparison
-     * between two years.
+     * Creates a Map of Series for comparing budget results (revenue, expense, net result)
+     * between two years. Each Series contains the three budget metrics for comparison.
      *
      * @param year1 the first year to compare
      * @param year2 the second year to compare
-     * @param isRevenue true for revenue items, false for expense items
-     * @return Map containing "Year1" and "Year2" series
+     * @return Map where key is the year name (e.g., "2024") and value is a Series
+     *         containing "Revenue", "Expense", and "Net Result" data points
      * @throws IllegalArgumentException if year1 equals year2, if budget
      *                                  for either year doesn't exist,
      *                                  or if years are invalid
      */
     public Map<String, Series<String, Number>> getYearComparisonSeries(
-        int year1, int year2, boolean isRevenue
+        int year1, int year2
     ) throws IllegalArgumentException {
         if (year1 == year2) {
             throw new IllegalArgumentException("Can't compare same year");
@@ -478,18 +482,48 @@ public class BudgetService {
 
             if (budgetOpt.isEmpty()) {
                 throw new IllegalArgumentException("Budget for year: "
-            + year + " doesn't exist");
+                + year + " doesn't exist");
             }
 
             Budget budget = budgetOpt.get();
-            budget.getItems().stream()
-                .filter(item -> item != null
-                    && item.getIsRevenue() == isRevenue)
-                .forEach(item -> series.getData().add(
-                    new Data<>(item.getName(), item.getValue())
-                ));
+
+            // Add Revenue, Expense, and Net Result
+            series.getData().add(new Data<>("Revenue", budget.getTotalRevenue()));
+            series.getData().add(new Data<>("Expense", budget.getTotalExpense()));
         }
-        return Map.of("Year1", year1Series, "Year2", year2Series);
+
+        return Map.of(String.valueOf(year1), year1Series, 
+                      String.valueOf(year2), year2Series);
+    }
+
+    /**
+     * Creates a Series for displaying total revenue and expense in a BarChart.
+     * Suitable for comparing revenue vs expense for a specific year.
+     *
+     * @param year the year of the budget
+     * @return Series containing "Revenue" and "Expense" data points
+     * @throws IllegalArgumentException if budget for the specified year doesn't exist
+     *                                  or if year is invalid
+     */
+    public Series<String, Number> getRevenueExpenseBarSeries(int year)
+    throws IllegalArgumentException {
+        validateYear(year);
+        
+        Optional<Budget> budgetOpt = budgetRepository.findById(year);
+        
+        if (budgetOpt.isEmpty()) {
+        throw new IllegalArgumentException("Budget for year: "
+        + year + " doesn't exist");
+        }
+
+        Budget budget = budgetOpt.get();
+        Series<String, Number> series = new Series<>();
+        series.setName("Budget Overview");
+
+        series.getData().add(new Data<>("Revenue", budget.getTotalRevenue()));
+        series.getData().add(new Data<>("Expense", budget.getTotalExpense()));
+
+        return series;
     }
 
     /**
