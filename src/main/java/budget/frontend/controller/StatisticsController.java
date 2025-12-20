@@ -69,7 +69,7 @@ public class StatisticsController {
                     case "Top Items" ->
                         loadTopItems();
                     case "Budget Results" ->
-                        loadAllCharts();
+                        loadBudgetCharts();
                     default ->
                         loadTopItems();
                 }
@@ -90,7 +90,7 @@ public class StatisticsController {
                     case "Top Items" ->
                         loadTopItems();
                     case "Budget Results" ->
-                        loadAllCharts();
+                        loadBudgetCharts();
                     default ->
                         loadTopItems();
                 }
@@ -136,7 +136,7 @@ public class StatisticsController {
     /**
      * Loads all charts with data from the BudgetService.
      */
-    private void loadAllCharts() {
+    private void loadBudgetCharts() {
         Integer selectedYear = yearComboBox.getValue();
         if (selectedYear == null) {
             selectedYear = CURRENT_YEAR;
