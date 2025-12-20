@@ -11,6 +11,7 @@ import budget.backend.model.domain.Budget;
 import budget.backend.model.domain.BudgetItem;
 import budget.backend.repository.BudgetRepository;
 import budget.constants.Limits;
+import budget.frontend.constants.Constants;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,7 +29,7 @@ import javafx.scene.chart.XYChart.Series;
 public class BudgetService {
 
     private final BudgetRepository budgetRepository;
-    private final int TOP_N_ITEMS = 5;
+
 
     /**
      * Constructs a BudgetService with the specified repository.
@@ -114,57 +115,96 @@ public class BudgetService {
                             .sum();
     }
 
+    /**
+     * Calculates the sum of values in a Series.
+     *
+     * @param series the Series to sum values from
+     * @return the sum of all Y values in the Series
+     */
+    private double calculateSeriesSum(Series<String, Number> series) {
+        return series.getData().stream()
+            .mapToDouble(data -> data.getYValue().doubleValue())
+            .sum();
+    }
+
+    /**
+     * Creates PieChart.Data entries from a Series with percentage labels.
+     *
+     * @param series the Series containing top items
+     * @param total the total amount for calculating percentages
+     * @return ObservableList of PieChart.Data with formatted labels
+     */
+    private ObservableList<PieChart.Data> createPieDataFromSeries(
+        Series<String, Number> series,
+        double total) {
+        ObservableList<PieChart.Data> pieData =
+                                        FXCollections.observableArrayList();
+
+        for (var data : series.getData()) {
+            double value = data.getYValue().doubleValue();
+            double percentage = (value / total) * Limits.NUMBER_ONE_HUNDRED;
+            String label = String.format("%s%n%.2f%%",
+                data.getXValue(), percentage);
+
+            pieData.add(new PieChart.Data(label, value));
+        }
+
+        return pieData;
+    }
+
+    /**
+     * Creates a PieChart.Data entry for "Others" category if applicable.
+     *
+     * @param others the amount for "Others" category
+     * @param total the total amount for calculating percentage
+     * @return Optional PieChart.Data for Others, empty if others is too small
+     */
+    private Optional<PieChart.Data> createOthersPieData(
+                                            double others, double total) {
+        if (others <= Limits.SMALL_NUMBER) {
+            return Optional.empty();
+        }
+
+        double percentage = (others / total) * Limits.NUMBER_ONE_HUNDRED;
+        String label =
+            String.format("%s%n%.2f%%", Constants.OTHERS_LABEL, percentage);
+
+        return Optional.of(new PieChart.Data(label, others));
+    }
+
+    /**
+    * Creates PieChart data for top budget items with an "Others" category.
+    * Shows top N items and groups remaining items as "Others".
+    *
+    * @param year the year to get budget items from
+    * @param isRevenue true for revenue items, false for expense items
+    * @return ObservableList of PieChart.Data ready for display
+    * @throws IllegalArgumentException if budget doesn't exist
+    *                                               or year is invalid
+    */
     public ObservableList<PieChart.Data> getBudgetItemsforPie(
                                                             int year,
                                                             boolean isRevenue
     ) {
         Series<String, Number> series =
                                 getTopBudgetItemsSeries(year,
-                                                        TOP_N_ITEMS,
+                                                        Constants.TOP_N_ITEMS,
                                                         isRevenue,
                                                         true
                                                     );
-        validateYear(year);
-        Optional<Budget> budgetOpt = budgetRepository.findById(year);
+        Budget budget = getBudgetForYear(year);
 
-        if (budgetOpt.isEmpty()) {
-            throw new IllegalArgumentException(String
-                            .format("Budget for year %d doesn't exist", year));
-        }
-        Budget budget = budgetOpt.get();
+        double total = isRevenue
+        ? calculateTotalRevenue(budget)
+        : calculateTotalExpense(budget);
 
-        double total;
-        if (isRevenue) {
-            total = calculateTotalRevenue(budget);
-        } else {
-            total = calculateTotalExpense(budget);
-        }
-
-        double topSum = series.getData().stream()
-                        .mapToDouble(data -> data.getYValue().doubleValue())
-                        .sum();
+        double topSum = calculateSeriesSum(series);
         double others = total - topSum;
 
         ObservableList<PieChart.Data> pieData =
-                                        FXCollections.observableArrayList();
-        double pct;
-        for (var data : series.getData()) {
-            pct = (data.getYValue().doubleValue() / total)
-                                            * Limits.NUMBER_ONE_HUNDRED;
-
-            pieData.add(
-                new PieChart.Data(
-                    data.getXValue() + "\n" + String.format("%.2f", pct) + "%",
-                    data.getYValue().doubleValue()
-                ));
-        }
-        pct = (others / total) * Limits.NUMBER_ONE_HUNDRED;
-        if (others > Limits.SMALL_NUMBER) {
-            pieData.add(new PieChart.Data(
-                String.format("Others\n%.2f", pct) + "%",
-                others
-            ));
-        }
+                                        createPieDataFromSeries(series, total);
+        createOthersPieData(others, total)
+                    .ifPresent(pieData::add);
         return pieData;
     }
 
@@ -172,13 +212,14 @@ public class BudgetService {
 
     /**
      * Creates a Series for displaying loans trend over years.
-     * Filters budget items that contain "loan" in their name (case-insensitive).
+     * Filters budget items that are "Loans".
      *
      * @param startYear the starting year (inclusive)
      * @param endYear the ending year (exclusive)
      * @param isRevenue true for revenue loans, false for expense loans
      * @return Series containing loans data across years
-     * @throws IllegalArgumentException if startYear >= endYear or if years are invalid
+     * @throws IllegalArgumentException if startYear >= endYear or
+     *                                                  if years are invalid
      */
     public Series<Number, Number> getLoansTrendSeries(
         int startYear,
@@ -186,13 +227,16 @@ public class BudgetService {
         boolean isRevenue
     ) throws IllegalArgumentException {
         validateYearRange(startYear, endYear);
-        
+
         Series<Number, Number> loansSeries = new Series<>();
-        loansSeries.setName(isRevenue ? "Revenue Loans" : "Expense Loans");
-        
+        loansSeries.setName(isRevenue
+                            ? Constants.REVENUE_LOANS_LABEL
+                            : Constants.EXPENSE_LOANS_LABEL
+                        );
+
         for (int year = startYear; year < endYear; year++) {
             Optional<Budget> budgetOpt = budgetRepository.findById(year);
-        
+
             if (budgetOpt.isPresent()) {
                 Budget budget = budgetOpt.get();
 
@@ -200,10 +244,10 @@ public class BudgetService {
                 double totalLoans = budget.getItems().stream()
                     .filter(item -> item != null
                         && item.getIsRevenue() == isRevenue
-                        && item.getName().toLowerCase().contains("loan"))
+                        && item.getName().equals(Constants.LOANS_ITEM_NAME))
                     .mapToDouble(BudgetItem::getValue)
                     .sum();
-                    
+
                 loansSeries.getData().add(new Data<>(year, totalLoans));
             } else {
                 // Budget doesn't exist for this year, add 0
@@ -249,8 +293,83 @@ public class BudgetService {
     //  Μέθοδοι για Γραφήματα
 
     /**
+     * Gets the names of the top N budget items from a reference budget,
+     * excluding loans.
+     *
+     * @param budget the budget to extract top items from
+     * @param topN the number of top items to retrieve
+     * @param isRevenue true for revenue items, false for expense items
+     * @return List of item names sorted by value (descending)
+     */
+    private List<String> getTopItemNames(
+            Budget budget,
+            int topN,
+            boolean isRevenue) {
+        return budget.getItems().stream()
+            .filter(item -> item != null
+                && item.getIsRevenue() == isRevenue
+                && !item.getName().equals(Constants.LOANS_ITEM_NAME))
+            .sorted(Comparator.comparingDouble(BudgetItem::getValue).reversed())
+            .limit(topN)
+            .map(BudgetItem::getName)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Finds the value of a specific budget item in a budget.
+     *
+     * @param budget the budget to search in
+     * @param itemName the name of the item to find
+     * @param isRevenue true for revenue items, false for expense items
+     * @return Optional containing the item value if found, empty otherwise
+     */
+    private Optional<Double> findItemValueInBudget(
+            Budget budget,
+            String itemName,
+            boolean isRevenue) {
+        return budget.getItems().stream()
+            .filter(item -> item != null
+                && item.getIsRevenue() == isRevenue
+                && itemName.equals(item.getName()))
+            .findFirst()
+            .map(BudgetItem::getValue);
+    }
+
+    /**
+     * Creates a Series for a specific item showing its trend over years.
+     *
+     * @param itemName the name of the item
+     * @param startYear the starting year (inclusive)
+     * @param endYear the ending year (exclusive)
+     * @param isRevenue true for revenue items, false for expense items
+     * @return Series containing the item's values across years
+     */
+    private Series<Number, Number> createItemTrendSeries(
+            String itemName,
+            int startYear,
+            int endYear,
+            boolean isRevenue) {
+        Series<Number, Number> itemSeries = new Series<>();
+        itemSeries.setName(itemName);
+
+        for (int year = startYear; year < endYear; year++) {
+            Optional<Budget> budgetOpt = budgetRepository.findById(year);
+
+            double value = budgetOpt
+                .flatMap(budget ->
+                            findItemValueInBudget(budget, itemName, isRevenue))
+                .orElse(0.0);
+
+            itemSeries.getData().add(new Data<>(year, value));
+        }
+
+        return itemSeries;
+    }
+
+    /**
      * Creates a Map of Series, one for each of the top N budget items
-     * from a specific reference year, showing their trend over a range of years.
+     * from a specific reference year, showing their trend
+     *                                              over a range of years.
      *
      * @param referenceYear the year to determine top items from
      * @param startYear the starting year for the trend (inclusive)
@@ -260,8 +379,8 @@ public class BudgetService {
      * @return Map where key is the item name and value is the Series
      *         containing the item's values across years
      * @throws IllegalArgumentException if startYear >= endYear,
-     *                                  if topN <= 0, if reference year doesn't exist,
-     *                                  or if years are invalid
+     *                         if topN <= 0, if reference year doesn't exist,
+     *                         or if years are invalid
      */
     public Map<String, Series<Number, Number>> getTopItemsTrendSeries(
         int referenceYear,
@@ -272,58 +391,17 @@ public class BudgetService {
     ) throws IllegalArgumentException {
         validateYearRange(startYear, endYear);
         validateYear(referenceYear);
-        if (topN <= 0) {
-            throw new IllegalArgumentException(
-                "topN must be greater than 0, but was: " + topN);
-        }
+        validateTopN(topN);
 
-        Optional<Budget> referenceBudgetOpt = budgetRepository.findById(referenceYear);
+        Budget referenceBudget = getBudgetForYear(referenceYear);
+        List<String> topItemNames =
+                getTopItemNames(referenceBudget, topN, isRevenue);
 
-        if (referenceBudgetOpt.isEmpty()) {
-            throw new IllegalArgumentException(
-                "Budget for reference year " + referenceYear + " doesn't exist");
-        }
-
-        Budget referenceBudget = referenceBudgetOpt.get();
-
-        // Get top N item names from reference year
-        List<String> topItemNames = referenceBudget.getItems().stream()
-            .filter(item -> item != null && item.getIsRevenue() == isRevenue
-                                    && !item.getName().equals("Loans"))
-            .sorted(Comparator.comparingDouble(BudgetItem::getValue).reversed())
-            .limit(topN)
-            .map(BudgetItem::getName)
-            .collect(Collectors.toList());
-
-        // Create a Series for each top item
         Map<String, Series<Number, Number>> seriesMap = new HashMap<>();
 
         for (String itemName : topItemNames) {
-            Series<Number, Number> itemSeries = new Series<>();
-            itemSeries.setName(itemName);
-
-            // For each year, find the value of this specific item
-            for (int year = startYear; year < endYear; year++) {
-                Optional<Budget> budgetOpt = budgetRepository.findById(year);
-
-                if (budgetOpt.isPresent()) {
-                    Budget budget = budgetOpt.get();
-                    Optional<BudgetItem> itemOpt = budget.getItems().stream()
-                        .filter(item -> item != null 
-                            && item.getIsRevenue() == isRevenue
-                            && itemName.equals(item.getName()))
-                        .findFirst();
-                        
-                    if (itemOpt.isPresent()) {
-                        itemSeries.getData().add(
-                            new Data<>(year, itemOpt.get().getValue()));
-                    } else {
-                        // Item doesn't exist in this year, add 0
-                        itemSeries.getData().add(new Data<>(year, 0.0));
-                    }
-                }
-            }
-
+            Series<Number, Number> itemSeries = createItemTrendSeries(
+                itemName, startYear, endYear, isRevenue);
             seriesMap.put(itemName, itemSeries);
         }
 
@@ -345,10 +423,10 @@ public class BudgetService {
         validateYearRange(startYear, endYear);
 
         Series<Number, Number> revenueSeries = new Series<>();
-        revenueSeries.setName("Revenue");
+        revenueSeries.setName(Constants.REVENUE_LABEL);
 
         Series<Number, Number> expenseSeries = new Series<>();
-        expenseSeries.setName("Expenses");
+        expenseSeries.setName(Constants.EXPENSES_LABEL);
 
         for (int year = startYear; year < endYear; year++) {
             Optional<Budget> budgetOpt = budgetRepository.findById(year);
@@ -363,7 +441,11 @@ public class BudgetService {
             expenseSeries.getData()
                             .add(new Data<>(year, budget.getTotalExpense()));
         }
-        return Map.of("Revenue", revenueSeries, "Expense", expenseSeries);
+        return Map.of(Constants.REVENUE_LABEL,
+                        revenueSeries,
+                        Constants.EXPENSE_LABEL,
+                        expenseSeries
+                    );
     }
 
     /**
@@ -381,7 +463,7 @@ public class BudgetService {
         validateYearRange(startYear, endYear);
 
         Series<Number, Number> netSeries = new Series<>();
-        netSeries.setName("Net result");
+        netSeries.setName(Constants.NET_RESULT_LABEL);
 
         for (int year = startYear; year < endYear; year++) {
             Optional<Budget> budgetOpt = budgetRepository.findById(year);
@@ -416,26 +498,20 @@ public class BudgetService {
                                         boolean includeLoans
     ) throws IllegalArgumentException {
         validateYear(year);
-        if (topN <= 0) {
-            throw new IllegalArgumentException(
-                "topN must be greater than 0, but was: " + topN);
-        }
+        validateTopN(topN);
 
         Series<String, Number> series = new Series<>();
-        series.setName(isRevenue ? "Top Revenue" : "Top Expense");
+        series.setName(isRevenue
+                        ? Constants.TOP_REVENUE_LABEL
+                        : Constants.TOP_EXPENSE_LABEL
+                    );
 
-        Optional<Budget> budgetOpt = budgetRepository.findById(year);
-
-        if (budgetOpt.isEmpty()) {
-            throw new IllegalArgumentException("Budget for year: "
-            + year + " doesn't exist");
-        }
-
-        Budget budget = budgetOpt.get();
+        Budget budget = getBudgetForYear(year);
         budget.getItems().stream()
             .filter(item -> item != null
                 && item.getIsRevenue() == isRevenue
-                && (includeLoans || !item.getName().equals("Loans")))
+                && (includeLoans
+                    || !item.getName().equals(Constants.LOANS_ITEM_NAME)))
             .sorted(Comparator.comparingDouble(BudgetItem::getValue).reversed())
             .limit(topN)
             .forEach(item -> series.getData().add(
@@ -445,13 +521,70 @@ public class BudgetService {
     }
 
     /**
-     * Creates a Map of Series for comparing budget results (revenue, expense, net result)
-     * between two years. Each Series contains the three budget metrics for comparison.
+     * Validates that two years are different.
+     *
+     * @param year1 the first year
+     * @param year2 the second year
+     * @throws IllegalArgumentException if year1 equals year2
+     */
+    private void validateDifferentYears(int year1, int year2) {
+        if (year1 == year2) {
+            throw new IllegalArgumentException("Can't compare same year");
+        }
+    }
+
+    /**
+     * Creates a Series for a specific year with its name.
+     *
+     * @param year the year to create Series for
+     * @return Series with name set to the year string
+     */
+    private Series<String, Number> createYearSeries(int year) {
+        Series<String, Number> series = new Series<>();
+        series.setName(String.valueOf(year));
+        return series;
+    }
+
+    /**
+     * Adds budget metrics (Revenue and Expense) to a Series.
+     *
+     * @param series the Series to add data to
+     * @param budget the budget containing the metrics
+     */
+    private void addBudgetMetricsToSeries(
+            Series<String, Number> series,
+            Budget budget) {
+        series.getData().add(
+            new Data<>(Constants.REVENUE_LABEL, budget.getTotalRevenue()));
+        series.getData().add(
+            new Data<>(Constants.EXPENSE_LABEL, budget.getTotalExpense()));
+    }
+
+    /**
+     * Creates a Series for year comparison by loading budget
+     *                                                      and adding metrics.
+     *
+     * @param year the year to create Series for
+     * @return Series containing Revenue and Expense data points
+     * @throws IllegalArgumentException if budget doesn't exist
+     *                                                       or year is invalid
+     */
+    private Series<String, Number> createYearComparisonSeries(int year) {
+        Budget budget = getBudgetForYear(year);
+        Series<String, Number> series = createYearSeries(year);
+        addBudgetMetricsToSeries(series, budget);
+        return series;
+    }
+
+    /**
+     * Creates a Map of Series for comparing budget results (revenue, expense)
+     * between two years. Each Series contains the two budget metrics
+     *                                                          for comparison.
      *
      * @param year1 the first year to compare
      * @param year2 the second year to compare
-     * @return Map where key is the year name (e.g., "2024") and value is a Series
-     *         containing "Revenue", "Expense", and "Net Result" data points
+     * @return Map where key is the year name (e.g., "2024") and value
+                    * is a Series containing "Revenue", "Expense", data points
      * @throws IllegalArgumentException if year1 equals year2, if budget
      *                                  for either year doesn't exist,
      *                                  or if years are invalid
@@ -459,41 +592,17 @@ public class BudgetService {
     public Map<String, Series<String, Number>> getYearComparisonSeries(
         int year1, int year2
     ) throws IllegalArgumentException {
-        if (year1 == year2) {
-            throw new IllegalArgumentException("Can't compare same year");
-        }
+        validateDifferentYears(year1, year2);
         validateYear(year1);
         validateYear(year2);
 
-        Series<String, Number> year1Series = new Series<>();
-        year1Series.setName(String.valueOf(year1));
+        Series<String, Number> year1Series = createYearComparisonSeries(year1);
+        Series<String, Number> year2Series = createYearComparisonSeries(year2);
 
-        Series<String, Number> year2Series = new Series<>();
-        year2Series.setName(String.valueOf(year2));
-
-        Map<Integer, Series<String, Number>> years =
-                                Map.of(year1, year1Series, year2, year2Series);
-
-        for (var entry : years.entrySet()) {
-            int year = entry.getKey();
-            var series = entry.getValue();
-
-            Optional<Budget> budgetOpt = budgetRepository.findById(year);
-
-            if (budgetOpt.isEmpty()) {
-                throw new IllegalArgumentException("Budget for year: "
-                + year + " doesn't exist");
-            }
-
-            Budget budget = budgetOpt.get();
-
-            // Add Revenue, Expense, and Net Result
-            series.getData().add(new Data<>("Revenue", budget.getTotalRevenue()));
-            series.getData().add(new Data<>("Expense", budget.getTotalExpense()));
-        }
-
-        return Map.of(String.valueOf(year1), year1Series, 
-                      String.valueOf(year2), year2Series);
+        return Map.of(
+            String.valueOf(year1), year1Series,
+            String.valueOf(year2), year2Series
+        );
     }
 
     /**
@@ -502,26 +611,21 @@ public class BudgetService {
      *
      * @param year the year of the budget
      * @return Series containing "Revenue" and "Expense" data points
-     * @throws IllegalArgumentException if budget for the specified year doesn't exist
-     *                                  or if year is invalid
+     * @throws IllegalArgumentException if budget for the specified year
+     *                                      doesn't exist or if year is invalid
      */
     public Series<String, Number> getRevenueExpenseBarSeries(int year)
     throws IllegalArgumentException {
         validateYear(year);
-        
-        Optional<Budget> budgetOpt = budgetRepository.findById(year);
-        
-        if (budgetOpt.isEmpty()) {
-        throw new IllegalArgumentException("Budget for year: "
-        + year + " doesn't exist");
-        }
 
-        Budget budget = budgetOpt.get();
+        Budget budget = getBudgetForYear(year);
         Series<String, Number> series = new Series<>();
-        series.setName("Budget Overview");
+        series.setName(Constants.BUDGET_OVERVIEW_LABEL);
 
-        series.getData().add(new Data<>("Revenue", budget.getTotalRevenue()));
-        series.getData().add(new Data<>("Expense", budget.getTotalExpense()));
+        series.getData().add(
+            new Data<>(Constants.REVENUE_LABEL, budget.getTotalRevenue()));
+        series.getData().add(
+            new Data<>(Constants.EXPENSE_LABEL, budget.getTotalExpense()));
 
         return series;
     }
@@ -541,18 +645,11 @@ public class BudgetService {
             throws IllegalArgumentException {
         validateYear(year);
 
-        Optional<Budget> budgetOpt = budgetRepository.findById(year);
-
-        if (budgetOpt.isEmpty()) {
-            throw new IllegalArgumentException("Budget for year: "
-            + year + " doesn't exist");
-        }
-
-        Budget budget = budgetOpt.get();
+        Budget budget = getBudgetForYear(year);
         var revenueData = new PieChart.Data(
-                                        "Revenue", budget.getTotalRevenue());
+                            Constants.REVENUE_LABEL, budget.getTotalRevenue());
         var expenseData = new PieChart.Data(
-                                        "Expense", budget.getTotalExpense());
+                            Constants.EXPENSE_LABEL, budget.getTotalExpense());
 
         return FXCollections.observableArrayList(revenueData, expenseData);
     }
@@ -588,5 +685,37 @@ public class BudgetService {
                 + "but was: startYear=" + startYear
                 + ", endYear=" + endYear);
         }
+    }
+
+    /**
+     * Validates that topN is a positive number.
+     *
+     * @param topN the number to validate
+     * @throws IllegalArgumentException if topN <= 0
+     */
+    private void validateTopN(int topN) {
+        if (topN <= 0) {
+            throw new IllegalArgumentException(
+                "topN must be greater than 0, but was: " + topN);
+        }
+    }
+
+    /**
+     * Retrieves and validates budget for a given year.
+     *
+     * @param year the year to retrieve budget for
+     * @return the Budget for the specified year
+     * @throws IllegalArgumentException if budget doesn't exist
+     *                                              or year is invalid
+     */
+    private Budget getBudgetForYear(int year) {
+        validateYear(year);
+        Optional<Budget> budgetOpt = budgetRepository.findById(year);
+
+        if (budgetOpt.isEmpty()) {
+            throw new IllegalArgumentException(
+                String.format("Budget for year %d doesn't exist", year));
+        }
+        return budgetOpt.get();
     }
 }

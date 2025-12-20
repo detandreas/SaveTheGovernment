@@ -23,7 +23,7 @@ import javafx.scene.chart.XYChart.Series;
  * Handles display of various budget statistics and charts.
  */
 public class StatisticsController {
-    
+
     @FXML private ComboBox<Integer> yearComboBox;
     @FXML private ComboBox<String> chartTypeComboBox;
     @FXML private ComboBox<String> categoryComboBox;
@@ -66,14 +66,12 @@ public class StatisticsController {
             String selectedType = chartTypeComboBox.getValue();
             if (selectedType != null) {
                 switch (selectedType) {
-                    case "Top Items":
+                    case "Top Items" ->
                         loadTopItems();
-                        break;
-                    case "Budget Results":
+                    case "Budget Results" ->
                         loadAllCharts();
-                        break;
-                    default:
-                        break;
+                    default ->
+                        loadTopItems();
                 }
             }
         });
@@ -93,6 +91,8 @@ public class StatisticsController {
                         loadTopItems();
                     case "Budget Results" ->
                         loadAllCharts();
+                    default ->
+                        loadTopItems();
                 }
             }
         });
@@ -111,14 +111,14 @@ public class StatisticsController {
         if (selectedYear == null) {
             selectedYear = CURRENT_YEAR;
         }
-        
+
         String selectedCategory = categoryComboBox.getValue();
         if (selectedCategory == null) {
             selectedCategory = "Revenue";
         }
-        
+
         boolean isRevenue = "Revenue".equals(selectedCategory);
-        
+
         try {
             loadTop5Pie(selectedYear, isRevenue, selectedCategory);
         } catch (IllegalArgumentException e) {
@@ -137,14 +137,18 @@ public class StatisticsController {
         }
 
         try {
-            pieChart.setTitle("Revenue vs Expense Distribution");
-            revenueExpenseLineChart.setTitle("Revenue & Expense Trend");
-            netResultLineChart.setTitle("Net Result Trend");
-            topItemsBarChart.setTitle("Year Comparison");
+            categoryComboBox.setVisible(false);
+            categoryComboBox.setManaged(false);
             trendLineChart1.setVisible(false);
             trendLineChart1.setManaged(false);
             trendLineChart2.setVisible(false);
             trendLineChart2.setManaged(false);
+
+            pieChart.setTitle("Revenue vs Expense Distribution");
+            revenueExpenseLineChart.setTitle("Revenue & Expense Trend");
+            netResultLineChart.setTitle("Net Result Trend");
+            topItemsBarChart.setTitle("Year Comparison");
+
             loadRevenueExpensePieChart(selectedYear);
             loadRevenueExpenseTrendChart();
             loadNetResultTrendChart();
@@ -160,25 +164,28 @@ public class StatisticsController {
         if (selectedYear == null) {
             selectedYear = CURRENT_YEAR;
         }
-        
+
         String selectedCategory = categoryComboBox.getValue();
         if (selectedCategory == null) {
             selectedCategory = "Revenue";
         }
-        
+
         boolean isRevenue = "Revenue".equals(selectedCategory);
-        
+
         try {
             trendLineChart1.setVisible(true);
             trendLineChart1.setManaged(true);
             trendLineChart2.setVisible(true);
             trendLineChart2.setManaged(true);
-            
-            pieChart.setTitle(String.format("Top 5 %s Distribution", selectedCategory));
+            categoryComboBox.setVisible(true);
+            categoryComboBox.setManaged(true);
+
+            pieChart.setTitle(
+                String.format("Top 5 %s Distribution", selectedCategory));
             netResultLineChart.setTitle("Top 5 Expenses Trend");
             revenueExpenseLineChart.setTitle("Top 5 Revenues Trend");
             topItemsBarChart.setTitle("Top 5 Expenses & Revenues");
-            
+
             loadTop5ExpenseTrend(selectedYear);
             loadTop5RevenueTrend(selectedYear);
             loadTop5Pie(selectedYear, isRevenue, selectedCategory);
@@ -192,7 +199,7 @@ public class StatisticsController {
     private void loadLoansRevenueSeries() {
         trendLineChart1.getData().clear();
         setupYearAxisFormatter(trendLineChart1);
-        Series<Number, Number> series =budgetService.getLoansTrendSeries(
+        Series<Number, Number> series = budgetService.getLoansTrendSeries(
                                                             DEFAULT_START_YEAR,
                                                             DEFAULT_END_YEAR,
                                                             true
@@ -201,11 +208,9 @@ public class StatisticsController {
     }
 
     /**
-     * Loads the year comparison bar chart comparing revenue, expense, and net result
+     * Loads the year comparison bar chart comparing revenue, expense
      * between two years.
      *
-     * @param year1 the first year to compare
-     * @param year2 the second year to compare
      */
     private void loadYearComparisonBarChart() {
         topItemsBarChart.getData().clear();
@@ -216,12 +221,15 @@ public class StatisticsController {
                 selectedYear = CURRENT_YEAR;
             }
             int previousYear = selectedYear - 1;
-            Map<String, XYChart.Series<String, Number>> seriesMap = 
-                budgetService.getYearComparisonSeries(selectedYear, previousYear);
+            Map<String, XYChart.Series<String, Number>> seriesMap =
+                budgetService.getYearComparisonSeries(
+                                            selectedYear, previousYear);
 
             // Add both series to the chart
-            XYChart.Series<String, Number> year1Series = seriesMap.get(String.valueOf(selectedYear));
-            XYChart.Series<String, Number> year2Series = seriesMap.get(String.valueOf(previousYear));
+            XYChart.Series<String, Number> year1Series =
+                                seriesMap.get(String.valueOf(selectedYear));
+            XYChart.Series<String, Number> year2Series =
+                                seriesMap.get(String.valueOf(previousYear));
 
             if (year1Series != null && !year1Series.getData().isEmpty()) {
                 topItemsBarChart.getData().add(year1Series);
@@ -238,7 +246,7 @@ public class StatisticsController {
     private void loadLoansExpenseSeries() {
         trendLineChart2.getData().clear();
         setupYearAxisFormatter(trendLineChart2);
-        Series<Number, Number> series =budgetService.getLoansTrendSeries(
+        Series<Number, Number> series = budgetService.getLoansTrendSeries(
                                                             DEFAULT_START_YEAR,
                                                             DEFAULT_END_YEAR,
                                                             false
@@ -406,14 +414,16 @@ public class StatisticsController {
         try {
             // Load top revenue items
             XYChart.Series<String, Number> revenueSeries =
-                budgetService.getTopBudgetItemsSeries(year, TOP_N_ITEMS, true, false);
+                budgetService.getTopBudgetItemsSeries(
+                    year, TOP_N_ITEMS, true, false);
             if (revenueSeries != null && !revenueSeries.getData().isEmpty()) {
                 topItemsBarChart.getData().add(revenueSeries);
             }
 
             // Load top expense items
             XYChart.Series<String, Number> expenseSeries =
-                budgetService.getTopBudgetItemsSeries(year, TOP_N_ITEMS, false, false);
+                budgetService.getTopBudgetItemsSeries(
+                    year, TOP_N_ITEMS, false, false);
             if (expenseSeries != null && !expenseSeries.getData().isEmpty()) {
                 topItemsBarChart.getData().add(expenseSeries);
             }
@@ -422,37 +432,28 @@ public class StatisticsController {
         }
     }
 
-    private void loadRevenueExpenseBarChart(int year) {
-        topItemsBarChart.getData().clear();
-        
-        try {
-            XYChart.Series<String, Number> series = 
-                budgetService.getRevenueExpenseBarSeries(year);
-            topItemsBarChart.getData().add(series);
-        } catch (IllegalArgumentException e) {
-            topItemsBarChart.getData().clear();
-        }
-    }
-
     private void loadTop5Pie(int year, boolean isRevenue, String categoryName) {
         pieChart.getData().clear();
-        
+
         try {
             ObservableList<PieChart.Data> pieData =
                 budgetService.getBudgetItemsforPie(year, isRevenue);
-            
+
             if (pieData.isEmpty()) {
                 pieChart.setTitle(String.format(
-                    "Top 5 %s Distribution - No data available", categoryName));
+                    "Top 5 %s Distribution - No data available",
+                    categoryName)
+                );
                 return;
             }
-            
+
             pieChart.setData(pieData);
             pieChart.setTitle(String.format(
                 "Top 5 %s Distribution", categoryName));
         } catch (IllegalArgumentException e) {
             pieChart.setTitle(String.format(
-                "Top 5 %s Distribution - Year %d not found", categoryName, year));
+                "Top 5 %s Distribution - Year %d not found",
+                categoryName, year));
             pieChart.getData().clear();
         }
     }
