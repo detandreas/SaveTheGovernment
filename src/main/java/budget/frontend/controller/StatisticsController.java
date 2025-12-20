@@ -106,6 +106,12 @@ public class StatisticsController {
         categoryComboBox.setValue("Revenue");
         categoryComboBox.setOnAction(e -> updateTop5PieChart());
     }
+
+    /**
+     * Updates the top 5 pie chart based on the selected year and category.
+     * Handles cases where data is not available by clearing the chart
+     * and displaying an appropriate message.
+     */
     private void updateTop5PieChart() {
         Integer selectedYear = yearComboBox.getValue();
         if (selectedYear == null) {
@@ -137,28 +143,54 @@ public class StatisticsController {
         }
 
         try {
-            categoryComboBox.setVisible(false);
-            categoryComboBox.setManaged(false);
-            trendLineChart1.setVisible(false);
-            trendLineChart1.setManaged(false);
-            trendLineChart2.setVisible(false);
-            trendLineChart2.setManaged(false);
-
-            pieChart.setTitle("Revenue vs Expense Distribution");
-            revenueExpenseLineChart.setTitle("Revenue & Expense Trend");
-            netResultLineChart.setTitle("Net Result Trend");
-            topItemsBarChart.setTitle("Year Comparison");
-
-            loadRevenueExpensePieChart(selectedYear);
-            loadRevenueExpenseTrendChart();
-            loadNetResultTrendChart();
-            loadYearComparisonBarChart();
+            setupVisibilityForAllCharts();
+            setupTitlesForAllCharts();
+            loadChartsForAllCharts(selectedYear);
         } catch (IllegalArgumentException e) {
             // Handle case where budget doesn't exist for selected year
             clearAllCharts();
         }
     }
 
+    /**
+     * Sets up visibility for all charts view.
+     */
+    private void setupVisibilityForAllCharts() {
+        categoryComboBox.setVisible(false);
+        categoryComboBox.setManaged(false);
+        trendLineChart1.setVisible(false);
+        trendLineChart1.setManaged(false);
+        trendLineChart2.setVisible(false);
+        trendLineChart2.setManaged(false);
+    }
+
+    /**
+     * Sets up titles for all charts view.
+     */
+    private void setupTitlesForAllCharts() {
+        pieChart.setTitle("Revenue vs Expense Distribution");
+        revenueExpenseLineChart.setTitle("Revenue & Expense Trend");
+        netResultLineChart.setTitle("Net Result Trend");
+        topItemsBarChart.setTitle("Year Comparison");
+    }
+
+    /**
+     * Loads all charts data for the all charts view.
+     *
+     * @param selectedYear the selected year
+     */
+    private void loadChartsForAllCharts(int selectedYear) {
+        loadRevenueExpensePieChart(selectedYear);
+        loadRevenueExpenseTrendChart();
+        loadNetResultTrendChart();
+        loadYearComparisonBarChart();
+    }
+
+    /**
+     * Loads all top items charts with data from the BudgetService.
+     * Sets up visibility, titles, and loads all relevant charts for the
+     * top items view including trends, pie chart, bar chart, and loans series.
+     */
     private void loadTopItems() {
         Integer selectedYear = yearComboBox.getValue();
         if (selectedYear == null) {
@@ -173,29 +205,61 @@ public class StatisticsController {
         boolean isRevenue = "Revenue".equals(selectedCategory);
 
         try {
-            trendLineChart1.setVisible(true);
-            trendLineChart1.setManaged(true);
-            trendLineChart2.setVisible(true);
-            trendLineChart2.setManaged(true);
-            categoryComboBox.setVisible(true);
-            categoryComboBox.setManaged(true);
-
-            pieChart.setTitle(
-                String.format("Top 5 %s Distribution", selectedCategory));
-            netResultLineChart.setTitle("Top 5 Expenses Trend");
-            revenueExpenseLineChart.setTitle("Top 5 Revenues Trend");
-            topItemsBarChart.setTitle("Top 5 Expenses & Revenues");
-
-            loadTop5ExpenseTrend(selectedYear);
-            loadTop5RevenueTrend(selectedYear);
-            loadTop5Pie(selectedYear, isRevenue, selectedCategory);
-            loadTopItemsBarChart(selectedYear);
-            loadLoansExpenseSeries();
-            loadLoansRevenueSeries();
+            setupVisibilityForTopItems();
+            setupTitlesForTopItems(selectedCategory);
+            loadChartsForTopItems(selectedYear, isRevenue, selectedCategory);
         } catch (IllegalArgumentException e) {
             clearAllCharts();
         }
     }
+
+    /**
+     * Sets up visibility for top items view.
+     */
+    private void setupVisibilityForTopItems() {
+        trendLineChart1.setVisible(true);
+        trendLineChart1.setManaged(true);
+        trendLineChart2.setVisible(true);
+        trendLineChart2.setManaged(true);
+        categoryComboBox.setVisible(true);
+        categoryComboBox.setManaged(true);
+    }
+
+    /**
+     * Sets up titles for top items view.
+     *
+     * @param selectedCategory the selected category
+     */
+    private void setupTitlesForTopItems(String selectedCategory) {
+        pieChart.setTitle(
+            String.format("Top 5 %s Distribution", selectedCategory));
+        netResultLineChart.setTitle("Top 5 Expenses Trend");
+        revenueExpenseLineChart.setTitle("Top 5 Revenues Trend");
+        topItemsBarChart.setTitle("Top 5 Expenses & Revenues");
+    }
+
+    /**
+     * Loads all charts data for the top items view.
+     *
+     * @param selectedYear the selected year
+     * @param isRevenue whether the category is revenue
+     * @param selectedCategory the selected category name
+     */
+    private void loadChartsForTopItems(int selectedYear, boolean isRevenue,
+                                       String selectedCategory) {
+        loadTop5ExpenseTrend(selectedYear);
+        loadTop5RevenueTrend(selectedYear);
+        loadTop5Pie(selectedYear, isRevenue, selectedCategory);
+        loadTopItemsBarChart(selectedYear);
+        loadLoansExpenseSeries();
+        loadLoansRevenueSeries();
+    }
+
+    /**
+     * Loads the loans revenue trend series into trendLineChart1.
+     * Clears existing data and sets up the year axis formatter before
+     * adding the revenue loans trend data.
+     */
     private void loadLoansRevenueSeries() {
         trendLineChart1.getData().clear();
         setupYearAxisFormatter(trendLineChart1);
@@ -208,9 +272,8 @@ public class StatisticsController {
     }
 
     /**
-     * Loads the year comparison bar chart comparing revenue, expense
-     * between two years.
-     *
+     * Loads the year comparison bar chart comparing revenue and expense
+     * between the selected year and the previous year.
      */
     private void loadYearComparisonBarChart() {
         topItemsBarChart.getData().clear();
@@ -243,6 +306,11 @@ public class StatisticsController {
         }
     }
 
+    /**
+     * Loads the loans expense trend series into trendLineChart2.
+     * Clears existing data and sets up the year axis formatter before
+     * adding the expense loans trend data.
+     */
     private void loadLoansExpenseSeries() {
         trendLineChart2.getData().clear();
         setupYearAxisFormatter(trendLineChart2);
@@ -345,6 +413,12 @@ public class StatisticsController {
         }
     }
 
+    /**
+     * Loads the top 5 revenue items trend line chart for the specified year.
+     * Displays the trend of the top revenue items across multiple years.
+     *
+     * @param year the year to determine top items from
+     */
     private void loadTop5RevenueTrend(int year) {
         setupYearAxisFormatter(revenueExpenseLineChart);
         revenueExpenseLineChart.getData().clear();
@@ -365,6 +439,12 @@ public class StatisticsController {
          }
     }
 
+    /**
+     * Loads the top 5 expense items trend line chart for the specified year.
+     * Displays the trend of the top expense items across multiple years.
+     *
+     * @param year the year to determine top items from
+     */
     private void loadTop5ExpenseTrend(int year) {
         setupYearAxisFormatter(netResultLineChart);
         netResultLineChart.getData().clear();
@@ -432,6 +512,14 @@ public class StatisticsController {
         }
     }
 
+    /**
+     * Loads the top 5 items pie chart for the specified year and category.
+     * Displays the distribution of top revenue or expense items.
+     *
+     * @param year the year to display data for
+     * @param isRevenue true if displaying revenue items, false for expenses
+     * @param categoryName the name of the category for display purposes
+     */
     private void loadTop5Pie(int year, boolean isRevenue, String categoryName) {
         pieChart.getData().clear();
 
