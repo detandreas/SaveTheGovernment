@@ -47,7 +47,7 @@ public class StatisticsController {
     @FXML
     public void initialize() {
         setupComboBoxes();
-        loadAllCharts();
+        loadTopItems();
     }
 
     /**
@@ -61,7 +61,21 @@ public class StatisticsController {
         }
         yearComboBox.setItems(years);
         yearComboBox.setValue(CURRENT_YEAR);
-        yearComboBox.setOnAction(e -> loadAllCharts());
+        yearComboBox.setOnAction(e -> {
+            String selectedType = chartTypeComboBox.getValue();
+            if (selectedType != null) {
+                switch (selectedType) {
+                    case "Top Items":
+                        loadTopItems();
+                        break;
+                    case "Budget Results":
+                        loadAllCharts();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
 
         // Setup chart type combo box (for future use)
         ObservableList<String> chartTypes = FXCollections.observableArrayList(
@@ -97,6 +111,10 @@ public class StatisticsController {
         }
 
         try {
+            trendLineChart1.setVisible(false);
+            trendLineChart1.setManaged(false);
+            trendLineChart2.setVisible(false);
+            trendLineChart2.setManaged(false);
             loadRevenueExpensePieChart(selectedYear);
             loadRevenueExpenseTrendChart();
             loadNetResultTrendChart();
@@ -117,10 +135,32 @@ public class StatisticsController {
             loadTop5RevenueTrend(selectedYear);
             loadTop5Pie(selectedYear, true);
             loadTopItemsBarChart(selectedYear);
+            loadLoansExpenseSeries();
+            loadLoansRevenueSeries();
         } catch (IllegalArgumentException e) {
         }
     }
+    private void loadLoansRevenueSeries() {
+        trendLineChart1.getData().clear();
+        setupYearAxisFormatter(trendLineChart1);
+        Series<Number, Number> series =budgetService.getLoansTrendSeries(
+                                                            DEFAULT_START_YEAR,
+                                                            DEFAULT_END_YEAR,
+                                                            true
+                                                        );
+        trendLineChart1.getData().add(series);
+    }
 
+    private void loadLoansExpenseSeries() {
+        trendLineChart2.getData().clear();
+        setupYearAxisFormatter(trendLineChart2);
+        Series<Number, Number> series =budgetService.getLoansTrendSeries(
+                                                            DEFAULT_START_YEAR,
+                                                            DEFAULT_END_YEAR,
+                                                            false
+                                                        );
+        trendLineChart2.getData().add(series);
+    }
     /**
      * Loads the revenue vs expense pie chart for the selected year.
      *

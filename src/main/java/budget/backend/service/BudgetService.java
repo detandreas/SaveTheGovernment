@@ -170,6 +170,50 @@ public class BudgetService {
     //  Μέθοδοι για Πίνακες
 
     /**
+     * Creates a Series for displaying loans trend over years.
+     * Filters budget items that contain "loan" in their name (case-insensitive).
+     *
+     * @param startYear the starting year (inclusive)
+     * @param endYear the ending year (exclusive)
+     * @param isRevenue true for revenue loans, false for expense loans
+     * @return Series containing loans data across years
+     * @throws IllegalArgumentException if startYear >= endYear or if years are invalid
+     */
+    public Series<Number, Number> getLoansTrendSeries(
+        int startYear,
+        int endYear,
+        boolean isRevenue
+    ) throws IllegalArgumentException {
+        validateYearRange(startYear, endYear);
+        
+        Series<Number, Number> loansSeries = new Series<>();
+        loansSeries.setName(isRevenue ? "Revenue Loans" : "Expense Loans");
+        
+        for (int year = startYear; year < endYear; year++) {
+            Optional<Budget> budgetOpt = budgetRepository.findById(year);
+        
+            if (budgetOpt.isPresent()) {
+                Budget budget = budgetOpt.get();
+
+                // Sum all loan items for this year
+                double totalLoans = budget.getItems().stream()
+                    .filter(item -> item != null
+                        && item.getIsRevenue() == isRevenue
+                        && item.getName().toLowerCase().contains("loan"))
+                    .mapToDouble(BudgetItem::getValue)
+                    .sum();
+                    
+                loansSeries.getData().add(new Data<>(year, totalLoans));
+            } else {
+                // Budget doesn't exist for this year, add 0
+                loansSeries.getData().add(new Data<>(year, 0.0));
+            }
+        }
+
+        return loansSeries;
+    }
+
+    /**
      * Creates an ObservableList of BudgetItems for a specific year
      * suitable for use in JavaFX TableView.
      *
@@ -243,7 +287,8 @@ public class BudgetService {
 
         // Get top N item names from reference year
         List<String> topItemNames = referenceBudget.getItems().stream()
-            .filter(item -> item != null && item.getIsRevenue() == isRevenue)
+            .filter(item -> item != null && item.getIsRevenue() == isRevenue
+                                    && !item.getName().equals("Loans"))
             .sorted(Comparator.comparingDouble(BudgetItem::getValue).reversed())
             .limit(topN)
             .map(BudgetItem::getName)
