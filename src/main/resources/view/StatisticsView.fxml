@@ -46,7 +46,7 @@
         <!-- Top Left: Revenue vs Expense Pie Chart -->
         <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
             <children>
-                <PieChart fx:id="revenueExpensePieChart" title="Revenue vs Expense Distribution" VBox.vgrow="ALWAYS" />
+                <PieChart fx:id="pieChart" title="Revenue vs Expense Distribution" VBox.vgrow="ALWAYS" />
             </children>
         </VBox>
 

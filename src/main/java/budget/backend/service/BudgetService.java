@@ -1,6 +1,8 @@
 package budget.backend.service;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +28,7 @@ import javafx.scene.chart.XYChart.Series;
 public class BudgetService {
 
     private final BudgetRepository budgetRepository;
+    private final int TOP_N_ITEMS = 5;
 
     /**
      * Constructs a BudgetService with the specified repository.
@@ -116,11 +119,16 @@ public class BudgetService {
                                                             boolean isRevenue
     ) {
         Series<String, Number> series =
-                                getTopBudgetItemsSeries(year, 5, isRevenue);
+                                getTopBudgetItemsSeries(year,
+                                                        TOP_N_ITEMS,
+                                                        isRevenue
+                                                    );
+        validateYear(year);
         Optional<Budget> budgetOpt = budgetRepository.findById(year);
 
         if (budgetOpt.isEmpty()) {
-            throw new IllegalArgumentException("Budget for year " + year + "doesn't exist");
+            throw new IllegalArgumentException(String
+                            .format("Budget for year %d doesn't exist", year));
         }
         Budget budget = budgetOpt.get();
 
@@ -140,18 +148,19 @@ public class BudgetService {
                                         FXCollections.observableArrayList();
         double pct;
         for (var data : series.getData()) {
-            pct = (data.getYValue().doubleValue() / total) * 100;
+            pct = (data.getYValue().doubleValue() / total)
+                                            * Limits.NUMBER_ONE_HUNDRED;
 
             pieData.add(
                 new PieChart.Data(
-                    data.getXValue() + "/n" + pct + "%",
+                    data.getXValue() + "\n" + String.format("%.2f", pct) + "%",
                     data.getYValue().doubleValue()
                 ));
         }
-
+        pct = (others / total) * Limits.NUMBER_ONE_HUNDRED;
         if (others > Limits.SMALL_NUMBER) {
             pieData.add(new PieChart.Data(
-                "Others",
+                String.format("Others\n%.2f", pct) + "%",
                 others
             ));
         }
@@ -193,6 +202,87 @@ public class BudgetService {
     }
 
     //  Μέθοδοι για Γραφήματα
+
+    /**
+     * Creates a Map of Series, one for each of the top N budget items
+     * from a specific reference year, showing their trend over a range of years.
+     *
+     * @param referenceYear the year to determine top items from
+     * @param startYear the starting year for the trend (inclusive)
+     * @param endYear the ending year for the trend (exclusive)
+     * @param topN the number of top items to include (must be > 0)
+     * @param isRevenue true for revenue items, false for expense items
+     * @return Map where key is the item name and value is the Series
+     *         containing the item's values across years
+     * @throws IllegalArgumentException if startYear >= endYear,
+     *                                  if topN <= 0, if reference year doesn't exist,
+     *                                  or if years are invalid
+     */
+    public Map<String, Series<Number, Number>> getTopItemsTrendSeries(
+        int referenceYear,
+        int startYear,
+        int endYear,
+        int topN,
+        boolean isRevenue
+    ) throws IllegalArgumentException {
+        validateYearRange(startYear, endYear);
+        validateYear(referenceYear);
+        if (topN <= 0) {
+            throw new IllegalArgumentException(
+                "topN must be greater than 0, but was: " + topN);
+        }
+
+        Optional<Budget> referenceBudgetOpt = budgetRepository.findById(referenceYear);
+
+        if (referenceBudgetOpt.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Budget for reference year " + referenceYear + " doesn't exist");
+        }
+
+        Budget referenceBudget = referenceBudgetOpt.get();
+
+        // Get top N item names from reference year
+        List<String> topItemNames = referenceBudget.getItems().stream()
+            .filter(item -> item != null && item.getIsRevenue() == isRevenue)
+            .sorted(Comparator.comparingDouble(BudgetItem::getValue).reversed())
+            .limit(topN)
+            .map(BudgetItem::getName)
+            .collect(Collectors.toList());
+
+        // Create a Series for each top item
+        Map<String, Series<Number, Number>> seriesMap = new HashMap<>();
+
+        for (String itemName : topItemNames) {
+            Series<Number, Number> itemSeries = new Series<>();
+            itemSeries.setName(itemName);
+
+            // For each year, find the value of this specific item
+            for (int year = startYear; year < endYear; year++) {
+                Optional<Budget> budgetOpt = budgetRepository.findById(year);
+
+                if (budgetOpt.isPresent()) {
+                    Budget budget = budgetOpt.get();
+                    Optional<BudgetItem> itemOpt = budget.getItems().stream()
+                        .filter(item -> item != null 
+                            && item.getIsRevenue() == isRevenue
+                            && itemName.equals(item.getName()))
+                        .findFirst();
+                        
+                    if (itemOpt.isPresent()) {
+                        itemSeries.getData().add(
+                            new Data<>(year, itemOpt.get().getValue()));
+                    } else {
+                        // Item doesn't exist in this year, add 0
+                        itemSeries.getData().add(new Data<>(year, 0.0));
+                    }
+                }
+            }
+
+            seriesMap.put(itemName, itemSeries);
+        }
+
+        return seriesMap;
+    }
 
     /**
      * Creates an Series for displaying revenue and expense trends over years.

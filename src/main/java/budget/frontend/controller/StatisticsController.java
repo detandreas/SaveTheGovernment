@@ -16,6 +16,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.util.StringConverter;
+import javafx.scene.chart.XYChart.Series;
 
 /**
  * Controller for the Statistics View.
@@ -67,7 +68,21 @@ public class StatisticsController {
         );
         chartTypeComboBox.setItems(chartTypes);
         chartTypeComboBox.setValue("Top Items");
-        chartTypeComboBox.setOnAction(e -> loadAllCharts());
+        chartTypeComboBox.setOnAction(e -> {
+            String selectedType = chartTypeComboBox.getValue();
+            if (selectedType != null) {
+                switch (selectedType) {
+                    case "Top Items":
+                        loadTopItems();
+                        break;
+                    case "Budget Results":
+                        loadAllCharts();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
     }
 
     /**
@@ -87,6 +102,20 @@ public class StatisticsController {
         } catch (IllegalArgumentException e) {
             // Handle case where budget doesn't exist for selected year
             clearAllCharts();
+        }
+    }
+
+    private void loadTopItems() {
+        Integer selectedYear = yearComboBox.getValue();
+        if (selectedYear == null) {
+            selectedYear = CURRENT_YEAR;
+        }
+        try {
+            loadTop5ExpenseTrend(selectedYear);
+            loadTop5RevenueTrend(selectedYear);
+            loadTop5Pie(selectedYear, true);
+            loadTopItemsBarChart(selectedYear);
+        } catch (IllegalArgumentException e) {
         }
     }
 
@@ -182,6 +211,46 @@ public class StatisticsController {
         }
     }
 
+    private void loadTop5RevenueTrend(int year) {
+        setupYearAxisFormatter(revenueExpenseLineChart);
+        revenueExpenseLineChart.getData().clear();
+         try {
+            Map<String, Series<Number, Number>> seriesMap =
+                budgetService.getTopItemsTrendSeries(
+                                                year,
+                                                DEFAULT_START_YEAR,
+                                                DEFAULT_END_YEAR,
+                                                TOP_N_ITEMS,
+                                                true
+                                            );
+            for (var valueSeries : seriesMap.values()) {
+                revenueExpenseLineChart.getData().add(valueSeries);
+            }
+         } catch (IllegalArgumentException e) {
+            revenueExpenseLineChart.getData().clear();
+         }
+    }
+
+    private void loadTop5ExpenseTrend(int year) {
+        setupYearAxisFormatter(netResultLineChart);
+        netResultLineChart.getData().clear();
+         try {
+            Map<String, Series<Number, Number>> seriesMap =
+                budgetService.getTopItemsTrendSeries(
+                                                year,
+                                                DEFAULT_START_YEAR,
+                                                DEFAULT_END_YEAR,
+                                                TOP_N_ITEMS,
+                                                false
+                                            );
+            for (var valueSeries : seriesMap.values()) {
+                netResultLineChart.getData().add(valueSeries);
+            }
+         } catch (IllegalArgumentException e) {
+            netResultLineChart.getData().clear();
+         }
+    }
+
     /**
      * Loads the net result trend line chart.
      */
@@ -229,14 +298,14 @@ public class StatisticsController {
 
     private void loadTop5Pie(int year, boolean isRevenue) {
         ObservableList<PieChart.Data> pieData =
-                                budgetService.getBudgetItemsforPie(year, isRevenue);
+                        budgetService.getBudgetItemsforPie(year, isRevenue);
 
         pieChart.setData(pieData);
-        pieChart.setTitle(isRevenue ?
-                                    "Top revenue budget items" :
-                                    "Top expense budget items"
-                                    );
-        
+        pieChart.setTitle(isRevenue
+                            ? "Top revenue budget items"
+                            : "Top expense budget items"
+                        );
+
     }
 
     /**
