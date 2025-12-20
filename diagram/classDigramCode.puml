@@ -426,16 +426,31 @@ BudgetRepository ..> "main.resources.Budget" : reads/writes
 ChangeLogRepository ..> BudgetChanges : reads/writes
 ChangeRequestRepository ..> PendingChanges : reads/writes
 BudgetService ..> "main.resources.BillMinistry": reads
+
+' C. Service Layer Dependencies (Detailed Logic Flow)
+
+' 1. Workflow Orchestration
+' The ChangeRequestService acts as the central coordinator for the modification process.
+' It delegates specific tasks: checking business rules, recording history, and updating totals.
 ChangeRequestService --> BudgetValidationService : delegates validation
-ChangeRequestService --> ChangeLogService : delegates logging
+ChangeRequestService --> ChangeLogService : triggers logging
 ChangeRequestService --> BudgetService : triggers recalc
+
+' 2. Security Delegation
+' The UserAuthenticationService keeps logic clean by offloading low-level security tasks.
+' It relies on Utility classes for password hashing and input format verification.
 UserAuthenticationService ..> PasswordUtils : uses hashing
 UserAuthenticationService ..> InputValidator : validates credentials
-UserAuthorizationService ..> User : checks permissions on
-UserAuthorizationService ..> BudgetItem : validates access to
-UserAuthorizationService ..> UserRole : verifies roles
 
-' C. Utility Dependencies 
+' 3. Access Control & Policy Enforcement
+' The UserAuthorizationService acts as a stateless guard.
+' It inspects Domain Objects against UserRoles to grant or deny access without modifying data.
+UserAuthorizationService ..> User : inspects permissions
+UserAuthorizationService ..> BudgetItem : checks ownership
+UserAuthorizationService ..> UserRole : validates role
+
+' D. Utility Dependencies 
+
 ' 1. PathsUtil: Connects Repositories with JSON (Resources)
 "main.budget.backend.repository" ..> "main.budget.backend.util.PathsUtil" : uses for file paths
 ' 2. PasswordUtils: For hashing during login/signup
