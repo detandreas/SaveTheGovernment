@@ -18,6 +18,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.util.StringConverter;
 import javafx.scene.chart.XYChart.Series;
 
@@ -30,6 +31,12 @@ public class StatisticsController {
     @FXML private ComboBox<Integer> yearComboBox;
     @FXML private ComboBox<String> chartTypeComboBox;
     @FXML private ComboBox<String> categoryComboBox;
+    @FXML private ComboBox<String> expenseComboBox;
+    @FXML private ComboBox<String> revenueComboBox;
+
+    @FXML private Label categoryLabel;
+    @FXML private Label revenueLabel;
+    @FXML private Label expenseLabel;
 
     @FXML private PieChart pieChart;
     @FXML private LineChart<Number, Number> revenueExpenseLineChart;
@@ -37,6 +44,7 @@ public class StatisticsController {
     @FXML private BarChart<String, Number> topItemsBarChart;
     @FXML private LineChart<Number, Number> trendLineChart1;
     @FXML private LineChart<Number, Number> trendLineChart2;
+
 
     private final BudgetService budgetService =
                                 new BudgetService(new BudgetRepository());

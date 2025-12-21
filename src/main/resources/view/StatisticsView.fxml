@@ -16,13 +16,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox
-    spacing="15.0"
-    styleClass="content-container"
-    stylesheets="@../styles/main.css"
-    xmlns="http://javafx.com/javafx"
-    xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="budget.frontend.controller.StatisticsController">
+<VBox spacing="15.0" styleClass="content-container" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budget.frontend.controller.StatisticsController">
 
     <HBox alignment="CENTER_LEFT" spacing="10.0">
         <children>
@@ -59,7 +53,7 @@
             <children>
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                     <children>
-                        <Label text="Category:">
+                        <Label fx:id="categoryLabel" text="Category:">
                            <HBox.margin>
                               <Insets left="5.0" />
                            </HBox.margin></Label>
@@ -73,6 +67,12 @@
         <!-- Row 0, Column 1: Revenue/Expense Trend Line Chart -->
         <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <children>
+                  <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                     <children>
+                        <Label fx:id="revenueLabel" contentDisplay="CENTER" text="Revenue Item:  " />
+                        <ComboBox fx:id="revenueCombobox" prefWidth="150.0" />
+                     </children>
+                  </HBox>
                 <LineChart fx:id="revenueExpenseLineChart" prefWidth="582.0" title="Revenue &amp; Expense Trends" VBox.vgrow="ALWAYS">
                     <xAxis>
                         <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
@@ -87,6 +87,16 @@
         <!-- Bottom Left: Net Result Line Chart -->
         <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
             <children>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0">
+                     <children>
+                        <Label fx:id="expenseLabel" text="Expense Item:  ">
+                           <padding>
+                              <Insets left="5.0" />
+                           </padding>
+                        </Label>
+                        <ComboBox fx:id="expenseCombobox" prefWidth="150.0" />
+                     </children>
+                  </HBox>
                 <LineChart fx:id="netResultLineChart" title="Net Result Trend" VBox.vgrow="ALWAYS">
                     <xAxis>
                         <NumberAxis autoRanging="false" label="Year" lowerBound="2018.0" minorTickCount="2" tickUnit="2.0" upperBound="2030.0" />
