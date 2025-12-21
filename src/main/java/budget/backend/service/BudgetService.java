@@ -668,9 +668,16 @@ public class BudgetService {
         Regression regression = new Regression(existingSeries);
         double m = regression.getSlope();
         double b = regression.getIntercept();
+        String operator = "+";
+        double absB = b;
+        if (b < Limits.SMALL_NUMBER) {
+            absB = Math.abs(b);
+            operator = "-";
+        }
 
         Series<Number, Number> regressionSeries = new Series<>();
-        regressionSeries.setName("Trend Line");
+        regressionSeries.setName(
+            String.format("Trend Line: Y = %,.2fX %s %,.2f", m, operator, absB));
         for (int year = REGRESSION_START_YEAR;
                                         year <= REGRESSION_END_YEAR; year++) {
             double y = m * year + b;

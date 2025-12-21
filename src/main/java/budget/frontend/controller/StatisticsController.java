@@ -95,8 +95,17 @@ public class StatisticsController {
         // Setup expense and revenue combo boxes
         updateRevenueOrExpenseComboBox(true);
         updateRevenueOrExpenseComboBox(false);
-        revenueComboBox.setOnAction(e -> updateTrendChart(true));
+        revenueComboBox.setOnAction(e -> determineAction());
         expenseComboBox.setOnAction(e -> updateTrendChart(false));
+    }
+
+    private void determineAction() {
+        String selectedChartType = chartTypeComboBox.getValue();
+        if ("Budget Results".equals(selectedChartType)) {
+            loadRevenueExpenseTrendChart();
+        } else {
+            updateTrendChart(true);
+        }
     }
 
     /**
@@ -206,10 +215,11 @@ public class StatisticsController {
      * Sets up visibility for all charts view.
      */
     private void setupVisibilityForAllCharts() {
+        revenueComboBox.setVisible(true);
+        revenueComboBox.setManaged(true);
+
         categoryComboBox.setVisible(false);
         categoryComboBox.setManaged(false);
-        revenueComboBox.setVisible(false);
-        revenueComboBox.setManaged(false);
         expenseComboBox.setVisible(false);
         expenseComboBox.setManaged(false);
         revenueLabel.setVisible(false);
@@ -228,10 +238,10 @@ public class StatisticsController {
      * Sets up titles for all charts view.
      */
     private void setupTitlesForAllCharts() {
-        pieChart.setTitle("Revenue vs Expense Distribution");
-        revenueExpenseLineChart.setTitle("Revenue & Expense Trend");
-        netResultLineChart.setTitle("Net Result Trend");
-        topItemsBarChart.setTitle("Year Comparison");
+        pieChart.setTitle("Revenue vs Expense Distribution ");
+        revenueExpenseLineChart.setTitle("Revenue & Expense Trend ");
+        netResultLineChart.setTitle("Net Result Trend ");
+        topItemsBarChart.setTitle("Year Comparison ");
     }
 
     /**
@@ -240,10 +250,21 @@ public class StatisticsController {
      * @param selectedYear the selected year
      */
     private void loadChartsForAllCharts(int selectedYear) {
+        setupRevenueComboBoxForBudgetResults();
         loadRevenueExpensePieChart(selectedYear);
         loadRevenueExpenseTrendChart();
         loadNetResultTrendChart();
         loadYearComparisonBarChart();
+    }
+
+    /**
+     * Sets up revenueComboBox with Revenue/Expense options for Budget Results view.
+     */
+    private void setupRevenueComboBoxForBudgetResults() {
+        ObservableList<String> revenueExpenseOptions = 
+            FXCollections.observableArrayList("Revenue", "Expense");
+        revenueComboBox.setItems(revenueExpenseOptions);
+        revenueComboBox.setValue("Revenue");
     }
 
     /**
@@ -302,10 +323,10 @@ public class StatisticsController {
      */
     private void setupTitlesForTopItems(String selectedCategory) {
         pieChart.setTitle(
-            String.format("Top 5 %s Distribution", selectedCategory));
-        netResultLineChart.setTitle("Top 5 Expenses Trend");
-        revenueExpenseLineChart.setTitle("Top 5 Revenues Trend");
-        topItemsBarChart.setTitle("Top 5 Expenses & Revenues");
+            String.format("Top 5 %s Distribution ", selectedCategory));
+        netResultLineChart.setTitle("Top 5 Expenses Trend ");
+        revenueExpenseLineChart.setTitle("Top 5 Revenues Trend ");
+        topItemsBarChart.setTitle("Top 5 Expenses & Revenues ");
     }
 
     /**
@@ -340,6 +361,9 @@ public class StatisticsController {
                                                             true
                                                         );
         trendLineChart1.getData().add(series);
+        Series<Number, Number> regressionSeries =
+                                budgetService.createRegressionSeries(series);
+        trendLineChart1.getData().add(regressionSeries);
     }
 
     /**
@@ -407,6 +431,9 @@ public class StatisticsController {
                                                             false
                                                         );
         trendLineChart2.getData().add(series);
+        Series<Number, Number> regressionSeries =
+                                budgetService.createRegressionSeries(series);
+        trendLineChart2.getData().add(regressionSeries);
     }
     /**
      * Loads the revenue vs expense pie chart for the selected year.
@@ -484,17 +511,33 @@ public class StatisticsController {
         setupYearAxisFormatter(revenueExpenseLineChart);
 
         try {
+            String selected = revenueComboBox.getValue();
+            if (selected == null) {
+                selected = "Revenue";
+            }
+
             Map<String, XYChart.Series<Number, Number>> seriesMap =
                 budgetService.getRevenueExpenseTrendSeries(
                     DEFAULT_START_YEAR, DEFAULT_END_YEAR);
 
-            XYChart.Series<Number, Number> revenueSeries =
-                                            seriesMap.get("Revenue");
-            XYChart.Series<Number, Number> expenseSeries =
-                                            seriesMap.get("Expense");
+            XYChart.Series<Number, Number> selectedSeries = null;
+            String title = "";
+            
+            if ("Revenue".equals(selected)) {
+                selectedSeries = seriesMap.get("Revenue");
+                title = "Revenue Trend ";
+            } else {
+                selectedSeries = seriesMap.get("Expense");
+                title = "Expense Trend ";
+            }
 
-                revenueExpenseLineChart.getData().add(revenueSeries);
-                revenueExpenseLineChart.getData().add(expenseSeries);
+            if (selectedSeries != null) {
+                revenueExpenseLineChart.getData().add(selectedSeries);
+                revenueExpenseLineChart.setTitle(title);
+                Series<Number, Number> regressionSeries =
+                            budgetService.createRegressionSeries(selectedSeries);
+                revenueExpenseLineChart.getData().add(regressionSeries);
+            }
         } catch (IllegalArgumentException e) {
                 revenueExpenseLineChart.getData().clear();
         }
@@ -550,8 +593,10 @@ public class StatisticsController {
 
         String selectedItem = targetComboBox.getValue();
         if (selectedItem == null || "all".equalsIgnoreCase(selectedItem)) {
+            targetChart.setTitle("Top 5 Revenue Trend ");
             loadTop5ItemsTrend(selectedYear, isRevenue, targetChart);
         } else {
+            targetChart.setTitle(String.format("%s Trend ", selectedItem));
             loadSingleItemTrend(targetChart, selectedYear,
                                 selectedItem, isRevenue);
         }
