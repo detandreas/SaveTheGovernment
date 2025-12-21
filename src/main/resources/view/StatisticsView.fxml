@@ -70,7 +70,7 @@
                   <HBox alignment="CENTER_RIGHT" spacing="10.0">
                      <children>
                         <Label fx:id="revenueLabel" contentDisplay="CENTER" text="Revenue Item:  " />
-                        <ComboBox fx:id="revenueCombobox" prefWidth="150.0" />
+                        <ComboBox fx:id="revenueComboBox" prefWidth="150.0" />
                      </children>
                   </HBox>
                 <LineChart fx:id="revenueExpenseLineChart" prefWidth="582.0" title="Revenue &amp; Expense Trends" VBox.vgrow="ALWAYS">
@@ -94,7 +94,7 @@
                               <Insets left="5.0" />
                            </padding>
                         </Label>
-                        <ComboBox fx:id="expenseCombobox" prefWidth="150.0" />
+                        <ComboBox fx:id="expenseComboBox" prefWidth="150.0" />
                      </children>
                   </HBox>
                 <LineChart fx:id="netResultLineChart" title="Net Result Trend" VBox.vgrow="ALWAYS">
