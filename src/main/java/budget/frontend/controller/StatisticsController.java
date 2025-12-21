@@ -477,6 +477,10 @@ public class StatisticsController {
                     DEFAULT_START_YEAR, DEFAULT_END_YEAR);
 
                 netResultLineChart.getData().add(netSeries);
+
+            XYChart.Series<Number, Number> regressionSeries = 
+                            budgetService.createRegressionSeries(netSeries);
+            netResultLineChart.getData().add(regressionSeries);
         } catch (IllegalArgumentException e) {
             netResultLineChart.getData().clear();
         }

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import budget.backend.model.domain.Budget;
 import budget.backend.model.domain.BudgetItem;
 import budget.backend.repository.BudgetRepository;
+import budget.backend.util.Regression;
 import budget.constants.Limits;
 import budget.frontend.constants.Constants;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -29,6 +30,8 @@ import javafx.scene.chart.XYChart.Series;
 public class BudgetService {
 
     private final BudgetRepository budgetRepository;
+    private final int REGRESSION_START_YEAR = 2019;
+    private final int REGRESSION_END_YEAR = 2029;
 
 
     /**
@@ -652,6 +655,28 @@ public class BudgetService {
                             Constants.EXPENSE_LABEL, budget.getTotalExpense());
 
         return FXCollections.observableArrayList(revenueData, expenseData);
+    }
+
+    /**
+     * Creates a Series representing a linear Regression from 2018 to 2030.
+     * @param existingSeries the series for which we will
+     *                                              compute the Regression
+     * @return
+     */
+    public Series<Number, Number> createRegressionSeries(
+                                    Series<Number, Number> existingSeries) {
+        Regression regression = new Regression(existingSeries);
+        double m = regression.getSlope();
+        double b = regression.getIntercept();
+
+        Series<Number, Number> regressionSeries = new Series<>();
+        regressionSeries.setName("Trend Line");
+        for (int year = REGRESSION_START_YEAR; year <= REGRESSION_END_YEAR; year++) {
+            double y = m * year + b;
+            regressionSeries.getData().add(new Data<>(year, y));
+        }
+
+        return regressionSeries;
     }
 
     /**
