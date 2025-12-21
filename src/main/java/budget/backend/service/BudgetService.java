@@ -677,7 +677,7 @@ public class BudgetService {
 
         Series<Number, Number> regressionSeries = new Series<>();
         regressionSeries.setName(
-            String.format("Trend Line: Y = %,.2fX %s %,.2f", m, operator, absB));
+        String.format("Trend Line: Y = %,.2fX %s %,.2f", m, operator, absB));
         for (int year = REGRESSION_START_YEAR;
                                         year <= REGRESSION_END_YEAR; year++) {
             double y = m * year + b;

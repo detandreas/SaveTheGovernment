@@ -258,10 +258,11 @@ public class StatisticsController {
     }
 
     /**
-     * Sets up revenueComboBox with Revenue/Expense options for Budget Results view.
+     * Sets up revenueComboBox with Revenue/Expense options
+     *                                          for Budget Results view.
      */
     private void setupRevenueComboBoxForBudgetResults() {
-        ObservableList<String> revenueExpenseOptions = 
+        ObservableList<String> revenueExpenseOptions =
             FXCollections.observableArrayList("Revenue", "Expense");
         revenueComboBox.setItems(revenueExpenseOptions);
         revenueComboBox.setValue("Revenue");
@@ -522,7 +523,7 @@ public class StatisticsController {
 
             XYChart.Series<Number, Number> selectedSeries = null;
             String title = "";
-            
+
             if ("Revenue".equals(selected)) {
                 selectedSeries = seriesMap.get("Revenue");
                 title = "Revenue Trend ";
@@ -535,7 +536,7 @@ public class StatisticsController {
                 revenueExpenseLineChart.getData().add(selectedSeries);
                 revenueExpenseLineChart.setTitle(title);
                 Series<Number, Number> regressionSeries =
-                            budgetService.createRegressionSeries(selectedSeries);
+                        budgetService.createRegressionSeries(selectedSeries);
                 revenueExpenseLineChart.getData().add(regressionSeries);
             }
         } catch (IllegalArgumentException e) {
