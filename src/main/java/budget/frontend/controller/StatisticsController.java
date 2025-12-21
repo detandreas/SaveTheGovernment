@@ -478,7 +478,7 @@ public class StatisticsController {
 
                 netResultLineChart.getData().add(netSeries);
 
-            XYChart.Series<Number, Number> regressionSeries = 
+            XYChart.Series<Number, Number> regressionSeries =
                             budgetService.createRegressionSeries(netSeries);
             netResultLineChart.getData().add(regressionSeries);
         } catch (IllegalArgumentException e) {

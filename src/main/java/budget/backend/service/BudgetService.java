@@ -30,8 +30,8 @@ import javafx.scene.chart.XYChart.Series;
 public class BudgetService {
 
     private final BudgetRepository budgetRepository;
-    private final int REGRESSION_START_YEAR = 2019;
-    private final int REGRESSION_END_YEAR = 2029;
+    private static final int REGRESSION_START_YEAR = 2019;
+    private static final int REGRESSION_END_YEAR = 2029;
 
 
     /**
@@ -661,7 +661,7 @@ public class BudgetService {
      * Creates a Series representing a linear Regression from 2018 to 2030.
      * @param existingSeries the series for which we will
      *                                              compute the Regression
-     * @return
+     * @return regression series
      */
     public Series<Number, Number> createRegressionSeries(
                                     Series<Number, Number> existingSeries) {
@@ -671,7 +671,8 @@ public class BudgetService {
 
         Series<Number, Number> regressionSeries = new Series<>();
         regressionSeries.setName("Trend Line");
-        for (int year = REGRESSION_START_YEAR; year <= REGRESSION_END_YEAR; year++) {
+        for (int year = REGRESSION_START_YEAR;
+                                        year <= REGRESSION_END_YEAR; year++) {
             double y = m * year + b;
             regressionSeries.getData().add(new Data<>(year, y));
         }
