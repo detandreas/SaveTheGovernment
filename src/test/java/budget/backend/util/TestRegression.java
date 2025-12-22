@@ -32,7 +32,7 @@ public class TestRegression {
         () -> {
         new Regression(null);});
 
-        assertEquals("Failure - Series cannot be null", ex.getMessage());
+        assertEquals("Series cannot be null", ex.getMessage());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class TestRegression {
         new Regression(series1);},
         "Failure - Series with pne data point should throw");
 
-        assertEquals("Failure - Series must contain at least 2 data points",
+        assertEquals("Series must contain at least 2 data points",
         ex2.getMessage());
     }
 
