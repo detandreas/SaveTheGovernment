@@ -1,9 +1,10 @@
 package budget.backend.util;
 
-import javafx.scene.chart.XYChart;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import javafx.scene.chart.XYChart;
 
 
 public class TestRegression {
@@ -18,11 +19,11 @@ public class TestRegression {
         Regression regression = new Regression(series);
 
         assertEquals(2.0, regression.getSlope(), 0.0001,
-        "Slope calculation is incorrect");
+        "Failure - Slope calculation is incorrect");
         assertEquals(1.0, regression.getIntercept(), 0.0001,
-        "Intercept calculation is incorrect");
+        "Failure - Intercept calculation is incorrect");
         assertEquals(3, regression.getN(),
-        "Number of data points (N) is incorrect");
+        "Failure - Number of data points (N) is incorrect");
     }
 
     @Test
@@ -31,7 +32,7 @@ public class TestRegression {
         () -> {
         new Regression(null);});
 
-        assertEquals("Series cannot be null", ex.getMessage());
+        assertEquals("Failure - Series cannot be null", ex.getMessage());
     }
 
     @Test
@@ -40,14 +41,16 @@ public class TestRegression {
 
         assertThrows(IllegalArgumentException.class, () -> {
         new Regression(series);
-        }, "Should throw exception for empty series");
+        }, "Failure - Should throw exception for empty series");
+
         XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
         series1.getData().add(new XYChart.Data<>(1, 3));
 
         IllegalArgumentException ex2 = assertThrows(IllegalArgumentException.class, () -> {
-        new Regression(series1);});
+        new Regression(series1);},
+        "Failure - Series with pne data point should throw");
 
-        assertEquals("Series must contain at least 2 data points",
+        assertEquals("Failure - Series must contain at least 2 data points",
         ex2.getMessage());
     }
 
@@ -61,6 +64,6 @@ public class TestRegression {
 
         assertThrows(ArithmeticException.class, () -> {
         new Regression(series);
-        }, "Should throw ArithmeticException when all X values are the same");
+        }, "Failure - Should throw ArithmeticException when all X values are the same");
     }
 }
