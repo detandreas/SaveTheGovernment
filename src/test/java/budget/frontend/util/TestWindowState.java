@@ -49,49 +49,4 @@ public class TestWindowState {
         assertFalse(WindowState.isStored(),
                 "Failure - isStored() should be false if height is 0");
     }
-}package budget.frontend.util;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-public class TestWindowState {
-    @BeforeEach
-    void cleanUp() {
-        WindowState.setSize(0, 0);
-    }
-
-    @Test
-    void TestSetSizeandGetDimentions() {
-        double width = 800.0;
-        double height = 600.0;
-
-        WindowState.setSize(width, height);
-
-        assertEquals(width, WindowState.getWidth(), "Width not stored Correctly");
-        assertEquals(height, WindowState.getHeight(), "Height not stored Correctyly");
-    }
-
-    @Test
-    void testIsStoredReturnsFalseInitially() {
-        assertFalse(WindowState.isStored(), "isStored() should be false when dimensions are 0");
-    }
-
-    @Test
-    void TestIsStoredReturnTrueAfterSettingSize() {
-        WindowState.setSize(1024, 768);
-
-        assertTrue(WindowState.isStored(), "isStored() should be true after setting valid dimensions");
-    }
-
-    @Test
-    void TestIsStoredWithZeroDimentions() {
-        WindowState.setSize(0, 100);
-        assertFalse(WindowState.isStored(), "isStored() should be false if width is 0");
-
-        WindowState.setSize(100, 0);
-        assertFalse(WindowState.isStored(), "isStored() should be false if height is 0");
-    }
 }
