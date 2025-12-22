@@ -31,7 +31,8 @@ public final class InputValidationService {
             throw new ValidationException("invalid username");
         }
         if (!InputValidator.isFullName(u.getFullName())) {
-            throw new ValidationException("invalid fullname");
+            throw new ValidationException(
+            "Invalid fullName. Example of correct format: Lakis Gavalas");
         }
         if (!InputValidator.isNonNull(u.getHashPassword())) {
             throw new ValidationException("invalid hashed password");
@@ -53,7 +54,8 @@ public final class InputValidationService {
             throw new ValidationException("invalid username");
         }
         if (!InputValidator.isFullName(u.getFullName())) {
-            throw new ValidationException("invalid fullname");
+            throw new ValidationException(
+            "Invalid fullName. Example of correct format: Lakis Gavalas");
         }
         if (!InputValidator.isNonNull(u.getHashPassword())) {
             throw new ValidationException("invalid hashed password");

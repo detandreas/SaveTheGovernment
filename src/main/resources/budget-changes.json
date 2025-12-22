@@ -5,7 +5,7 @@
     "oldValue": 1000.0,
     "newValue": 1500.0,
     "submittedDate": "2024-01-15T10:30:00",
-    "actorUserName": "pmuser",
+    "actorName": "pmuser",
     "actorId": "550e8400-e29b-41d4-a716-446655440002"
   },
   {
@@ -14,7 +14,7 @@
     "oldValue": 2500.5,
     "newValue": 3000.0,
     "submittedDate": "2024-01-14T14:20:15",
-    "actorUserName": "govuser",
+    "actorName": "govuser",
     "actorId": "550e8400-e29b-41d4-a716-446655440001"
   },
   {
@@ -23,7 +23,7 @@
     "oldValue": 500.0,
     "newValue": 750.25,
     "submittedDate": "2024-01-13T09:15:30",
-    "actorUserName": "govuser2",
+    "actorName": "govuser2",
     "actorId": "550e8400-e29b-41d4-a716-446655440003"
   },
   {
@@ -32,7 +32,7 @@
     "oldValue": 12000.0,
     "newValue": 15000.0,
     "submittedDate": "2024-01-16T16:45:00",
-    "actorUserName": "pmuser",
+    "actorName": "pmuser",
     "actorId": "550e8400-e29b-41d4-a716-446655440002"
   },
   {
@@ -41,7 +41,7 @@
     "oldValue": 800.75,
     "newValue": 1000.0,
     "submittedDate": "2024-01-17T11:00:00",
-    "actorUserName": "govuser",
+    "actorName": "govuser",
     "actorId": "550e8400-e29b-41d4-a716-446655440001"
   },
   {
@@ -50,7 +50,7 @@
     "oldValue": 5000.0,
     "newValue": 4500.0,
     "submittedDate": "2024-01-12T08:30:00",
-    "actorUserName": "pmuser",
+    "actorName": "pmuser",
     "actorId": "550e8400-e29b-41d4-a716-446655440002"
   },
   {
@@ -59,7 +59,7 @@
     "oldValue": 2000.0,
     "newValue": 2500.0,
     "submittedDate": "2024-06-18T13:00:00",
-    "actorUserName": "yourusername",
+    "actorName": "yourusername",
     "actorId": "b3527da4-3765-471f-a4aa-032aaa5a3ef6"
   }
 ]

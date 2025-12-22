@@ -58,7 +58,8 @@ public class TestInputValidationService {
 
         final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateNewUser(tUser));
 
-        assertEquals("invalid fullname",ex.getMessage());
+        assertEquals("Invalid fullName. Example of correct format: Lakis Gavalas",
+        ex.getMessage());
     }
 
     @Test
@@ -94,7 +95,8 @@ public class TestInputValidationService {
 
         final ValidationException ex = assertThrows(ValidationException.class,() -> service.validateUserUpdate(tUser));
 
-        assertEquals("invalid fullname",ex.getMessage());
+        assertEquals("Invalid fullName. Example of correct format: Lakis Gavalas",
+        ex.getMessage());
     }
 
     @Test

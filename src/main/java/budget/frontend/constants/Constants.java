@@ -36,6 +36,23 @@ public final class Constants {
     public static final String TOTAL_BUDGET_VIEW =
                                             "/view/TotalBudgetView.fxml";
     public static final String HOME_VIEW = "/view/HomeView.fxml";
-    public static final String HISTORY_VIEW = "/view/HistoryView.fxml";
+    public static final String HISTORY_VIEW = "/view/ChangeLogView.fxml";
     public static final String STATISTICS_VIEW = "/view/StatisticsView.fxml";
+
+    // Chart labels and budget item names
+    public static final String LOANS_ITEM_NAME = "Loans";
+    public static final String LOAN_KEYWORD = "loan";
+    public static final String REVENUE_LABEL = "Revenue";
+    public static final String EXPENSE_LABEL = "Expense";
+    public static final String EXPENSES_LABEL = "Expenses";
+    public static final String OTHERS_LABEL = "Others";
+    public static final String NET_RESULT_LABEL = "Net result";
+    public static final String BUDGET_OVERVIEW_LABEL = "Budget Overview";
+    public static final String TOP_REVENUE_LABEL = "Top Revenue";
+    public static final String TOP_EXPENSE_LABEL = "Top Expense";
+    public static final String REVENUE_LOANS_LABEL = "Revenue Loans";
+    public static final String EXPENSE_LOANS_LABEL = "Expense Loans";
+
+    // defaults
+    public static final int TOP_N_ITEMS = 5;
 }
