@@ -78,10 +78,10 @@
     }
   ],
   "primeMinister": {
-    "id": "550e8400-e29b-41d4-a716-446655440002",
-    "userName": "pmuser",
-    "fullName": "Prime Minister",
-    "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+    "id": "8133213a-9c44-4b02-8238-00d8571e94da",
+    "userName": "mitsotakis",
+    "fullName": "Kyriakos Mitsotakis",
+    "password": "29864e923a5a4efd8e378c9b5825644b89d8ca738c4c6b75694222c87ed91594",
     "userRole": "PRIME_MINISTER"
   }
 }

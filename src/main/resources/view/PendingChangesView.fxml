@@ -24,39 +24,6 @@
         <children>
             <Label text="Change Log History" styleClass="page-title"/>
 
-            <Region HBox.hgrow="ALWAYS" />
-
-            <HBox alignment="CENTER_RIGHT" spacing="5.0">
-                <children>
-                    <MenuButton mnemonicParsing="false" styleClass="filter-button">
-                        <graphic>
-                            <ImageView fitHeight="18" fitWidth="18" pickOnBounds="true" preserveRatio="true">
-                                <image>
-                                    <Image url="@../images/filters_icon.png" />
-                                </image>
-                            </ImageView>
-                        </graphic>
-                        <items>
-                            <MenuItem text="Sort by Difference Amount: Low to High" onAction="#handleSortAmountAsc" styleClass="filter-item" />
-                            <MenuItem text="Sort by Difference Amount: High to Low" onAction="#handleSortAmountDesc" styleClass="filter-item" />
-
-                            <SeparatorMenuItem />
-
-                            <MenuItem text="Filter: Increases Only" onAction="#handleFilterIncreasesOnly" styleClass="filter-item" />
-                            <MenuItem text="Filter: Decreases Only" onAction="#handleFilterDecreasesOnly" styleClass="filter-item" />
-
-                            <SeparatorMenuItem />
-
-                            <MenuItem text="Sort by User Name: A-Z" onAction="#handleSortByNameAsc" styleClass="filter-item" />
-                            <MenuItem text="Sort by User Name: Z-A" onAction="#handleSortByNameDesc" styleClass="filter-item" />
-
-                            <SeparatorMenuItem />
-
-                            <MenuItem text="Clear Filters" onAction="#handleClearFilters" styleClass="filter-item" />
-                        </items>
-                    </MenuButton>
-                </children>
-            </HBox>
         </children>
     </HBox>
 
@@ -69,7 +36,6 @@
             <TableColumn fx:id="newValueColumn" text="New Value (€)" prefWidth="120" styleClass="center-aligned-cell"/>
             <TableColumn fx:id="valueDifferenceColumn" text="Difference (€)" prefWidth="120" styleClass="center-aligned-cell"/>
             <TableColumn fx:id="actionColumn" text="Actions" prefWidth="160" styleClass="center-aligned-cell"/>
-    </columns>
         </columns>
         
         <columnResizePolicy>

@@ -394,6 +394,7 @@ public class ChangeRequestService {
      */
     public ObservableList<PendingChange> getAllPendingChangesSortedByDate() {
         return changeRequestRepository.load().stream()
+            .filter(change -> change.getStatus() == Status.PENDING)
             .sorted(Comparator.comparing((PendingChange change) ->
                 LocalDateTime.parse(
                         change.getSubmittedDate(),
