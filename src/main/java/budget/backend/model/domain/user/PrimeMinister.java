@@ -79,14 +79,18 @@ public final class PrimeMinister extends User {
 
     /**
      * Sets the singleton instance.
-     * Suppressed warning justification: This is a session singleton intentionally 
+     * Suppressed warning justification:
+     * This is a session singleton intentionally
      * storing the mutable logged-in user state.
+     * @param pm the Prime Minister instance to set
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_STATIC_REP2", justification = "Singleton instance is mutable by design")
+    @SuppressFBWarnings
+        (value = "EI_EXPOSE_STATIC_REP2",
+        justification = "Singleton instance is mutable by design")
     public static void setInstance(PrimeMinister pm) {
         instance = pm;
     }
-    
+
     /**
      * Clears the singleton instance.
      * Used for testing purposes to reset the state.

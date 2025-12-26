@@ -1,9 +1,8 @@
 package budget.backend.service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;  // Add this import
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.Observable;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -23,8 +22,6 @@ import budget.backend.repository.UserRepository;
 import budget.constants.Limits;
 import budget.constants.Message;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import javafx.collections.ObservableList;
-
 /**
  * Service for handling change requests to budget items.
  * Responsible for submitting, approving, and rejecting change requests.
@@ -386,10 +383,11 @@ public class ChangeRequestService {
             .findFirst();
     }
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    private static final DateTimeFormatter FORMATTER =
+        DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     /**
-     * Retrieves all pending changes sorted by submission date in descending order.
-     *
+     * Retrieves all pending changes sorted by
+     * submission date in descending order.
      * @return an ObservableList of PendingChange objects sorted by date
      */
     public ObservableList<PendingChange> getAllPendingChangesSortedByDate() {

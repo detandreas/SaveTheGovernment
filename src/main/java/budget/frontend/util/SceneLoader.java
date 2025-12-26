@@ -242,33 +242,47 @@ public final class SceneLoader {
             return null;
         }
     }
-
     /**
      * A wrapper class to hold both the loaded root node and its controller.
-     * Useful when loading sub-views where we need to inject data into the controller.
-     *
+     * Useful when loading sub-views
+     * where we need to inject data into the controller.
      * @param <T> The type of the controller.
      */
     public static class ViewResult<T> {
         private final Parent root;
         private final T controller;
-
+        /**
+         * Constructor.
+         *
+         * @param root The root node.
+         * @param controller The controller instance.
+         */
         @SuppressFBWarnings(
-            value = "EI_EXPOSE_REP2", 
-            justification = "Wrapper class must store external mutable JavaFX objects."
+            value = "EI_EXPOSE_REP2",
+            justification =
+                "Wrapper class must store external mutable JavaFX objects."
         )
         public ViewResult(Parent root, T controller) {
             this.root = root;
             this.controller = controller;
         }
+        /**
+         * Returns the root node.
+         *
+         * @return The root node.
+         */
         @SuppressFBWarnings(
-            value = "EI_EXPOSE_REP", 
+            value = "EI_EXPOSE_REP",
             justification = "Returns mutable JavaFX root node intentionally."
         )
         public Parent getRoot() {
             return root;
         }
-        
+        /**
+         * Returns the controller instance.
+         *
+         * @return The controller.
+         */
         public T getController() {
             return controller;
         }
@@ -280,13 +294,17 @@ public final class SceneLoader {
      *
      * @param fxmlPath The path to the FXML file.
      * @param <T> The type of the controller.
-     * @return A ViewResult containing both the root node and the controller, or null if failed.
+     * @return A ViewResult containing both
+     *      the root node and the controller, or null if failed.
      */
     public static <T> ViewResult<T> loadView(String fxmlPath) {
         URL fxmlUrl = SceneLoader.class.getResource(fxmlPath);
 
         if (fxmlUrl == null) {
-            LOGGER.log(Level.SEVERE, "ΣΦΑΛΜΑ: Το αρχείο {0} δεν βρέθηκε.", fxmlPath);
+            LOGGER.log(
+                Level.SEVERE, "ΣΦΑΛΜΑ: Το αρχείο {0} δεν βρέθηκε.",
+                fxmlPath
+            );
             return null;
         }
 
@@ -298,7 +316,10 @@ public final class SceneLoader {
             return new ViewResult<>(root, controller);
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "ΣΦΑΛΜΑ κατά τη φόρτωση του View: {0}", fxmlPath);
+            LOGGER.log(
+                Level.SEVERE, "ΣΦΑΛΜΑ κατά τη φόρτωση του View: {0}",
+                fxmlPath
+            );
             e.printStackTrace();
             return null;
         }

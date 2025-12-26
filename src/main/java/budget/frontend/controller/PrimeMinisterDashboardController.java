@@ -17,7 +17,7 @@ public class PrimeMinisterDashboardController extends DashboardController {
     @FXML
     private BorderPane mainBorderPane;
 
-    private final Logger LOGGER =
+    private static final Logger LOGGER =
         Logger.getLogger(PrimeMinisterDashboardController.class.getName());
 
     /**
@@ -56,32 +56,34 @@ public class PrimeMinisterDashboardController extends DashboardController {
         LOGGER.log(Level.INFO, "Button clicked: handlePendingChanges started.");
 
         try {
-            SceneLoader.ViewResult<PendingChangesController> result = 
-                SceneLoader.loadView("/view/PendingChangesView.fxml");
+            SceneLoader.ViewResult<PendingChangesController> result =
+                SceneLoader.loadView(
+                    "/view/PendingChangesView.fxml"
+                );
 
             if (result == null) {
                 LOGGER.log(Level.SEVERE, "Result from SceneLoader is NULL!");
                 return;
             }
-            
             LOGGER.log(Level.INFO, "View loaded successfully.");
-
             if (this.mainBorderPane == null) {
-                LOGGER.log(Level.SEVERE, "CRITICAL ERROR: mainBorderPane is NULL! Check FXML fx:id.");
+                LOGGER.log(
+                    Level.SEVERE,
+                    "CRITICAL ERROR: mainBorderPane is NULL! Check FXML fx:id."
+                );
                 return;
             }
 
             LOGGER.log(Level.INFO, "Fetching PrimeMinister instance...");
             PrimeMinister pm = PrimeMinister.getInstance();
-            
             LOGGER.log(Level.INFO, "Setting PrimeMinister to controller...");
             result.getController().setPrimeMinister(pm);
-
             LOGGER.log(Level.INFO, "Setting center of BorderPane...");
             mainBorderPane.setCenter(result.getRoot());
-            
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "EXCEPTION in handlePendingChanges", e);
+            LOGGER.log(
+                Level.SEVERE, "EXCEPTION in handlePendingChanges", e
+            );
             e.printStackTrace();
         }
     }

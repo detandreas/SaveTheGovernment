@@ -29,13 +29,17 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+/**
+ * Controller class for managing the pending changes view.
+ * It follows the same architecture as ChangeLogController for consistency.
+ */
 public class PendingChangesController {
 
-    private static final Logger LOGGER = Logger.getLogger(PendingChangesController.class.getName());
+    private static final Logger LOGGER =
+        Logger.getLogger(PendingChangesController.class.getName());
 
     @FXML private TableView<PendingChange> pendingChangesTable;
-    @FXML private TableColumn<PendingChange, String> dateColumn; 
+    @FXML private TableColumn<PendingChange, String> dateColumn;
     @FXML private TableColumn<PendingChange, String> actorColumn;
     @FXML private TableColumn<PendingChange, Integer> itemIdColumn;
     @FXML private TableColumn<PendingChange, Double> oldValueColumn;
@@ -45,31 +49,40 @@ public class PendingChangesController {
 
     private ChangeRequestService changeRequestService;
     private PrimeMinister currentUser;
-    
     private ObservableList<PendingChange> allItems;
     private FilteredList<PendingChange> filteredItems;
     private SortedList<PendingChange> sortedItems;
 
+    /**
+     * Initializes the controller by setting up
+     * table columns and loading data.
+     */
     @FXML
     public void initialize() {
         setupTableColumns();
         initServices();
-        LOGGER.log(Level.INFO, "Controller UI initialized. Waiting for User Data...");
+        LOGGER.log(
+            Level.INFO,
+            "Controller UI initialized. Waiting for User Data..."
+        );
     }
     /**
-     * Sets the current Prime Minister.
+     * Sets the Prime Minister user for
+     * this controller and loads the data.
+     *
+     * @param pm the Prime Minister user
      */
     @SuppressFBWarnings(
-        value = "EI_EXPOSE_REP2", 
-        justification = "Controller needs a reference to the external mutable User object by design."
+        value = "EI_EXPOSE_REP2",
+        justification =
+            "Controller needs a reference to the"
+            + "external mutable User object by design."
     )
     public void setPrimeMinister(PrimeMinister pm) {
         this.currentUser = pm;
         LOGGER.log(Level.INFO, "PrimeMinister set: " + pm.getFullName());
-        
         loadData();
     }
-
     private void initServices() {
         try {
             ChangeRequestRepository reqRepo = new ChangeRequestRepository();
@@ -77,12 +90,18 @@ public class PendingChangesController {
             UserRepository userRepo = new UserRepository();
             ChangeLogRepository logRepo = new ChangeLogRepository();
 
-            BudgetValidationService valService = new BudgetValidationService(budgetRepo);
+            BudgetValidationService valService =
+                new BudgetValidationService(budgetRepo);
             BudgetService budgetService = new BudgetService(budgetRepo);
             ChangeLogService logService = new ChangeLogService(logRepo);
 
             this.changeRequestService = new ChangeRequestService(
-                reqRepo, budgetRepo, userRepo, valService, budgetService, logService
+                reqRepo,
+                budgetRepo,
+                userRepo,
+                valService,
+                budgetService,
+                logService
             );
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error initializing services", e);
@@ -90,23 +109,24 @@ public class PendingChangesController {
     }
 
      private void setupTableColumns() {
-        dateColumn.setCellValueFactory(cell -> 
+        dateColumn.setCellValueFactory(cell ->
             new SimpleStringProperty(cell.getValue().getSubmittedDate()));
 
-        actorColumn.setCellValueFactory(cell -> 
+        actorColumn.setCellValueFactory(cell ->
             new SimpleStringProperty(cell.getValue().getRequestByName()));
 
-        itemIdColumn.setCellValueFactory(cell ->  
+        itemIdColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getBudgetItemId()));
 
-        oldValueColumn.setCellValueFactory(cell -> 
+        oldValueColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getOldValue()));
 
-        newValueColumn.setCellValueFactory(cell -> 
+        newValueColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getNewValue()));
 
         valueDifferenceColumn.setCellValueFactory(cell -> {
-            double diff = cell.getValue().getNewValue() - cell.getValue().getOldValue();
+            double diff =
+            cell.getValue().getNewValue() - cell.getValue().getOldValue();
             return new SimpleObjectProperty<>(diff);
         });
 
@@ -125,23 +145,21 @@ public class PendingChangesController {
     }
 
     private void setupActionColumnButtons() {
-        Callback<TableColumn<PendingChange, Void>, TableCell<PendingChange, Void>> cellFactory = param -> new TableCell<>() {
+        Callback<TableColumn<PendingChange, Void>,
+        TableCell<PendingChange, Void>> cellFactory =
+            param -> new TableCell<>() {
             private final Button btnAccept = new Button("Accept");
             private final Button btnReject = new Button("Reject");
             private final HBox container = new HBox(10, btnAccept, btnReject);
 
-        {            
+        {
             container.getStyleClass().add("action-box");
-
             btnAccept.getStyleClass().addAll("action-button", "btn-accept");
-
             btnReject.getStyleClass().addAll("action-button", "btn-reject");
-
             btnAccept.setOnAction(event -> {
                 PendingChange item = getTableView().getItems().get(getIndex());
                 handleApprove(item);
             });
-
             btnReject.setOnAction(event -> {
                 PendingChange item = getTableView().getItems().get(getIndex());
                 handleReject(item);
@@ -208,12 +226,17 @@ public class PendingChangesController {
             }
         };
     }
+    /**
+     * Loads data into the table from the service.
+     */
     private void loadData() {
-        if (changeRequestService == null) return;
+        if (changeRequestService == null) {
+            return;
+        }
 
         try {
             allItems = changeRequestService.getAllPendingChangesSortedByDate();
-            
+
             if (allItems == null) {
                 LOGGER.log(Level.WARNING, "No data found.");
                 return;
@@ -221,17 +244,25 @@ public class PendingChangesController {
 
             filteredItems = new FilteredList<>(allItems, p -> true);
             sortedItems = new SortedList<>(filteredItems);
-            sortedItems.comparatorProperty().bind(pendingChangesTable.comparatorProperty());
-
+            sortedItems.comparatorProperty().bind(
+                pendingChangesTable.comparatorProperty()
+            );
             pendingChangesTable.setItems(sortedItems);
-            
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to load table data.", e);
+            LOGGER.log(
+                Level.SEVERE, "Failed to load table data.", e
+            );
         }
     }
-
+    /**
+     * Handles the approval of a pending change.
+     * @param change the PendingChange to approve
+     */
     private void handleApprove(PendingChange change) {
-        LOGGER.log(Level.INFO, "Attempting to approve request ID: {0}", change.getId());
+        LOGGER.log(
+            Level.INFO,
+            "Attempting to approve request ID: {0}", change.getId()
+        );
         try {
             changeRequestService.approveRequest(currentUser, change);
             allItems.remove(change);
@@ -240,9 +271,15 @@ public class PendingChangesController {
             LOGGER.log(Level.SEVERE, "Approve failed", e);
         }
     }
-
+    /**
+     * Handles the rejection of a pending change.
+     * @param change the PendingChange to reject
+     */
     private void handleReject(PendingChange change) {
-        LOGGER.log(Level.INFO, "Attempting to reject request ID: {0}", change.getId());
+        LOGGER.log(
+            Level.INFO, "Attempting to reject request ID: {0}",
+            change.getId()
+        );
         try {
             changeRequestService.rejectRequest(currentUser, change);
             allItems.remove(change);
