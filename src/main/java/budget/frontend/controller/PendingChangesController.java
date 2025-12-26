@@ -17,11 +17,15 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,16 +52,10 @@ public class PendingChangesController {
     @FXML
     public void initialize() {
         setupTableColumns();
-        
         initServices();
-        
         LOGGER.log(Level.INFO, "Controller UI initialized. Waiting for User Data...");
     }
 
-    /**
-     * ΑΥΤΗ η μέθοδος καλείται από τον "γονιό" controller (Dashboard)
-     * ΑΦΟΥ φορτωθεί το FXML. Εδώ περνάμε τον χρήστη.
-     */
     public void setPrimeMinister(PrimeMinister pm) {
         this.currentUser = pm;
         LOGGER.log(Level.INFO, "PrimeMinister set: " + pm.getFullName());
@@ -105,6 +103,17 @@ public class PendingChangesController {
             return new SimpleObjectProperty<>(diff);
         });
 
+        NumberFormat currencyFormat = NumberFormat
+            .getCurrencyInstance(Locale.GERMANY);
+
+        // Custom Cell Factory για τις στήλες τιμών
+        var currencyCellFactory = createCurrencyCellFactory(currencyFormat);
+        oldValueColumn.setCellFactory(currencyCellFactory);
+        newValueColumn.setCellFactory(currencyCellFactory);
+        valueDifferenceColumn.setCellFactory(
+            createStyledCurrencyCellFactory(currencyFormat)
+        );
+
         setupActionColumnButtons();
     }
 
@@ -115,14 +124,10 @@ public class PendingChangesController {
             private final HBox container = new HBox(10, btnAccept, btnReject);
 
         {            
-            // 1. Ρύθμιση του Container μέσω CSS class
             container.getStyleClass().add("action-box");
-            // (Το container.setAlignment(Pos.CENTER) πλέον γίνεται στο CSS με -fx-alignment: center)
 
-            // 2. Ρύθμιση του Accept Button
             btnAccept.getStyleClass().addAll("action-button", "btn-accept");
 
-            // 3. Ρύθμιση του Reject Button
             btnReject.getStyleClass().addAll("action-button", "btn-reject");
 
             btnAccept.setOnAction(event -> {
@@ -148,6 +153,54 @@ public class PendingChangesController {
         };
         actionColumn.setCellFactory(cellFactory);
     }
+    /**
+     * Helper method to create a formatted currency cell
+     * with conditional styling.
+     * @param format the NumberFormat instance for currency formatting
+     * @return a Callback for TableCell creation
+     */
+    private Callback<TableColumn<PendingChange, Double>,
+        TableCell<PendingChange, Double>>
+        createStyledCurrencyCellFactory(NumberFormat format) {
+        return column -> new TableCell<PendingChange, Double>() {
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("status-green", "status-red");
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    double absValue = Math.abs(item);
+                    setText(format.format(absValue));
+                    if (item > 0) {
+                        getStyleClass().add("status-green");
+                    } else if (item < 0) {
+                        getStyleClass().add("status-red");
+                    }
+                }
+            }
+        };
+    }
+    /**
+     * Helper method to create a formatted currency cell.
+     * @param format the NumberFormat instance for currency formatting
+     * @return a Callback for TableCell creation
+     */
+    private Callback<TableColumn<PendingChange, Double>,
+        TableCell<PendingChange, Double>>
+        createCurrencyCellFactory(NumberFormat format) {
+        return column -> new TableCell<PendingChange, Double>() {
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(format.format(item));
+                }
+            }
+        };
+    }
     private void loadData() {
         if (changeRequestService == null) return;
 
@@ -170,8 +223,7 @@ public class PendingChangesController {
         }
     }
 
-    // ... (handleApprove/Reject παραμένουν ίδια) ...
-     private void handleApprove(PendingChange change) {
+    private void handleApprove(PendingChange change) {
         LOGGER.log(Level.INFO, "Attempting to approve request ID: {0}", change.getId());
         try {
             changeRequestService.approveRequest(currentUser, change);
