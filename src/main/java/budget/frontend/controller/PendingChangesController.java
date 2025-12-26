@@ -2,7 +2,15 @@ package budget.frontend.controller;
 
 import budget.backend.model.domain.PendingChange;
 import budget.backend.model.domain.user.PrimeMinister;
+import budget.backend.repository.BudgetRepository;
 import budget.backend.service.ChangeRequestService;
+import budget.backend.repository.ChangeRequestRepository;
+import budget.backend.service.BudgetService;
+import budget.backend.repository.UserRepository;
+import budget.backend.service.BudgetValidationService;
+import budget.backend.service.ChangeLogService;
+import budget.backend.repository.ChangeLogRepository;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -24,6 +32,7 @@ public class PendingChangesController {
     @FXML private TableView<PendingChange> pendingChangesTable;
     @FXML private TableColumn<PendingChange, String> dateColumn; 
     @FXML private TableColumn<PendingChange, String> actorColumn;
+    @FXML private TableColumn<PendingChange, Integer> itemIdColumn;
     @FXML private TableColumn<PendingChange, Double> oldValueColumn;
     @FXML private TableColumn<PendingChange, Double> newValueColumn;
     @FXML private TableColumn<PendingChange, Double> valueDifferenceColumn;
@@ -31,7 +40,7 @@ public class PendingChangesController {
 
     private ChangeRequestService changeRequestService;
     private PrimeMinister currentUser;
-
+    
     private ObservableList<PendingChange> allItems;
     private FilteredList<PendingChange> filteredItems;
     private SortedList<PendingChange> sortedItems;
@@ -39,23 +48,51 @@ public class PendingChangesController {
     @FXML
     public void initialize() {
         setupTableColumns();
-        LOGGER.log(Level.INFO, "PendingChangesController initialized (Waiting for data injection).");
+        
+        initServices();
+        
+        LOGGER.log(Level.INFO, "Controller UI initialized. Waiting for User Data...");
     }
 
-    public void initData(ChangeRequestService service, PrimeMinister pm) {
-        this.changeRequestService = service;
+    /**
+     * ΑΥΤΗ η μέθοδος καλείται από τον "γονιό" controller (Dashboard)
+     * ΑΦΟΥ φορτωθεί το FXML. Εδώ περνάμε τον χρήστη.
+     */
+    public void setPrimeMinister(PrimeMinister pm) {
         this.currentUser = pm;
+        LOGGER.log(Level.INFO, "PrimeMinister set: " + pm.getFullName());
         
-        LOGGER.log(Level.INFO, "Data injected into controller. Loading pending requests...");
         loadData();
     }
 
-    private void setupTableColumns() {
+    private void initServices() {
+        try {
+            ChangeRequestRepository reqRepo = new ChangeRequestRepository();
+            BudgetRepository budgetRepo = new BudgetRepository();
+            UserRepository userRepo = new UserRepository();
+            ChangeLogRepository logRepo = new ChangeLogRepository();
+
+            BudgetValidationService valService = new BudgetValidationService(budgetRepo);
+            BudgetService budgetService = new BudgetService(budgetRepo);
+            ChangeLogService logService = new ChangeLogService(logRepo);
+
+            this.changeRequestService = new ChangeRequestService(
+                reqRepo, budgetRepo, userRepo, valService, budgetService, logService
+            );
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error initializing services", e);
+        }
+    }
+
+     private void setupTableColumns() {
         dateColumn.setCellValueFactory(cell -> 
             new SimpleStringProperty(cell.getValue().getSubmittedDate()));
 
         actorColumn.setCellValueFactory(cell -> 
             new SimpleStringProperty(cell.getValue().getRequestByName()));
+
+        itemIdColumn.setCellValueFactory(cell ->  
+            new SimpleObjectProperty<>(cell.getValue().getBudgetItemId()));
 
         oldValueColumn.setCellValueFactory(cell -> 
             new SimpleObjectProperty<>(cell.getValue().getOldValue()));
@@ -77,19 +114,27 @@ public class PendingChangesController {
             private final Button btnReject = new Button("Reject");
             private final HBox container = new HBox(10, btnAccept, btnReject);
 
-            {
-                container.setAlignment(Pos.CENTER);
+        {            
+            // 1. Ρύθμιση του Container μέσω CSS class
+            container.getStyleClass().add("action-box");
+            // (Το container.setAlignment(Pos.CENTER) πλέον γίνεται στο CSS με -fx-alignment: center)
 
-                btnAccept.setOnAction(event -> {
-                    PendingChange item = getTableView().getItems().get(getIndex());
-                    handleApprove(item);
-                });
+            // 2. Ρύθμιση του Accept Button
+            btnAccept.getStyleClass().addAll("action-button", "btn-accept");
 
-                btnReject.setOnAction(event -> {
-                    PendingChange item = getTableView().getItems().get(getIndex());
-                    handleReject(item);
-                });
-            }
+            // 3. Ρύθμιση του Reject Button
+            btnReject.getStyleClass().addAll("action-button", "btn-reject");
+
+            btnAccept.setOnAction(event -> {
+                PendingChange item = getTableView().getItems().get(getIndex());
+                handleApprove(item);
+            });
+
+            btnReject.setOnAction(event -> {
+                PendingChange item = getTableView().getItems().get(getIndex());
+                handleReject(item);
+            });
+        }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
@@ -103,17 +148,16 @@ public class PendingChangesController {
         };
         actionColumn.setCellFactory(cellFactory);
     }
-
     private void loadData() {
-        if (changeRequestService == null) {
-            LOGGER.log(Level.WARNING, "ChangeRequestService is null! Cannot load data.");
-            return;
-        }
+        if (changeRequestService == null) return;
 
         try {
             allItems = changeRequestService.getAllPendingChangesSortedByDate();
             
-            LOGGER.log(Level.INFO, "Loaded {0} pending changes from service.", allItems.size());
+            if (allItems == null) {
+                LOGGER.log(Level.WARNING, "No data found.");
+                return;
+            }
 
             filteredItems = new FilteredList<>(allItems, p -> true);
             sortedItems = new SortedList<>(filteredItems);
@@ -122,36 +166,30 @@ public class PendingChangesController {
             pendingChangesTable.setItems(sortedItems);
             
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to load pending changes.", e);
+            LOGGER.log(Level.SEVERE, "Failed to load table data.", e);
         }
     }
 
-    private void handleApprove(PendingChange change) {
+    // ... (handleApprove/Reject παραμένουν ίδια) ...
+     private void handleApprove(PendingChange change) {
         LOGGER.log(Level.INFO, "Attempting to approve request ID: {0}", change.getId());
-        
         try {
             changeRequestService.approveRequest(currentUser, change);
             allItems.remove(change);
-            
-            LOGGER.log(Level.INFO, "SUCCESS: Request {0} approved and removed from table.", change.getId());
-            
+            LOGGER.log(Level.INFO, "Request approved.");
         } catch (Exception e) {
-            // Το Level.SEVERE καταγράφει και το stack trace του exception
-            LOGGER.log(Level.SEVERE, "FAILURE: Could not approve request " + change.getId(), e);
+            LOGGER.log(Level.SEVERE, "Approve failed", e);
         }
     }
 
     private void handleReject(PendingChange change) {
         LOGGER.log(Level.INFO, "Attempting to reject request ID: {0}", change.getId());
-
         try {
             changeRequestService.rejectRequest(currentUser, change);
             allItems.remove(change);
-            
-            LOGGER.log(Level.INFO, "SUCCESS: Request {0} rejected and removed from table.", change.getId());
-            
+            LOGGER.log(Level.INFO, "Request rejected.");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "FAILURE: Could not reject request " + change.getId(), e);
+            LOGGER.log(Level.SEVERE, "Reject failed", e);
         }
     }
 }

@@ -50,12 +50,22 @@
                   </ImageView>
                </graphic>
             </Button>
+            <!-- View Change History Menu Button-->
+            <Button fx:id="historyButton" alignment="BASELINE_LEFT" graphicTextGap="10.0" maxWidth="Infinity" onAction="#handleHistory" styleClass="menu-btn" text="View Change History">
+               <graphic>
+                  <ImageView fitHeight="18" fitWidth="18" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/history_icon.png" /> 
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
             <!-- Manage Pending Changes Menu Button-->
             <Button fx:id="pendingChangesButton" alignment="BASELINE_LEFT" graphicTextGap="10.0" maxWidth="Infinity" onAction="#handlePendingChanges" styleClass="menu-btn" text="Manage Pending Changes">
                <graphic>
                   <ImageView fitHeight="18" fitWidth="18" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../images/history_icon.png" /> 
+                        <Image url="@../images/pending_changes_icon.png" /> 
                      </image>
                   </ImageView>
                </graphic>

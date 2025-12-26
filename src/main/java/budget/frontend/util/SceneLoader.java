@@ -241,4 +241,58 @@ public final class SceneLoader {
             return null;
         }
     }
+
+    /**
+     * A wrapper class to hold both the loaded root node and its controller.
+     * Useful when loading sub-views where we need to inject data into the controller.
+     *
+     * @param <T> The type of the controller.
+     */
+    public static class ViewResult<T> {
+        private final Parent root;
+        private final T controller;
+
+        public ViewResult(Parent root, T controller) {
+            this.root = root;
+            this.controller = controller;
+        }
+
+        public Parent getRoot() {
+            return root;
+        }
+
+        public T getController() {
+            return controller;
+        }
+    }
+
+    /**
+     * Loads an FXML file and returns both the root node and the controller.
+     * Does NOT set the scene on the stage.
+     *
+     * @param fxmlPath The path to the FXML file.
+     * @param <T> The type of the controller.
+     * @return A ViewResult containing both the root node and the controller, or null if failed.
+     */
+    public static <T> ViewResult<T> loadView(String fxmlPath) {
+        URL fxmlUrl = SceneLoader.class.getResource(fxmlPath);
+
+        if (fxmlUrl == null) {
+            LOGGER.log(Level.SEVERE, "ΣΦΑΛΜΑ: Το αρχείο {0} δεν βρέθηκε.", fxmlPath);
+            return null;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent root = loader.load();
+            T controller = loader.getController(); // Παίρνουμε τον Controller
+
+            return new ViewResult<>(root, controller);
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "ΣΦΑΛΜΑ κατά τη φόρτωση του View: {0}", fxmlPath);
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

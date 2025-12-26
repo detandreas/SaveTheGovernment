@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import budget.backend.exceptions.UserNotAuthorizedException;
 import budget.backend.exceptions.ValidationException;
 import budget.backend.model.domain.user.GovernmentMember;
+import budget.backend.model.domain.user.PrimeMinister;
 import budget.backend.model.domain.user.User;
 import budget.backend.model.enums.Ministry;
 import budget.backend.repository.UserRepository;
@@ -213,10 +214,13 @@ public class LoginController {
                 );
             }
             case PRIME_MINISTER -> {
-                LOGGER.log(
-                    Level.INFO,
-                    "--- [5] Μπήκαμε στο Case PRIME_MINISTER"
-                );
+                LOGGER.log(Level.INFO, "--- [5] Μπήκαμε στο Case PRIME_MINISTER");
+                
+                if (user instanceof PrimeMinister) {
+                    PrimeMinister.setInstance((PrimeMinister) user);
+                } else {
+                    PrimeMinister.setInstance((PrimeMinister) user); 
+                }
                 yield new ViewPathInfo(
                     Constants.PRIME_MINISTER_VIEW,
                     "Prime Minister Dashboard"

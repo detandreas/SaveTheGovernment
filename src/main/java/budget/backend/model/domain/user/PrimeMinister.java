@@ -78,6 +78,24 @@ public final class PrimeMinister extends User {
     }
 
     /**
+     * Sets the singleton instance.
+     * Used during login to set the authenticated Prime Minister.
+     *
+     * @param pm the Prime Minister instance to set
+     */
+    public static void setInstance(PrimeMinister pm) {
+        instance = pm;
+    }
+    
+    /**
+     * Clears the singleton instance.
+     * Used for testing purposes to reset the state.
+     */
+    public static void clearInstance() {
+        instance = null;
+    }
+
+    /**
      * Indicates whether the Prime Minister can edit the provided budget item.
      *
      * @param budgetItem the budget item in question
