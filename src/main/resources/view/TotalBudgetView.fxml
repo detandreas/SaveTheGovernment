@@ -91,7 +91,7 @@
     <TableView fx:id="budgetTable" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="nameColumn" prefWidth="200" text="Budget Item" />
-            <TableColumn fx:id="valueColumn" prefWidth="150" styleClass="center-aligned-cell" text="Amount (€)" />
+            <TableColumn fx:id="valueColumn" prefWidth="150" text="Amount (€)" />
             <TableColumn fx:id="typeColumn" prefWidth="100" text="Type" />       
         </columns>
         

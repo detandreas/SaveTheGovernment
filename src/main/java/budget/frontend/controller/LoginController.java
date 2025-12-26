@@ -218,7 +218,6 @@ public class LoginController {
                     Level.INFO,
                     "--- [5] Μπήκαμε στο Case PRIME_MINISTER"
                 );
-                PrimeMinister.setInstance((PrimeMinister) user);
                 yield new ViewPathInfo(
                     Constants.PRIME_MINISTER_VIEW,
                     "Prime Minister Dashboard"

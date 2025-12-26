@@ -26,6 +26,7 @@ import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
 import java.text.NumberFormat;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -257,6 +258,16 @@ public class PendingChangesController {
                 Level.SEVERE, "Failed to load table data.", e
             );
         }
+        setupFilters();
+    }
+    /**
+     * Sets up filtering and sorting for the table.
+     */
+    private void setupFilters() {
+        allItems = changeRequestService.getAllPendingChangesSortedByDate();
+        filteredItems = new FilteredList<>(allItems, p -> true);
+        sortedItems = new SortedList<>(filteredItems);
+        pendingChangesTable.setItems(sortedItems);
     }
     /**
      * Handles the approval of a pending change.
@@ -291,5 +302,41 @@ public class PendingChangesController {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Reject failed", e);
         }
+    }
+
+    @FXML
+    private void handleSortAmountAsc() {
+        sortedItems.setComparator(Comparator.comparingDouble(change -> change.getNewValue() - change.getOldValue()));
+    }
+
+    @FXML
+    private void handleSortAmountDesc() {
+        sortedItems.setComparator(Comparator.comparingDouble((PendingChange change) -> change.getNewValue() - change.getOldValue()).reversed());
+    }
+
+    @FXML
+    private void handleFilterIncreasesOnly() {
+        filteredItems.setPredicate(change -> change.getNewValue() > change.getOldValue());
+    }
+
+    @FXML
+    private void handleFilterDecreasesOnly() {
+        filteredItems.setPredicate(change -> change.getNewValue() < change.getOldValue());
+    }
+
+    @FXML
+    private void handleSortByNameAsc() {
+        sortedItems.setComparator(Comparator.comparing(PendingChange::getRequestByName));
+    }
+
+    @FXML
+    private void handleSortByNameDesc() {
+        sortedItems.setComparator(Comparator.comparing(PendingChange::getRequestByName).reversed());
+    }
+
+    @FXML
+    private void handleClearFilters() {
+        filteredItems.setPredicate(p -> true);
+        sortedItems.setComparator(null);  // Επαναφορά στο default sorting
     }
 }
