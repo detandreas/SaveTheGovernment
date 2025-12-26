@@ -4,6 +4,7 @@ import budget.backend.model.domain.PendingChange;
 import budget.backend.model.domain.user.PrimeMinister;
 import budget.backend.repository.BudgetRepository;
 import budget.backend.service.ChangeRequestService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import budget.backend.repository.ChangeRequestRepository;
 import budget.backend.service.BudgetService;
 import budget.backend.repository.UserRepository;
@@ -55,7 +56,13 @@ public class PendingChangesController {
         initServices();
         LOGGER.log(Level.INFO, "Controller UI initialized. Waiting for User Data...");
     }
-
+    /**
+     * Sets the current Prime Minister.
+     */
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2", 
+        justification = "Controller needs a reference to the external mutable User object by design."
+    )
     public void setPrimeMinister(PrimeMinister pm) {
         this.currentUser = pm;
         LOGGER.log(Level.INFO, "PrimeMinister set: " + pm.getFullName());

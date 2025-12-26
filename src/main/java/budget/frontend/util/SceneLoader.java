@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -252,15 +253,22 @@ public final class SceneLoader {
         private final Parent root;
         private final T controller;
 
+        @SuppressFBWarnings(
+            value = "EI_EXPOSE_REP2", 
+            justification = "Wrapper class must store external mutable JavaFX objects."
+        )
         public ViewResult(Parent root, T controller) {
             this.root = root;
             this.controller = controller;
         }
-
+        @SuppressFBWarnings(
+            value = "EI_EXPOSE_REP", 
+            justification = "Returns mutable JavaFX root node intentionally."
+        )
         public Parent getRoot() {
             return root;
         }
-
+        
         public T getController() {
             return controller;
         }
