@@ -60,7 +60,7 @@
         </children>
     </HBox>
 
-    <TableView fx:id="changeLogTable" VBox.vgrow="ALWAYS">
+    <TableView fx:id="PendingChangesTable" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="dateColumn" text="Date &amp; Time" prefWidth="180"/>
             <TableColumn fx:id="actorColumn" text="User" prefWidth="150"/>
