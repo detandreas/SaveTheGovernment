@@ -162,17 +162,38 @@ public class PendingChangesController {
         Callback<TableColumn<PendingChange, Void>,
         TableCell<PendingChange, Void>> cellFactory =
             param -> new TableCell<>() {
-            private final Button btnAccept = new Button("Accept");
+            private final Button btnAccept = new Button("Approve");
             private final Button btnReject = new Button("Reject");
             private final HBox container = new HBox(10, btnAccept, btnReject);
 
         {
             container.getStyleClass().add("action-box");
-            btnAccept.getStyleClass().addAll("action-button", "btn-accept");
+            btnAccept.getStyleClass().addAll("action-button", "btn-approve");
             btnReject.getStyleClass().addAll("action-button", "btn-reject");
             btnAccept.setOnAction(event -> {
                 PendingChange item = getTableView().getItems().get(getIndex());
-                handleApprove(item);
+
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Approve Confirmation");
+                alert.setHeaderText(
+                    "Approve Pending Change ID: " + item.getId()
+                );
+                alert.setContentText("Are you sure you want to approve it?");
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.getStylesheets().add(
+                    getClass().getResource(
+                        "/styles/dialog.css"
+                    ).toExternalForm()
+                );
+                dialogPane.getStyleClass().add("approve-alert");
+                alert.setGraphic(null);
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    handleApprove(item);
+                } else {
+                    LOGGER.log(Level.INFO, "Accept cancelled by user.");
+                }
             });
             btnReject.setOnAction(event -> {
                 PendingChange item = getTableView().getItems().get(getIndex());
@@ -277,7 +298,6 @@ public class PendingChangesController {
                 LOGGER.log(Level.WARNING, "No data found.");
                 return;
             }
-
             filteredItems = new FilteredList<>(allItems, p -> true);
             sortedItems = new SortedList<>(filteredItems);
             sortedItems.comparatorProperty().bind(

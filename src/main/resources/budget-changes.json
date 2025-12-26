@@ -43,5 +43,14 @@
     "submittedDate": "2025-12-26T22:52:14.5803887",
     "actorName": "Andreas Papathanasiou",
     "actorId": "550e8400-e29b-41d4-a716-446655440000"
+  },
+  {
+    "id": 9,
+    "budgetItemId": 57,
+    "oldValue": 12000.0,
+    "newValue": 15000.0,
+    "submittedDate": "2025-12-26T23:43:48.9913885",
+    "actorName": "Andreas Papathanasiou",
+    "actorId": "550e8400-e29b-41d4-a716-446655440000"
   }
 ]

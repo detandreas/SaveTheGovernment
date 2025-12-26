@@ -156,11 +156,11 @@
     -fx-background-radius: 5;
 }
 
-.btn-accept {
+.btn-approve {
     -fx-background-color: #1e894a;
 }
 
-.btn-accept:hover {
+.btn-approve:hover {
     -fx-background-color: #0f6a35; /* Λίγο πιο σκούρο όταν περνάει το ποντίκι */
 }
 
