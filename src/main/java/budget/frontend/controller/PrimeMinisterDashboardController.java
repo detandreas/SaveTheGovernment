@@ -8,7 +8,7 @@ import javafx.fxml.FXML;
  * Controller for the Citizen Dashboard.
  * Handles navigation and display of various views for citizens.
  */
-public class CitizenDashboardController extends DashboardController {
+public class PrimeMinisterDashboardController extends DashboardController {
 
     /**
      * Initializes the dashboard by loading the TotalBudgetView
@@ -40,8 +40,8 @@ public class CitizenDashboardController extends DashboardController {
      * @param event the action event that was triggered
      */
     @FXML
-    private void handleHistory(ActionEvent event) {
-        loadCenterView(Constants.HISTORY_VIEW);
+    private void handlePendingChanges(ActionEvent event) {
+        loadCenterView(Constants.PENDING_CHANGES_VIEW);
     }
 
     /**

@@ -34,6 +34,13 @@
       "fullName": "Maria Ikonomopoulou",
       "password": "0e9a2a449067c768e68acad7bc10489045a32ee3130f828712931840072ee0c2",
       "userRole": "CITIZEN"
+    },
+    {
+      "id": "b5cac65d-9abd-474c-96cc-d6130c7bd5ec",
+      "userName": "clichewiche",
+      "fullName": "Cliche Wiche",
+      "password": "414c9fd2e18fd3fc78041bdb942e4387442a5ef71398d49d2d872744048e3708",
+      "userRole": "CITIZEN"
     }
   ],
   "governmentMembers": [

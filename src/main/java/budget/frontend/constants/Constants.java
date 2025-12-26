@@ -38,6 +38,8 @@ public final class Constants {
     public static final String HOME_VIEW = "/view/HomeView.fxml";
     public static final String HISTORY_VIEW = "/view/ChangeLogView.fxml";
     public static final String STATISTICS_VIEW = "/view/StatisticsView.fxml";
+    public static final String PENDING_CHANGES_VIEW =
+                                    "/view/PendingChangesView.fxml";  
 
     // Chart labels and budget item names
     public static final String LOANS_ITEM_NAME = "Loans";
