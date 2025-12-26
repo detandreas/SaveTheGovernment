@@ -42,6 +42,7 @@ public class PendingChangesController {
     @FXML private TableView<PendingChange> pendingChangesTable;
     @FXML private TableColumn<PendingChange, String> dateColumn;
     @FXML private TableColumn<PendingChange, String> actorColumn;
+    @FXML private TableColumn<PendingChange, String> itemNameColumn;
     @FXML private TableColumn<PendingChange, Integer> itemIdColumn;
     @FXML private TableColumn<PendingChange, Double> oldValueColumn;
     @FXML private TableColumn<PendingChange, Double> newValueColumn;
@@ -119,6 +120,9 @@ public class PendingChangesController {
 
         actorColumn.setCellValueFactory(cell ->
             new SimpleStringProperty(cell.getValue().getRequestByName()));
+
+        itemNameColumn.setCellValueFactory(cell ->
+            new SimpleStringProperty(cell.getValue().getBudgetItemName()));
 
         itemIdColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getBudgetItemId()));
@@ -274,11 +278,16 @@ public class PendingChangesController {
      * @param change the PendingChange to approve
      */
     private void handleApprove(PendingChange change) {
-        LOGGER.log(
-            Level.INFO,
-            "Attempting to approve request ID: {0}", change.getId()
-        );
+        LOGGER.log(Level.INFO, "Attempting to approve request ID: {0}", change.getId());
+        
+        LOGGER.log(Level.INFO, "Debug Year Check: Request ID {0} has Year: {1}", 
+            new Object[]{change.getId(), change.getBudgetItemYear()}); 
+
         try {
+            if (change.getBudgetItemYear() == 0) {
+                throw new IllegalArgumentException("Cannot approve request: Year is invalid (0)");
+            }
+            
             changeRequestService.approveRequest(currentUser, change);
             allItems.remove(change);
             LOGGER.log(Level.INFO, "Request approved.");
@@ -306,32 +315,48 @@ public class PendingChangesController {
 
     @FXML
     private void handleSortAmountAsc() {
-        sortedItems.setComparator(Comparator.comparingDouble(change -> change.getNewValue() - change.getOldValue()));
+        sortedItems.setComparator(
+            Comparator.comparingDouble(
+                change -> change.getNewValue() - change.getOldValue()
+            )
+        );
     }
 
     @FXML
     private void handleSortAmountDesc() {
-        sortedItems.setComparator(Comparator.comparingDouble((PendingChange change) -> change.getNewValue() - change.getOldValue()).reversed());
+        sortedItems.setComparator(
+            Comparator.comparingDouble(
+                (PendingChange change) -> change.getNewValue() - change.getOldValue()
+            ).reversed()
+        );
     }
 
     @FXML
     private void handleFilterIncreasesOnly() {
-        filteredItems.setPredicate(change -> change.getNewValue() > change.getOldValue());
+        filteredItems.setPredicate(
+            change -> change.getNewValue() > change.getOldValue()
+        );
     }
 
     @FXML
     private void handleFilterDecreasesOnly() {
-        filteredItems.setPredicate(change -> change.getNewValue() < change.getOldValue());
+        filteredItems.setPredicate(
+            change -> change.getNewValue() < change.getOldValue()
+        );
     }
 
     @FXML
     private void handleSortByNameAsc() {
-        sortedItems.setComparator(Comparator.comparing(PendingChange::getRequestByName));
+        sortedItems.setComparator(
+            Comparator.comparing(PendingChange::getRequestByName)
+        );
     }
 
     @FXML
     private void handleSortByNameDesc() {
-        sortedItems.setComparator(Comparator.comparing(PendingChange::getRequestByName).reversed());
+        sortedItems.setComparator(
+            Comparator.comparing(PendingChange::getRequestByName).reversed()
+        );
     }
 
     @FXML

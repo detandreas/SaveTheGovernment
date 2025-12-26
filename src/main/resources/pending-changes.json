@@ -2,6 +2,7 @@
   {
     "id": 1,
     "budgetItemId": 101,
+    "budgetItemYear": 2025,
     "requestByName": "andreas",
     "requestById": "550e8400-e29b-41d4-a716-446655440000",
     "oldValue": 1000.0,
@@ -10,18 +11,9 @@
     "submittedDate": "2024-01-15T10:30:00"
   },
   {
-    "id": 2,
-    "budgetItemId": 102,
-    "requestByName": "nancy1",
-    "requestById": "550e8400-e29b-41d4-a716-446655440001",
-    "oldValue": 2500.5,
-    "newValue": 3000.0,
-    "status": "APPROVED",
-    "submittedDate": "2024-01-14T14:20:15"
-  },
-  {
     "id": 3,
     "budgetItemId": 103,
+    "budgetItemYear": 2025,
     "requestByName": "Nais",
     "requestById": "c41f50ca-bdf8-4c2f-bc22-95cee5543eda",
     "oldValue": 500.0,
@@ -31,22 +23,26 @@
   },
   {
     "id": 4,
-    "budgetItemId": 104,
+    "budgetItemId": 57,
+    "budgetItemName": "Financial derivatives",
+    "budgetItemYear": 2025,
     "requestByName": "andreas1",
     "requestById": "550e8400-e29b-41d4-a716-446655440000",
     "oldValue": 12000.0,
     "newValue": 15000.0,
-    "status": "PENDING",
+    "status": "APPROVED",
     "submittedDate": "2024-01-16T16:45:00"
   },
   {
     "id": 5,
-    "budgetItemId": 105,
+    "budgetItemId": 57,
+    "budgetItemName": "Financial derivatives",
+    "budgetItemYear": 2025,
     "requestByName": "govuser",
     "requestById": "550e8400-e29b-41d4-a716-446655440001",
     "oldValue": 800.75,
     "newValue": 1000.0,
-    "status": "PENDING",
+    "status": "REJECTED",
     "submittedDate": "2024-01-17T11:00:00"
   }
 ]
