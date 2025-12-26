@@ -25,6 +25,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import java.util.Optional;
+
 import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.Locale;
@@ -171,7 +176,29 @@ public class PendingChangesController {
             });
             btnReject.setOnAction(event -> {
                 PendingChange item = getTableView().getItems().get(getIndex());
-                handleReject(item);
+
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Reject Confirmation");
+                alert.setHeaderText(
+                    "Reject Pending Change ID: " + item.getId()
+                );
+                alert.setContentText("Are you sure you want to reject it?");
+
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.getStylesheets().add(
+                    getClass().getResource(
+                        "/styles/dialog.css"
+                    ).toExternalForm()
+                );
+                dialogPane.getStyleClass().add("reject-alert");
+                alert.setGraphic(null);
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    handleReject(item);
+                } else {
+                    LOGGER.log(Level.INFO, "Reject cancelled by user.");
+                }
             });
         }
 
@@ -278,16 +305,18 @@ public class PendingChangesController {
      * @param change the PendingChange to approve
      */
     private void handleApprove(PendingChange change) {
-        LOGGER.log(Level.INFO, "Attempting to approve request ID: {0}", change.getId());
-        
-        LOGGER.log(Level.INFO, "Debug Year Check: Request ID {0} has Year: {1}", 
-            new Object[]{change.getId(), change.getBudgetItemYear()}); 
+        LOGGER.log(
+            Level.INFO,
+            "Attempting to approve request ID: {0}",
+            change.getId()
+        );
 
         try {
             if (change.getBudgetItemYear() == 0) {
-                throw new IllegalArgumentException("Cannot approve request: Year is invalid (0)");
+                throw new IllegalArgumentException(
+                    "Cannot approve request: Year is invalid (0)"
+                );
             }
-            
             changeRequestService.approveRequest(currentUser, change);
             allItems.remove(change);
             LOGGER.log(Level.INFO, "Request approved.");
@@ -326,7 +355,8 @@ public class PendingChangesController {
     private void handleSortAmountDesc() {
         sortedItems.setComparator(
             Comparator.comparingDouble(
-                (PendingChange change) -> change.getNewValue() - change.getOldValue()
+                (PendingChange change) ->
+                change.getNewValue() - change.getOldValue()
             ).reversed()
         );
     }
@@ -362,6 +392,6 @@ public class PendingChangesController {
     @FXML
     private void handleClearFilters() {
         filteredItems.setPredicate(p -> true);
-        sortedItems.setComparator(null);  // Επαναφορά στο default sorting
+        sortedItems.setComparator(null);
     }
 }

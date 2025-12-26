@@ -149,7 +149,7 @@ implements GenericInterfaceRepository<User, UUID> {
                     } catch (IllegalStateException e) {
                         LOGGER.log(
                             Level.FINE,
-                            "PrimeMinister instance already set, skipping setInstance."
+                            "PrimeMinister already set, skipping setInstance."
                         );
                     }
                     return pm;

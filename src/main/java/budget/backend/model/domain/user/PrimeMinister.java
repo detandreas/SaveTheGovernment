@@ -88,7 +88,9 @@ public final class PrimeMinister extends User {
    @SuppressFBWarnings
         (value = "EI_EXPOSE_STATIC_REP2",
         justification = "Singleton instance is mutable by design")
-    public static synchronized void setInstance(PrimeMinister deserializedInstance) {
+    public static synchronized void setInstance(
+        PrimeMinister deserializedInstance
+    ) {
         if (deserializedInstance == null) {
             throw new IllegalArgumentException(
                 "Cannot set null as PrimeMinister instance."
@@ -96,7 +98,8 @@ public final class PrimeMinister extends User {
         }
         if (instance != null) {
             throw new IllegalStateException(
-                "PrimeMinister instance already exists. Cannot set a new instance."
+                "PrimeMinister instance already exists."
+                + " Cannot set a new instance."
             );
         }
         instance = deserializedInstance;

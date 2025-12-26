@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import budget.backend.exceptions.UserNotAuthorizedException;
 import budget.backend.exceptions.ValidationException;
 import budget.backend.model.domain.user.GovernmentMember;
-import budget.backend.model.domain.user.PrimeMinister;
 import budget.backend.model.domain.user.User;
 import budget.backend.model.enums.Ministry;
 import budget.backend.repository.UserRepository;
