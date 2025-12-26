@@ -109,8 +109,12 @@ public class PendingChangesController {
     }
 
      private void setupTableColumns() {
-        dateColumn.setCellValueFactory(cell ->
-            new SimpleStringProperty(cell.getValue().getSubmittedDate()));
+        dateColumn.setCellValueFactory(cellData -> {
+            String originalDate = cellData.getValue().getSubmittedDate();
+            return new SimpleStringProperty(
+                originalDate.replace("T", " ")
+            );
+        });
 
         actorColumn.setCellValueFactory(cell ->
             new SimpleStringProperty(cell.getValue().getRequestByName()));
