@@ -1,0 +1,89 @@
+.reject-alert.dialog-pane {
+    -fx-background-color: #f4f4f4; 
+    -fx-border-color: #a52b1e;
+    -fx-border-width: 2px;
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-size: 14px;
+}
+
+.reject-alert .header-panel {
+    -fx-background-color: #a52b1e;
+    -fx-padding: 15px;
+}
+
+.reject-alert .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+
+.reject-alert .content {
+    -fx-padding: 20px;
+    -fx-text-fill: #333333;
+}
+
+.reject-alert .button-bar .button {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #333;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-padding: 8px 15px;
+}
+
+.reject-alert .button-bar .button:hover {
+    -fx-background-color: #bdbdbd;
+}
+
+.reject-alert .button-bar .button:default {
+    -fx-background-color: #a52b1e;
+    -fx-text-fill: white;
+}
+
+.reject-alert .button-bar .button:default:hover {
+    -fx-background-color: #7a1e14; 
+}
+
+.approve-alert.dialog-pane {
+    -fx-background-color: #f4f4f4; 
+    -fx-border-color: #1e894a;
+    -fx-border-width: 2px;
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-size: 14px;
+}
+
+.approve-alert .header-panel {
+    -fx-background-color: #1e894a;
+    -fx-padding: 15px;
+}
+
+.approve-alert .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+
+.approve-alert .content {
+    -fx-padding: 20px;
+    -fx-text-fill: #333333;
+}
+
+.approve-alert .button-bar .button {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #333;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-padding: 8px 15px;
+}
+
+.approve-alert .button-bar .button:hover {
+    -fx-background-color: #bdbdbd;
+}
+
+.approve-alert .button-bar .button:default {
+    -fx-background-color: #1e894a;
+    -fx-text-fill: white;
+}
+
+.approve-alert .button-bar .button:default:hover {
+    -fx-background-color: #0f6a35; 
+}

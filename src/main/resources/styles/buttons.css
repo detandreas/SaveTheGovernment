@@ -141,3 +141,33 @@
 .filter-item:focused .label {
     -fx-text-fill: white;
 }
+
+/* Action Buttons inside Pending Changes Table */
+.action-box {
+    -fx-alignment: center; 
+    -fx-spacing: 10;
+}
+
+.action-button {
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-padding: 5 10 5 10;
+    -fx-background-radius: 5;
+}
+
+.btn-approve {
+    -fx-background-color: #1e894a;
+}
+
+.btn-approve:hover {
+    -fx-background-color: #0f6a35; /* Λίγο πιο σκούρο όταν περνάει το ποντίκι */
+}
+
+.btn-reject {
+    -fx-background-color: #a52b1e;
+}
+
+.btn-reject:hover {
+    -fx-background-color: #7a1e14; /* Λίγο πιο σκούρο όταν περνάει το ποντίκι */
+}

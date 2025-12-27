@@ -23,17 +23,6 @@ public class CitizenDashboardController extends DashboardController {
     // --- Navigation Events (Clicks στο Menu) ---
 
     /**
-     * Handles the click event for the Home menu item.
-     * Loads the HomeView in the center section of the dashboard.
-     *
-     * @param event the action event that was triggered
-     */
-    @FXML
-    private void handleHome(ActionEvent event) {
-        loadCenterView(Constants.HOME_VIEW);
-    }
-
-    /**
      * Handles the click event for the Total Budget menu item.
      * Loads the TotalBudgetView in the center section of the dashboard.
      *

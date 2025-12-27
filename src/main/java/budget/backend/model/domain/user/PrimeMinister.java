@@ -78,6 +78,42 @@ public final class PrimeMinister extends User {
     }
 
     /**
+    * Sets the singleton instance from deserialization.
+     * This method should only be called when loading from JSON.
+     * It ensures the singleton pattern is maintained after deserialization.
+     *
+     * @param deserializedInstance the PrimeMinister instance loaded from JSON
+     * @throws IllegalStateException if an instance already exists
+    */
+   @SuppressFBWarnings
+        (value = "EI_EXPOSE_STATIC_REP2",
+        justification = "Singleton instance is mutable by design")
+    public static synchronized void setInstance(
+        PrimeMinister deserializedInstance
+    ) {
+        if (deserializedInstance == null) {
+            throw new IllegalArgumentException(
+                "Cannot set null as PrimeMinister instance."
+            );
+        }
+        if (instance != null) {
+            throw new IllegalStateException(
+                "PrimeMinister instance already exists."
+                + " Cannot set a new instance."
+            );
+        }
+        instance = deserializedInstance;
+    }
+
+    /**
+     * Clears the singleton instance.
+     * Used for testing purposes to reset the state.
+     */
+    public static void clearInstance() {
+        instance = null;
+    }
+
+    /**
      * Indicates whether the Prime Minister can edit the provided budget item.
      *
      * @param budgetItem the budget item in question

@@ -9,15 +9,6 @@
     "actorId": "550e8400-e29b-41d4-a716-446655440002"
   },
   {
-    "id": 2,
-    "budgetItemId": 102,
-    "oldValue": 2500.5,
-    "newValue": 3000.0,
-    "submittedDate": "2024-01-14T14:20:15",
-    "actorName": "govuser",
-    "actorId": "550e8400-e29b-41d4-a716-446655440001"
-  },
-  {
     "id": 3,
     "budgetItemId": 103,
     "oldValue": 500.0,
@@ -25,24 +16,6 @@
     "submittedDate": "2024-01-13T09:15:30",
     "actorName": "govuser2",
     "actorId": "550e8400-e29b-41d4-a716-446655440003"
-  },
-  {
-    "id": 4,
-    "budgetItemId": 104,
-    "oldValue": 12000.0,
-    "newValue": 15000.0,
-    "submittedDate": "2024-01-16T16:45:00",
-    "actorName": "pmuser",
-    "actorId": "550e8400-e29b-41d4-a716-446655440002"
-  },
-  {
-    "id": 5,
-    "budgetItemId": 105,
-    "oldValue": 800.75,
-    "newValue": 1000.0,
-    "submittedDate": "2024-01-17T11:00:00",
-    "actorName": "govuser",
-    "actorId": "550e8400-e29b-41d4-a716-446655440001"
   },
   {
     "id": 6,
@@ -61,5 +34,23 @@
     "submittedDate": "2024-06-18T13:00:00",
     "actorName": "yourusername",
     "actorId": "b3527da4-3765-471f-a4aa-032aaa5a3ef6"
+  },
+  {
+    "id": 8,
+    "budgetItemId": 57,
+    "oldValue": 12000.0,
+    "newValue": 15000.0,
+    "submittedDate": "2025-12-26T22:52:14.5803887",
+    "actorName": "Andreas Papathanasiou",
+    "actorId": "550e8400-e29b-41d4-a716-446655440000"
+  },
+  {
+    "id": 9,
+    "budgetItemId": 57,
+    "oldValue": 12000.0,
+    "newValue": 15000.0,
+    "submittedDate": "2025-12-26T23:43:48.9913885",
+    "actorName": "Andreas Papathanasiou",
+    "actorId": "550e8400-e29b-41d4-a716-446655440000"
   }
 ]

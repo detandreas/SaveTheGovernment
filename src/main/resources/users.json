@@ -8,13 +8,6 @@
       "userRole": "CITIZEN"
     },
     {
-      "id": "550e8400-e29b-41d4-a716-446655440001",
-      "userName": "nancy1",
-      "fullName": "Nancy Patata",
-      "password": "9d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
-      "userRole": "CITIZEN"
-    },
-    {
       "id": "c41f50ca-bdf8-4c2f-bc22-95cee5543eda",
       "userName": "Nais",
       "fullName": "NAIS-AGGELOS",
@@ -33,6 +26,13 @@
       "userName": "maroik",
       "fullName": "Maria Ikonomopoulou",
       "password": "0e9a2a449067c768e68acad7bc10489045a32ee3130f828712931840072ee0c2",
+      "userRole": "CITIZEN"
+    },
+    {
+      "id": "b5cac65d-9abd-474c-96cc-d6130c7bd5ec",
+      "userName": "clichewiche",
+      "fullName": "Cliche Wiche",
+      "password": "414c9fd2e18fd3fc78041bdb942e4387442a5ef71398d49d2d872744048e3708",
       "userRole": "CITIZEN"
     }
   ],
@@ -71,10 +71,10 @@
     }
   ],
   "primeMinister": {
-    "id": "550e8400-e29b-41d4-a716-446655440002",
-    "userName": "pmuser",
-    "fullName": "Prime Minister",
-    "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+    "id": "9bf8b42c-9a57-453c-bdbb-87358c101df8",
+    "userName": "mitsotakis",
+    "fullName": "Kyriakos Mitsotakis",
+    "password": "29864e923a5a4efd8e378c9b5825644b89d8ca738c4c6b75694222c87ed91594",
     "userRole": "PRIME_MINISTER"
   }
 }

@@ -1,7 +1,13 @@
 package budget.backend.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import budget.backend.exceptions.ValidationException;
 import budget.backend.model.domain.Budget;
@@ -16,7 +22,6 @@ import budget.backend.repository.UserRepository;
 import budget.constants.Limits;
 import budget.constants.Message;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * Service for handling change requests to budget items.
  * Responsible for submitting, approving, and rejecting change requests.
@@ -376,5 +381,25 @@ public class ChangeRequestService {
         return budget.getItems().stream()
             .filter(item -> item.getId() == itemId)
             .findFirst();
+    }
+
+    private static final DateTimeFormatter FORMATTER =
+        DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    /**
+     * Retrieves all pending changes sorted by
+     * submission date in descending order.
+     * @return an ObservableList of PendingChange objects sorted by date
+     */
+    public ObservableList<PendingChange> getAllPendingChangesSortedByDate() {
+        return changeRequestRepository.load().stream()
+            .filter(change -> change.getStatus() == Status.PENDING)
+            .sorted(Comparator.comparing((PendingChange change) ->
+                LocalDateTime.parse(
+                        change.getSubmittedDate(),
+                        FORMATTER)).reversed())
+            .collect(Collectors.collectingAndThen(
+                Collectors.toList(),
+                FXCollections::observableArrayList
+            ));
     }
 }

@@ -144,6 +144,14 @@ implements GenericInterfaceRepository<User, UUID> {
                 JsonElement element = json.getAsJsonObject("primeMinister");
                 PrimeMinister pm = GSON.fromJson(element, PrimeMinister.class);
                 if (pm != null) {
+                    try {
+                        PrimeMinister.setInstance(pm);
+                    } catch (IllegalStateException e) {
+                        LOGGER.log(
+                            Level.FINE,
+                            "PrimeMinister already set, skipping setInstance."
+                        );
+                    }
                     return pm;
                 }
             } catch (JsonSyntaxException e) {

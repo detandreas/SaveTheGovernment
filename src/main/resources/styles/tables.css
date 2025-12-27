@@ -94,3 +94,11 @@
     -fx-shape: null;
     -fx-padding: 0;
 }
+
+.table-view .center-header .label {
+    -fx-alignment: CENTER;
+}
+
+.center-aligned-cell {
+    -fx-alignment: CENTER;
+}

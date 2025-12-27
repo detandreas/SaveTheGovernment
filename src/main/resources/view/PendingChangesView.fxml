@@ -15,14 +15,14 @@
 
 <VBox xmlns="http://javafx.com/javafx" 
       xmlns:fx="http://javafx.com/fxml" 
-      fx:controller="budget.frontend.controller.ChangeLogController"
+      fx:controller="budget.frontend.controller.PendingChangesController"
       spacing="15.0" 
       styleClass="content-container"
       stylesheets="@../styles/main.css">
 
     <HBox alignment="CENTER_LEFT" spacing="10.0">
         <children>
-            <Label text="Change Log History" styleClass="page-title"/>
+            <Label text="Manage Pending Changes" styleClass="page-title"/>
 
             <Region HBox.hgrow="ALWAYS" />
 
@@ -57,25 +57,29 @@
                     </MenuButton>
                 </children>
             </HBox>
+
         </children>
     </HBox>
 
-    <TableView fx:id="changeLogTable" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="dateColumn" text="Date &amp; Time" prefWidth="180"/>
-            <TableColumn fx:id="actorColumn" text="User" prefWidth="150"/>
-            <TableColumn fx:id="itemIdColumn" text="Item ID" prefWidth="80" styleClass="center-aligned-cell, center-header"/>
-            <TableColumn fx:id="oldValueColumn" text="Old Value (€)" prefWidth="120" styleClass="center-aligned-cell, center-header"/>
-            <TableColumn fx:id="newValueColumn" text="New Value (€)" prefWidth="120" styleClass="center-aligned-cell, center-header"/>
-            <TableColumn fx:id="valueDifferenceColumn" text="Difference (€)" prefWidth="120" styleClass="center-aligned-cell, center-header"/>
-        </columns>
+    <TableView fx:id="pendingChangesTable" VBox.vgrow="ALWAYS">
         
+        <columns>
+            <TableColumn fx:id="dateColumn" text="Date &amp; Time" prefWidth="150"/>
+            <TableColumn fx:id="actorColumn" text="User" prefWidth="100"/>
+            <TableColumn fx:id="itemNameColumn" text="Item Name" prefWidth="150"/>
+            <TableColumn fx:id="itemIdColumn" text="Item ID" prefWidth="80" styleClass="center-aligned-cell, center-header"/>
+            <TableColumn fx:id="oldValueColumn" text="Old Value (€)" prefWidth="150" styleClass="center-aligned-cell, center-header"/>
+            <TableColumn fx:id="newValueColumn" text="New Value (€)" prefWidth="150" styleClass="center-aligned-cell, center-header"/>
+            <TableColumn fx:id="valueDifferenceColumn" text="Difference (€)" prefWidth="150" styleClass="center-aligned-cell, center-header"/>
+            <TableColumn fx:id="actionColumn" text="Actions" prefWidth="160" styleClass="center-aligned-cell, center-header"/>
+        </columns>
+
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
         </columnResizePolicy>
 
         <placeholder>
-            <Label text="No changes recorded." styleClass="placeholder-label"/>
+            <Label text="All Pending Changes are resolved." styleClass="placeholder-label"/>
         </placeholder>
     </TableView>
 
