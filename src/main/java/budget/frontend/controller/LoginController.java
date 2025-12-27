@@ -279,6 +279,7 @@ public class LoginController {
             return;
         }
 
+        controller.setCurrentUser(user);
         controller.setUserInfo(user.getFullName(),
                                 user.getUserRole().toString());
     }

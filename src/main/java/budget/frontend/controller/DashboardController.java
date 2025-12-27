@@ -1,6 +1,10 @@
 package budget.frontend.controller;
+import java.util.function.Consumer;
+
+import budget.backend.model.domain.user.User;
 import budget.frontend.constants.Constants;
 import budget.frontend.util.SceneLoader;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -19,6 +23,33 @@ public class DashboardController {
     @FXML private BorderPane mainBorderPane;
     @FXML private Label fullNameLabel;
     @FXML private Label roleLabel;
+
+    private User currentUser;
+
+    /**
+     * Sets the currently authenticated user.
+     * This method is called by LoginController after successful authentication.
+     *
+     * @param user the authenticated user object
+     */
+        @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2",
+        justification =
+            "Controller needs a reference to the"
+            + "external mutable User object by design."
+    )
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
+
+    /**
+     * Returns the currently authenticated user.
+     *
+     * @return the current user, or null if not set
+     */
+    protected User getCurrentUser() {
+        return currentUser;
+    }
 
     /**
      * Initializes the dashboard controller.
@@ -39,6 +70,33 @@ public class DashboardController {
     public void setUserInfo(String username, String role) {
         getFullNameLabel().setText(username);
         getRoleLabel().setText(role);
+    }
+
+    /**
+     * Loads an FXML view and displays it in the center section
+     *                                               of the dashboard.
+     * Allows for controller configuration after loading.
+     *
+     * @param <T> The type of the controller
+     * @param fxmlPath the path to the FXML file to load
+     * @param controllerType the class type of the controller
+     * @param controllerConfigurator a consumer to configure
+     *                                          the controller after loading
+     */
+    protected <T> void loadCenterView(
+        String fxmlPath,
+        Class<T> controllerType,
+        Consumer<T> controllerConfigurator
+    ) {
+        SceneLoader.ViewResult<T> result = SceneLoader.loadView(fxmlPath);
+
+        if (result != null && result.getRoot() != null) {
+            if (controllerConfigurator != null
+                                    && result.getController() != null) {
+                controllerConfigurator.accept(result.getController());
+            }
+            getMainBorderPane().setCenter(result.getRoot());
+        }
     }
 
     /**
