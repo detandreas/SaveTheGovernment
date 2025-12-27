@@ -1,7 +1,5 @@
 package budget.frontend.controller;
 
-import java.util.logging.Logger;
-
 import budget.backend.model.domain.user.PrimeMinister;
 import budget.backend.model.domain.user.User;
 import budget.frontend.constants.Constants;
@@ -12,9 +10,6 @@ import javafx.fxml.FXML;
  * Handles navigation and display of various views for citizens.
  */
 public class PrimeMinisterDashboardController extends DashboardController {
-
-    private static final Logger LOGGER =
-        Logger.getLogger(PrimeMinisterDashboardController.class.getName());
 
     /**
      * Initializes the dashboard by loading the TotalBudgetView

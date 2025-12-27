@@ -2,6 +2,8 @@ package budget.backend.model.domain.user;
 
 import java.lang.reflect.Field;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -82,5 +84,37 @@ public class TestPrimeMinister {
         assertTrue(s.contains("userName=TestUser1"), "Failure - wrong toString");
         assertTrue(s.contains("fullName=Test Full Name1"), "Failure - wrong toString");
         assertTrue(s.contains("userRole=Prime Minister"), "Failure - wrong toString");
+    }
+
+    @Test
+    void testSetInstanceNull() {
+        IllegalArgumentException ex =
+                    assertThrows(IllegalArgumentException.class, () -> PrimeMinister.setInstance(null),
+                "Failure - null parameter should throw exception");
+        assertEquals("Cannot set null as PrimeMinister instance.", ex.getMessage(),
+                "Failure - wrong exception message");
+    }
+
+    @Test
+    void testSetInstanceWhenPmExists() {
+        PrimeMinister.getInstance("mitsotakis", "kyriakos Mitsotakis", "123");
+
+        PrimeMinister pm = PrimeMinister.getInstance();
+
+        IllegalStateException ex =
+            assertThrows(IllegalStateException.class, () -> PrimeMinister.setInstance(pm),
+                "Failure - setInstance when PrimeMinister exists should throw");
+        assertEquals("PrimeMinister instance already exists. Cannot set a new instance.", ex.getMessage(),
+                "Failure - wrong message");
+    }
+
+    @Test
+    void testSetInstanceCorrect() {
+        PrimeMinister.getInstance("mitsotakis", "kyriakos Mitsotakis", "123");
+
+        PrimeMinister pm = PrimeMinister.getInstance();
+        PrimeMinister.clearInstance();
+        assertDoesNotThrow(() -> PrimeMinister.setInstance(pm),
+                "Failure - setting PM when instance is null shouldn't throw");
     }
 }
