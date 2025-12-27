@@ -88,7 +88,8 @@ public class DashboardController {
         Class<T> controllerType,
         Consumer<T> controllerConfigurator
     ) {
-        SceneLoader.ViewResult<T> result = SceneLoader.loadView(fxmlPath);
+        SceneLoader.ViewResult<T> result =
+                            SceneLoader.loadViewWithController(fxmlPath);
 
         if (result != null && result.getRoot() != null) {
             if (controllerConfigurator != null
