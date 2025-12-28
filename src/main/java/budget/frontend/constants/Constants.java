@@ -40,6 +40,8 @@ public final class Constants {
     public static final String STATISTICS_VIEW = "/view/StatisticsView.fxml";
     public static final String PENDING_CHANGES_VIEW =
                                     "/view/PendingChangesView.fxml";
+    public static final String GOV_MEMBER_PENDING_CHANGES_VIEW =
+                                "/view/GovMemberPendingChangesView.fxml";
 
     // Chart labels and budget item names
     public static final String LOANS_ITEM_NAME = "Loans";
