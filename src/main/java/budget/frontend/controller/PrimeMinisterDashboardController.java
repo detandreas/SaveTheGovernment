@@ -43,7 +43,7 @@ public class PrimeMinisterDashboardController extends DashboardController {
      * Loads the PendingChangesView in the center section of the dashboard.
      */
     @FXML
-    public void handlePendingChanges() {
+    public void handlePendingChanges(ActionEvent event) {
         User currentUser = super.getCurrentUser();
 
         if (currentUser instanceof PrimeMinister pm) {
