@@ -9,6 +9,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Map;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -95,17 +96,6 @@ public class StatisticsController {
         // Setup expense and revenue combo boxes
         updateRevenueOrExpenseComboBox(true);
         updateRevenueOrExpenseComboBox(false);
-        revenueComboBox.setOnAction(e -> determineAction());
-        expenseComboBox.setOnAction(e -> updateTrendChart(false));
-    }
-
-    private void determineAction() {
-        String selectedChartType = chartTypeComboBox.getValue();
-        if ("Budget Results".equals(selectedChartType)) {
-            loadRevenueExpenseTrendChart();
-        } else {
-            updateTrendChart(true);
-        }
     }
 
     /**
@@ -266,6 +256,7 @@ public class StatisticsController {
             FXCollections.observableArrayList("Revenue", "Expense");
         revenueComboBox.setItems(revenueExpenseOptions);
         revenueComboBox.setValue("Revenue");
+        revenueComboBox.setOnAction(e -> loadRevenueExpenseTrendChart());
     }
 
     /**
@@ -315,6 +306,8 @@ public class StatisticsController {
         categoryLabel.setManaged(true);
         categoryComboBox.setVisible(true);
         categoryComboBox.setManaged(true);
+        revenueComboBox.setOnAction(e -> updateTrendChart(true));
+        expenseComboBox.setOnAction(e -> updateTrendChart(false));
     }
 
     /**
@@ -339,7 +332,8 @@ public class StatisticsController {
      */
     private void loadChartsForTopItems(int selectedYear, boolean isRevenue,
                                        String selectedCategory) {
-        updateRevenueOrExpenseComboBox(isRevenue);
+        updateRevenueOrExpenseComboBox(true);  // Update revenue combo
+        updateRevenueOrExpenseComboBox(false); // Update expense combo
         loadTop5ExpenseTrend(selectedYear);
         loadTop5RevenueTrend(selectedYear);
         loadTop5Pie(selectedYear, isRevenue, selectedCategory);
@@ -521,26 +515,22 @@ public class StatisticsController {
                 budgetService.getRevenueExpenseTrendSeries(
                     DEFAULT_START_YEAR, DEFAULT_END_YEAR);
 
-            XYChart.Series<Number, Number> selectedSeries = null;
-            String title = "";
+            final XYChart.Series<Number, Number> selectedSeries =
+            "Revenue".equals(selected) ? seriesMap.get("Revenue") : seriesMap.get("Expense");
+            final String title = "Revenue".equals(selected) ? "Revenue Trend " : "Expense Trend ";
 
-            if ("Revenue".equals(selected)) {
-                selectedSeries = seriesMap.get("Revenue");
-                title = "Revenue Trend ";
-            } else {
-                selectedSeries = seriesMap.get("Expense");
-                title = "Expense Trend ";
-            }
-
-            if (selectedSeries != null) {
+            if (selectedSeries != null && !selectedSeries.getData().isEmpty()) {
                 revenueExpenseLineChart.getData().add(selectedSeries);
                 revenueExpenseLineChart.setTitle(title);
-                Series<Number, Number> regressionSeries =
-                        budgetService.createRegressionSeries(selectedSeries);
-                revenueExpenseLineChart.getData().add(regressionSeries);
+
+                Platform.runLater(() -> {
+                    Series<Number, Number> regressionSeries =
+                            budgetService.createRegressionSeries(selectedSeries);
+                    revenueExpenseLineChart.getData().add(regressionSeries);
+                });
             }
         } catch (IllegalArgumentException e) {
-                revenueExpenseLineChart.getData().clear();
+            revenueExpenseLineChart.getData().clear();
         }
     }
 
@@ -593,8 +583,9 @@ public class StatisticsController {
             : netResultLineChart;
 
         String selectedItem = targetComboBox.getValue();
-        if (selectedItem == null || "all".equalsIgnoreCase(selectedItem)) {
-            targetChart.setTitle("Top 5 Revenue Trend ");
+        if (selectedItem == null || "All".equals(selectedItem)) {
+            String trendType = isRevenue ? "Revenues" : "Expenses";
+            targetChart.setTitle(String.format("Top 5 %s Trend ", trendType));
             loadTop5ItemsTrend(selectedYear, isRevenue, targetChart);
         } else {
             targetChart.setTitle(String.format("%s Trend ", selectedItem));
