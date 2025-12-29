@@ -7,7 +7,10 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import budget.backend.model.domain.Budget;
@@ -64,5 +67,23 @@ public class TestBudgetService {
             System.setProperty("budget.data.dir", originalDataDir);
         }
     }
+    
+    // recalculateBudgetTotals
+    @Test
+    void recalculateBudgetTotalsNullBudgetTrhows() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+            () -> service.recalculateBudgetTotals(null));
+        assertEquals("Budget cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void recalculateBudgetTotalsValid() {
+        service.recalculateBudgetTotals(budget2024);
+
+        assertEquals(2000.0, budget2024.getTotalRevenue());
+        assertEquals(1200, budget2024.getTotalExpense());
+        assertEquals(800.0, budget2024.getNetResult());
+    }
+
     
 }
