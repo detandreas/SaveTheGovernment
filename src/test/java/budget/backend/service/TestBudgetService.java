@@ -17,6 +17,7 @@ import budget.backend.model.domain.Budget;
 import budget.backend.model.domain.BudgetItem;
 import budget.backend.model.enums.Ministry;
 import budget.backend.repository.BudgetRepository;
+import javafx.collections.ObservableList;
 
 public class TestBudgetService {
     private BudgetRepository repository;
@@ -51,10 +52,10 @@ public class TestBudgetService {
         service.recalculateBudgetTotals(budget2024);
         repository.save(budget2024);
 
-        BudgetItem revenItem25 = new BudgetItem(4, 2025, "revenueItem",
+        BudgetItem revenueItem25 = new BudgetItem(4, 2025, "revenueItem",
         2100.0, true, List.of(Ministry.FINANCE));
 
-        Budget budget2025 = new Budget(List.of(revenItem25), 2025);
+        Budget budget2025 = new Budget(List.of(revenueItem25), 2025);
         service.recalculateBudgetTotals(budget2025);
         repository.save(budget2025);
     }
@@ -85,5 +86,21 @@ public class TestBudgetService {
         assertEquals(800.0, budget2024.getNetResult());
     }
 
-    
+    // getBudgetItemsForTable
+    @Test
+    void getBudgetItemsForTableValidYear() {
+        ObservableList<BudgetItem> item = service.getBudgetItemsForTable(2024);
+
+        assertEquals(3,item.size());
+    }
+
+    //getBudgetItemsSortedByValue
+    @Test 
+    void getBudgetItemsSortedByValueDescending() {
+        ObservableList<BudgetItem> item = service.getBudgetItemsForTable(2024);
+
+        assertEquals(2000, item.get(0).getValue());
+        assertEquals(800, item.get(1).getValue());
+        assertEquals(400, item.get(2).getValue());
+    }
 }
