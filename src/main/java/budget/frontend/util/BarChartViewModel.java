@@ -4,6 +4,7 @@ import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart.Series;
 
 /**
@@ -52,6 +53,25 @@ public class BarChartViewModel {
     }
 
     /**
+     * Loads two separate series into the chart.
+     * This is useful for loading revenue and expense series separately.
+     * @param series1 first series
+     * @param series2 second series
+     */
+    public void loadTwoSeries(Series<String, Number> series1,
+                              Series<String, Number> series2) {
+        chart.getData().clear();
+
+        if (series1 != null && !series1.getData().isEmpty()) {
+            chart.getData().add(series1);
+        }
+
+        if (series2 != null && !series2.getData().isEmpty()) {
+            chart.getData().add(series2);
+        }
+    }
+
+    /**
      * Sets the chart title.
      * @param title chart title
      */
@@ -60,10 +80,17 @@ public class BarChartViewModel {
     }
 
     /**
-     * Clears the chart.
+     * Clears the chart and forces category axis refresh.
+     * This ensures that when switching between different chart types,
+     * the category axis properly updates its categories.
      */
     public void clear() {
         chart.getData().clear();
+        // Force the CategoryAxis to recalculate categories
+        if (chart.getXAxis() instanceof CategoryAxis categoryAxis) {
+            categoryAxis.getCategories().clear();
+            categoryAxis.invalidateRange(categoryAxis.getCategories());
+        }
     }
 
 }
