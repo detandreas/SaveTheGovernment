@@ -41,6 +41,7 @@ public class PrimeMinisterDashboardController extends DashboardController {
     /**
      * Handles the click event for the Pending Changes menu item.
      * Loads the PendingChangesView in the center section of the dashboard.
+     * @param event the action event that was triggered
      */
     @FXML
     public void handlePendingChanges(ActionEvent event) {

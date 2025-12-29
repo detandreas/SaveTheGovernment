@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox 
+    alignment="CENTER"
+    spacing="15"
+    stylesheets="@../styles/main.css"
+    xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="budget.frontend.controller.CreateChangeRequestController">
+
+    <padding>
+        <Insets bottom="30" left="40" right="40" top="30" />
+    </padding>
+
+    <Label fx:id="createChangeRequestLabel" style="-fx-padding: 0 0 10 0;" styleClass="header-label" text="Create a Change Request" />
+
+    <!-- SELECT BUDGET ITEM (COMBOBOX) -->
+    <HBox alignment="CENTER_LEFT" maxWidth="400" spacing="10" styleClass="input-container">
+        <ComboBox fx:id="budgetItemComboBox" maxWidth="Infinity" promptText="Select a budget item:" styleClass="embedded-text-field" HBox.hgrow="ALWAYS" />
+    </HBox>
+
+    <!-- OLD VALUE -->
+    <HBox alignment="CENTER_LEFT" maxWidth="400" spacing="10" styleClass="input-container">
+        <TextField fx:id="oldValueTextField" promptText= "Old Value:" editable="false" styleClass="embedded-text-field" HBox.hgrow="ALWAYS" />
+    </HBox>
+
+    <!-- NEW VALUE -->
+    <HBox alignment="CENTER_LEFT" maxWidth="400" spacing="10" styleClass="input-container">
+        <TextField fx:id="newValueTextField" promptText="Enter the new value:" styleClass="embedded-text-field" HBox.hgrow="ALWAYS" />
+    </HBox>
+
+    <!-- PERCENTAGE BUTTONS -->
+    <HBox alignment="CENTER" maxWidth="450" spacing="5">
+        <Button text="-20%" onAction="#handlePercentageClick" userData="-0.20" styleClass="btn-percent"/>
+        <Button text="-15%" onAction="#handlePercentageClick" userData="-0.15" styleClass="btn-percent"/>
+        <Button text="-10%" onAction="#handlePercentageClick" userData="-0.10" styleClass="btn-percent"/>
+        <Button text="+10%" onAction="#handlePercentageClick" userData="0.10" styleClass="btn-percent"/>
+        <Button text="+15%" onAction="#handlePercentageClick" userData="0.15" styleClass="btn-percent"/>
+        <Button text="+20%" onAction="#handlePercentageClick" userData="0.20" styleClass="btn-percent"/>
+    </HBox>
+
+    <HBox alignment="CENTER" spacing="20" style="-fx-padding: 20 0 0 0;">
+        <Button fx:id="btnOk" text="Submit Request" onAction="#handleSubmitRequest" defaultButton="true" styleClass="btn-approve"/>
+        <Button text="Cancel" onAction="#handleCancel" cancelButton="true"/>
+    </HBox>

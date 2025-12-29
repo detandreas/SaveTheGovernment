@@ -68,6 +68,14 @@
       "fullName": "Athanasia Patatoukaki",
       "password": "91dbd533a6e089b17afbefcde1033b52850a9224a054dbead115e1b0a114b2f0",
       "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "EDUCATION",
+      "id": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d",
+      "userName": "govmem",
+      "fullName": "Adonis Georgiadis",
+      "password": "29864e923a5a4efd8e378c9b5825644b89d8ca738c4c6b75694222c87ed91594",
+      "userRole": "GOVERNMENT_MEMBER"
     }
   ],
   "primeMinister": {
