@@ -527,12 +527,10 @@ public class StatisticsController {
                 revenueExpenseLineChart.getData().add(selectedSeries);
                 revenueExpenseLineChart.setTitle(title);
 
-                Platform.runLater(() -> {
-                    Series<Number, Number> regressionSeries =
-                            budgetService
-                            .createRegressionSeries(selectedSeries);
-                    revenueExpenseLineChart.getData().add(regressionSeries);
-                });
+                Series<Number, Number> regressionSeries =
+                        budgetService
+                        .createRegressionSeries(selectedSeries);
+                revenueExpenseLineChart.getData().add(regressionSeries);
             }
         } catch (IllegalArgumentException e) {
             revenueExpenseLineChart.getData().clear();
