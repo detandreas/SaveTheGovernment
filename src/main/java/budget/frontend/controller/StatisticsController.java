@@ -516,8 +516,12 @@ public class StatisticsController {
                     DEFAULT_START_YEAR, DEFAULT_END_YEAR);
 
             final XYChart.Series<Number, Number> selectedSeries =
-            "Revenue".equals(selected) ? seriesMap.get("Revenue") : seriesMap.get("Expense");
-            final String title = "Revenue".equals(selected) ? "Revenue Trend " : "Expense Trend ";
+            "Revenue".equals(selected)
+            ? seriesMap.get("Revenue")
+            : seriesMap.get("Expense");
+            final String title = "Revenue".equals(selected)
+            ? "Revenue Trend "
+            : "Expense Trend ";
 
             if (selectedSeries != null && !selectedSeries.getData().isEmpty()) {
                 revenueExpenseLineChart.getData().add(selectedSeries);
@@ -525,7 +529,8 @@ public class StatisticsController {
 
                 Platform.runLater(() -> {
                     Series<Number, Number> regressionSeries =
-                            budgetService.createRegressionSeries(selectedSeries);
+                            budgetService
+                            .createRegressionSeries(selectedSeries);
                     revenueExpenseLineChart.getData().add(regressionSeries);
                 });
             }
