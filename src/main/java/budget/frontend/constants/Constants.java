@@ -22,12 +22,15 @@ public final class Constants {
     public static final String CITIZEN_DASHBOARD_VIEW =
                                             "/view/CitizenDashboardView.fxml";
     public static final String GOV_MEMBER_DASHBOARD_VIEW =
-                                        "/view/GovMemberDashboardView.fxml";
+                                        "/view/GovernmentMemberDashboardView.fxml";
     public static final String FINANCE_GOV_VIEW =
-                                    "/view/FinanceGovMemberDashboardView.fxml";
+                                    "/view/FinanceGovernmentMemberDashboardView.fxml";
     public static final String PRIME_MINISTER_VIEW =
                                     "/view/PrimeMinisterDashboardView.fxml";
 
+    // Pop-up Window view
+    public static final String CREATE_CHANGE_REQUEST_VIEW =
+                                    "/view/CreateChangeRequestView.fxml";
     // Legacy names for backward compatibility
     public static final String CITIZEN_VIEW = CITIZEN_DASHBOARD_VIEW;
     public static final String GOV_VIEW = GOV_MEMBER_DASHBOARD_VIEW;

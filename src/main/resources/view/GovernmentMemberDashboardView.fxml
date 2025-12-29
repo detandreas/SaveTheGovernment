@@ -21,7 +21,7 @@
     stylesheets="@../styles/main.css"
     xmlns="http://javafx.com/javafx/25"
     xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="budget.frontend.controller.PrimeMinisterDashboardController">
+    fx:controller="budget.frontend.controller.GovernmentMemberDashboardController">
 
    <left>
       <VBox maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" BorderPane.alignment="CENTER">

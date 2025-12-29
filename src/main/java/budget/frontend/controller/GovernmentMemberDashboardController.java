@@ -34,7 +34,8 @@ public class GovernmentMemberDashboardController extends DashboardController {
 
     /**
      * Handles the Pending Changes menu item click.
-     * Loads the GovMemberPendingChangesView into the center section of the dashboard.
+     * Loads the GovMemberPendingChangesView
+     * into the center section of the dashboard.
      * @param event the action event that was triggered
      */
     @FXML
