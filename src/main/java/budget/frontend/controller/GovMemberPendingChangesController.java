@@ -1,6 +1,8 @@
 package budget.frontend.controller;
 
+import budget.backend.model.domain.BudgetItem;
 import budget.backend.model.domain.PendingChange;
+import budget.backend.model.domain.user.User;
 import budget.backend.repository.BudgetRepository;
 import budget.backend.service.ChangeRequestService;
 import budget.backend.repository.ChangeRequestRepository;
@@ -12,8 +14,10 @@ import budget.backend.repository.ChangeLogRepository;
 import budget.frontend.constants.Constants;
 import budget.frontend.util.SceneLoader;
 import budget.frontend.util.SceneLoader.ViewResult;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -28,9 +32,11 @@ import javafx.scene.control.TableView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import java.time.Year;
 
 import java.text.NumberFormat;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,6 +65,12 @@ public class GovMemberPendingChangesController {
     private ObservableList<PendingChange> allItems;
     private FilteredList<PendingChange> filteredItems;
     private SortedList<PendingChange> sortedItems;
+    private BudgetService budgetService;
+    private User currentUser;
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
 
     /**
      * Initializes the controller by setting up
@@ -74,6 +86,8 @@ public class GovMemberPendingChangesController {
             "Controller UI initialized. Waiting for User Data..."
         );
     }
+
+    
     private void initServices() {
         try {
             ChangeRequestRepository reqRepo = new ChangeRequestRepository();
@@ -83,7 +97,7 @@ public class GovMemberPendingChangesController {
 
             BudgetValidationService valService =
                 new BudgetValidationService(budgetRepo);
-            BudgetService budgetService = new BudgetService(budgetRepo);
+            this.budgetService = new BudgetService(budgetRepo);
             ChangeLogService logService = new ChangeLogService(logRepo);
 
             this.changeRequestService = new ChangeRequestService(
@@ -227,30 +241,54 @@ public class GovMemberPendingChangesController {
             );
         }
     }
-    /**
-     * Opens the Create Change Request window as a modal dialog.
-     * @return true if the request was created successfully, false otherwise
-     */
     private boolean openRequestWindow() {
         try {
             ViewResult<CreateChangeRequestController> result = 
-                SceneLoader.loadViewWithController(
-                    Constants.CREATE_CHANGE_REQUEST_VIEW
-                );
-            if (result == null) {
-                return false;
-            }
+                SceneLoader.loadViewWithController(Constants.CREATE_CHANGE_REQUEST_VIEW);
+            
+            if (result == null) return false;
+
             Parent root = result.getRoot(); 
             CreateChangeRequestController popupController = result.getController();
+
+            int currentYear = Year.now().getValue();
+            ObservableList<BudgetItem> items = budgetService.getBudgetItemsForTable(currentYear);
+            popupController.setBudgetItems(items);
 
             Stage stage = new Stage();
             stage.setTitle("New Budget Change Request");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setResizable(false); // Προαιρετικό
+            stage.setResizable(false);
+            
             stage.showAndWait();
-            return true;
-            //return popupController.isOkClicked();
+
+            // --- ΛΟΓΙΚΗ ΑΠΟΘΗΚΕΥΣΗΣ ---
+            
+            // 1. Ελέγχουμε αν πατήθηκε το Submit στο παράθυρο
+            if (popupController.isSubmitClicked()) {
+                
+                // 2. Παίρνουμε τα δεδομένα
+                BudgetItem selectedItem = popupController.getSelectedBudgetItem();
+                Double newValue = popupController.getNewValue();
+
+                // 3. Έλεγχος εγκυρότητας
+                if (selectedItem != null && newValue != null && currentUser != null) {
+                    
+                    // 4. ΚΑΛΕΣΜΑ ΤΟΥ SERVICE (Αυτό γράφει στο JSON)
+                    changeRequestService.submitChangeRequest(
+                        currentUser, 
+                        selectedItem, 
+                        newValue
+                    );
+                    
+                    return true; 
+                } else {
+                    LOGGER.log(Level.WARNING, "Submission failed: Missing item, value, or user.");
+                }
+            }
+
+            return false; // Αν πάτησε Cancel
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error opening request window", e);
