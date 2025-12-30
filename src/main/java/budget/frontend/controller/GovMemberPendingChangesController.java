@@ -263,28 +263,27 @@ public class GovMemberPendingChangesController {
             
             stage.showAndWait();
 
-            // --- ΛΟΓΙΚΗ ΑΠΟΘΗΚΕΥΣΗΣ ---
-            
-            // 1. Ελέγχουμε αν πατήθηκε το Submit στο παράθυρο
+            // -- SAVE CHANGES TO JSON IF SUBMITTED --
             if (popupController.isSubmitClicked()) {
                 
-                // 2. Παίρνουμε τα δεδομένα
                 BudgetItem selectedItem = popupController.getSelectedBudgetItem();
                 Double newValue = popupController.getNewValue();
 
-                // 3. Έλεγχος εγκυρότητας
+                LOGGER.log(Level.INFO, "DEBUG CHECK -> User: {0}, Item: {1}, Value: {2}", 
+                     new Object[]{currentUser, selectedItem, newValue});
                 if (selectedItem != null && newValue != null && currentUser != null) {
                     
-                    // 4. ΚΑΛΕΣΜΑ ΤΟΥ SERVICE (Αυτό γράφει στο JSON)
                     changeRequestService.submitChangeRequest(
                         currentUser, 
                         selectedItem, 
                         newValue
                     );
-                    
-                    return true; 
+                    LOGGER.log(Level.INFO, "Request submitted successfully to JSON.");
+                    return true;
                 } else {
-                    LOGGER.log(Level.WARNING, "Submission failed: Missing item, value, or user.");
+                    LOGGER.log(Level.WARNING,
+                        "Submission failed: Missing item, value, or user."
+                    );
                 }
             }
 
