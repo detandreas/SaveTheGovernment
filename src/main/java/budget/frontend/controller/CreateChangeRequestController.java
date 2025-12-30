@@ -1,5 +1,152 @@
 package budget.frontend.controller;
 
+import budget.backend.model.domain.BudgetItem;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import javafx.util.StringConverter;
+import java.text.NumberFormat;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class CreateChangeRequestController {
-    
+
+    private static final Logger LOGGER = Logger.getLogger(
+        CreateChangeRequestController.class.getName()
+    );
+
+    @FXML private ComboBox<BudgetItem> budgetItemComboBox;
+    @FXML private TextField oldValueTextField;
+    @FXML private TextField newValueTextField;
+    @FXML private Button submitButton;
+    @FXML private ToggleGroup percentGroup; 
+
+    private boolean submitClicked = false;
+
+    @FXML
+    public void initialize() {
+        NumberFormat currencyFormat =
+            NumberFormat.getCurrencyInstance(Locale.GERMANY);
+
+        budgetItemComboBox.setConverter(new StringConverter<BudgetItem>() {
+            @Override
+            public String toString(BudgetItem item) {
+                return (item == null) ? "" : item.getName();
+            }
+            @Override
+            public BudgetItem fromString(String string) { return null; }
+        });
+
+        budgetItemComboBox.getSelectionModel()
+            .selectedItemProperty()
+            .addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                oldValueTextField.setText(currencyFormat.format(newVal.getValue()));
+                newValueTextField.clear();
+                if (percentGroup.getSelectedToggle() != null) {
+                    percentGroup.getSelectedToggle().setSelected(false);
+                }
+            }
+        });
+        
+        // Αν ο χρήστης γράψει χειροκίνητα στο New Value, ξε-επιλέγουμε τα ποσοστά
+        newValueTextField.textProperty().addListener((obs, oldText, newText) -> {
+            if (newValueTextField.isFocused()) {
+                 if (percentGroup.getSelectedToggle() != null) {
+                    percentGroup.getSelectedToggle().setSelected(false);
+                }
+            }
+        });
+    }
+
+    public void setBudgetItems(ObservableList<BudgetItem> items) {
+        this.budgetItemComboBox.setItems(items);
+    }
+
+    public boolean isSubmitClicked() {
+        return submitClicked;
+    }
+
+    public BudgetItem getSelectedBudgetItem() {
+        return budgetItemComboBox.getValue();
+    }
+
+    public Double getNewValue() {
+        try {
+            String text = newValueTextField.getText();
+            if (text == null || text.isEmpty()) {
+                return null;
+            }
+            String cleanValue = text
+                .replace(".", "")
+                .replace(",", ".");
+            return Double.parseDouble(cleanValue);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    @FXML
+    private void handlePercentageClick(ActionEvent event) {
+        if (oldValueTextField.getText().isEmpty()) {
+            // Αν δεν έχει επιλέξει είδος, ξε-επιλέγουμε το κουμπί
+            if (percentGroup.getSelectedToggle() != null) {
+                percentGroup.getSelectedToggle().setSelected(false);
+            }
+            return;
+        }
+
+        try {
+            BudgetItem item = budgetItemComboBox.getValue();
+            if (item == null) {
+                LOGGER.log(Level.WARNING, "No budget item selected");
+                return;
+            }
+
+            double currentVal = item.getValue();
+            Node source = (Node) event.getSource();
+            String userDataStr = (String) source.getUserData();
+            
+            if (userDataStr != null) {
+                double percent = Double.parseDouble(userDataStr);
+                double newVal = currentVal + (currentVal * percent);
+                
+                newValueTextField.setText(
+                    String.format(Locale.GERMANY, "%,.2f", newVal)
+                );
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error calculating percentage", e);
+        }
+    }
+
+    @FXML
+    private void handleSubmitRequest() {
+        if (budgetItemComboBox.getValue() == null ||
+            newValueTextField.getText().isEmpty()
+        ) {
+            return; 
+        }
+        submitClicked = true;
+        closeWindow();
+    }
+
+    @FXML
+    private void handleCancel() {
+        submitClicked = false;
+        closeWindow();
+    }
+
+    private void closeWindow() {
+        if (submitButton != null && submitButton.getScene() != null) {
+             ((Stage) submitButton.getScene().getWindow()).close();
+        }
+    }
 }
