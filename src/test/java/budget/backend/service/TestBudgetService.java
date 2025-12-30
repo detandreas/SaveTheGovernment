@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
@@ -216,6 +217,22 @@ public class TestBudgetService {
         assertEquals(1, series.getData().size());
         assertEquals("expenseItem1", series.getData().get(0).getXValue());
 
+    }
+
+    //getYearComparisonSeries
+    @Test
+    void getYearComparisonSeriesInvalidYearThrows() {
+        assertThrows(IllegalArgumentException.class,
+            () -> service.getYearComparisonSeries(2024, 2024));
+    }
+
+    @Test
+    void getYearComparisonSeriesValid() {
+        Map<String, Series<String, Number>> result = service.getYearComparisonSeries(2024, 2025);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.containsKey("2024"));
     }
 
 }
