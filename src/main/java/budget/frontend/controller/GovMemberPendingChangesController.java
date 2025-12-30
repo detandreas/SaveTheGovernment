@@ -1,14 +1,18 @@
 package budget.frontend.controller;
 
+import budget.backend.exceptions.UserNotAuthorizedException;
 import budget.backend.model.domain.BudgetItem;
 import budget.backend.model.domain.PendingChange;
+import budget.backend.model.domain.user.GovernmentMember;
 import budget.backend.model.domain.user.User;
+import budget.backend.model.enums.Ministry;
 import budget.backend.repository.BudgetRepository;
 import budget.backend.service.ChangeRequestService;
 import budget.backend.repository.ChangeRequestRepository;
 import budget.backend.service.BudgetService;
 import budget.backend.repository.UserRepository;
 import budget.backend.service.BudgetValidationService;
+import budget.backend.service.UserAuthorizationService;
 import budget.backend.service.ChangeLogService;
 import budget.backend.repository.ChangeLogRepository;
 import budget.frontend.constants.Constants;
@@ -25,6 +29,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -40,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 /**
  * Controller class for managing the pending changes view.
  * It follows the same architecture as ChangeLogController for consistency.
@@ -62,6 +69,7 @@ public class GovMemberPendingChangesController {
     @FXML private TableColumn<PendingChange, Double> valueDifferenceColumn;
 
     private ChangeRequestService changeRequestService;
+    private UserAuthorizationService userAuthService;
     private ObservableList<PendingChange> allItems;
     private FilteredList<PendingChange> filteredItems;
     private SortedList<PendingChange> sortedItems;
@@ -99,6 +107,8 @@ public class GovMemberPendingChangesController {
                 new BudgetValidationService(budgetRepo);
             this.budgetService = new BudgetService(budgetRepo);
             ChangeLogService logService = new ChangeLogService(logRepo);
+
+            this.userAuthService = new UserAuthorizationService();
 
             this.changeRequestService = new ChangeRequestService(
                 reqRepo,
@@ -253,7 +263,23 @@ public class GovMemberPendingChangesController {
 
             int currentYear = Year.now().getValue();
             ObservableList<BudgetItem> items = budgetService.getBudgetItemsForTable(currentYear);
-            popupController.setBudgetItems(items);
+            ObservableList<BudgetItem> allowedItems;
+
+            if (currentUser instanceof GovernmentMember) {
+                GovernmentMember govMember = (GovernmentMember) currentUser;
+                Ministry myMinistry = govMember.getMinistry();
+
+                allowedItems = items.stream()
+                    .filter(item -> item.getMinistries() != null && 
+                                    item.getMinistries().contains(myMinistry))
+                    .collect(Collectors.toCollection(FXCollections::observableArrayList));
+
+                popupController.setBudgetItems(allowedItems);
+            } else {
+                LOGGER.log(Level.WARNING, 
+                    "Current user is not a Government Member. No items allowed."
+                );
+            }
 
             Stage stage = new Stage();
             stage.setTitle("New Budget Change Request");
@@ -269,17 +295,32 @@ public class GovMemberPendingChangesController {
                 BudgetItem selectedItem = popupController.getSelectedBudgetItem();
                 Double newValue = popupController.getNewValue();
 
-                LOGGER.log(Level.INFO, "DEBUG CHECK -> User: {0}, Item: {1}, Value: {2}", 
-                     new Object[]{currentUser, selectedItem, newValue});
                 if (selectedItem != null && newValue != null && currentUser != null) {
-                    
-                    changeRequestService.submitChangeRequest(
-                        currentUser, 
-                        selectedItem, 
-                        newValue
-                    );
-                    LOGGER.log(Level.INFO, "Request submitted successfully to JSON.");
-                    return true;
+                   try {
+                        userAuthService.checkCanUserSubmitRequest(currentUser, selectedItem);
+
+                        changeRequestService.submitChangeRequest(
+                            currentUser, 
+                            selectedItem, 
+                            newValue
+                        );
+                        
+                        LOGGER.log(Level.INFO, "Request submitted successfully.");
+                        return true;
+
+                    } catch (UserNotAuthorizedException | IllegalArgumentException e) {
+                        // Αν αποτύχει ο έλεγχος, εμφανίζουμε Alert στον χρήστη
+                        LOGGER.log(Level.WARNING, "Submission denied: " + e.getMessage());
+                        Alert alert = new Alert(AlertType.ERROR);
+                        alert.setTitle("Submission Denied");
+                        alert.setHeaderText("Authorization Error");
+                        alert.setContentText(
+                            "You are not authorized to submit "
+                            + "a change request for the selected budget item."
+                        ); 
+                        alert.showAndWait();
+                        return false;
+                    }
                 } else {
                     LOGGER.log(Level.WARNING,
                         "Submission failed: Missing item, value, or user."
@@ -287,7 +328,7 @@ public class GovMemberPendingChangesController {
                 }
             }
 
-            return false; // Αν πάτησε Cancel
+            return false;
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error opening request window", e);
