@@ -159,7 +159,7 @@ public class TestBudgetService {
 
     // getRevenueExpenseTrendSeries
     @Test
-    void  getRevenueExpenseTrendSeriesInvalidYearThrows() {
+    void  TestGetRevenueExpenseTrendSeriesInvalidYearThrows() {
         assertThrows(IllegalArgumentException.class,
             () -> service.getRevenueExpenseTrendSeries(2025, 2024));
     }
@@ -186,4 +186,36 @@ public class TestBudgetService {
         assertEquals(2400.0, result.get(Constants.REVENUE_LABEL).getData().get(0).getYValue());
         assertEquals(1200.0, result.get(Constants.EXPENSE_LABEL).getData().get(0).getYValue());
     }
+
+    //getTopBudgetItemsSeries
+    @Test
+    void getTopBudgetItemsSeriesInvalidYearThrows() {
+        assertThrows(IllegalArgumentException.class, () ->
+            service.getTopBudgetItemsSeries(2026, 2, true, true));
+    }
+
+    @Test
+    void getTopBudgetItemsSeriesInvalidTopNThrows() {
+        assertThrows(IllegalArgumentException.class,
+            () -> service.getTopBudgetItemsSeries(2024, 0, true, true));
+    }
+
+    @Test
+    void getTopBudgetItemsSeriesHasCorrectName() {
+        Series<String, Number> series1 = service.getTopBudgetItemsSeries(2024, 2, true, true);
+        Series<String, Number> series2 = service.getTopBudgetItemsSeries(2024, 2, false, true);
+
+        assertEquals(Constants.TOP_REVENUE_LABEL, series1.getName());
+        assertEquals(Constants.TOP_EXPENSE_LABEL, series2.getName());
+    }
+
+    @Test
+    void getTopBudgetItemsSeriesExpensesTopOne() {
+        Series<String, Number> series = service.getTopBudgetItemsSeries(2024, 1, false, true);
+
+        assertEquals(1, series.getData().size());
+        assertEquals("expenseItem1", series.getData().get(0).getXValue());
+
+    }
+
 }
