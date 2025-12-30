@@ -1,16 +1,15 @@
 package budget.frontend.controller;
 
-import budget.backend.model.domain.user.PrimeMinister;
+import budget.backend.model.domain.user.GovernmentMember;
 import budget.backend.model.domain.user.User;
 import budget.frontend.constants.Constants;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 /**
- * Controller for the Citizen Dashboard.
- * Handles navigation and display of various views for citizens.
+ * Controller for the Government Member Dashboard.
+ * Handles navigation and display of various views for government members.
  */
-public class PrimeMinisterDashboardController extends DashboardController {
-
+public class GovernmentMemberDashboardController extends DashboardController {
     /**
      * Initializes the dashboard by loading the TotalBudgetView
      * in the center section of the page.
@@ -23,12 +22,6 @@ public class PrimeMinisterDashboardController extends DashboardController {
 
     // --- Navigation Events (Clicks στο Menu) ---
 
-    /**
-     * Handles the click event for the Total Budget menu item.
-     * Loads the TotalBudgetView in the center section of the dashboard.
-     *
-     * @param event the action event that was triggered
-     */
     @FXML
     private void handleTotalBudget(ActionEvent event) {
         loadCenterView(Constants.TOTAL_BUDGET_VIEW);
@@ -39,31 +32,33 @@ public class PrimeMinisterDashboardController extends DashboardController {
         loadCenterView(Constants.HISTORY_VIEW);
     }
     /**
-     * Handles the click event for the Pending Changes menu item.
-     * Loads the PendingChangesView in the center section of the dashboard.
+     * Handles the Pending Changes menu item click.
+     * Loads the Government Member Pending Changes view
+     * into the center section of the dashboard.
      * @param event the action event that was triggered
      */
     @FXML
     public void handlePendingChanges(ActionEvent event) {
         User currentUser = super.getCurrentUser();
 
-        if (currentUser instanceof PrimeMinister pm) {
+        if (currentUser instanceof GovernmentMember) {
             loadCenterView(
-                Constants.PENDING_CHANGES_VIEW,
-                PendingChangesController.class,
-                controller -> controller.setPrimeMinister(pm)
+                Constants.GOV_MEMBER_PENDING_CHANGES_VIEW,
+                GovMemberPendingChangesController.class,
+                (controller) -> {
+                    controller.setCurrentUser(currentUser);
+                }
             );
         } else {
             throw new IllegalStateException(
-                "Current User is not a PrimeMinister"
+                "Current User is not a GovernmentMember"
             );
         }
     }
 
     /**
-     * Handles the click event for the Statistics menu item.
-     * Loads the StatisticsView in the center section of the dashboard.
-     *
+     * Handles the Statistics menu item click.
+     * Loads the Statistics view into the center section of the dashboard.
      * @param event the action event that was triggered
      */
     @FXML

@@ -6,6 +6,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
@@ -15,14 +16,14 @@
 
 <VBox xmlns="http://javafx.com/javafx" 
       xmlns:fx="http://javafx.com/fxml" 
-      fx:controller="budget.frontend.controller.PendingChangesController"
+      fx:controller="budget.frontend.controller.GovMemberPendingChangesController"
       spacing="15.0" 
       styleClass="content-container"
       stylesheets="@../styles/main.css">
 
     <HBox alignment="CENTER_LEFT" spacing="10.0">
         <children>
-            <Label text="Manage Pending Changes" styleClass="page-title"/>
+            <Label text="Pending Changes" styleClass="page-title"/>
 
             <Region HBox.hgrow="ALWAYS" />
 
@@ -61,6 +62,13 @@
         </children>
     </HBox>
 
+    <HBox alignment="CENTER_LEFT" spacing="10.0">
+        <children>
+            <Button fx:id="createNewRequestButton" onAction="#handleCreateNewRequest" text="Create New Request" styleClass="btn-approve" />
+            <Button fx:id="myRequestsButton" onAction="#handleMyRequests" text="My Requests" />
+        </children>
+    </HBox>
+
     <TableView fx:id="pendingChangesTable" VBox.vgrow="ALWAYS">
         
         <columns>
@@ -71,7 +79,6 @@
             <TableColumn fx:id="oldValueColumn" text="Old Value (€)" prefWidth="150" styleClass="center-aligned-cell, center-header"/>
             <TableColumn fx:id="newValueColumn" text="New Value (€)" prefWidth="150" styleClass="center-aligned-cell, center-header"/>
             <TableColumn fx:id="valueDifferenceColumn" text="Difference (€)" prefWidth="150" styleClass="center-aligned-cell, center-header"/>
-            <TableColumn fx:id="actionColumn" text="Actions" prefWidth="160" styleClass="center-aligned-cell, center-header"/>
         </columns>
 
         <columnResizePolicy>
