@@ -157,7 +157,7 @@ public class StatisticsService {
     /**
      * Gets loans series with regression.
      * @param isRevenue true if you are referring to loan Revenue item
-     * @return a Map containg loan trend Series and it's regression Series
+     * @return a Map containig loan trend Series and it's regression Series
      */
     public Map<String, Series<Number, Number>> getLoansTrendWithRegression(
         boolean isRevenue

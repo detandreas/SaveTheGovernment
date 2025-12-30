@@ -143,7 +143,7 @@ public class StatisticsController {
     *                   false if expenseCombobox is selected
     */
    private void updateRevenueOrExpenseComboBox(boolean isRevenue) {
-        Integer selectedYear = getSelectedYear();
+        int selectedYear = getSelectedYear();
         ObservableList<String> items = statisticsService.getTopItemsForComboBox(
             selectedYear, Constants.TOP_N_ITEMS, isRevenue);
         ComboBox<String> targetComboBox = isRevenue

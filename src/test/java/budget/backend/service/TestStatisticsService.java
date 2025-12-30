@@ -25,7 +25,7 @@ public class TestStatisticsService {
     /* Tests for getFormattedRevenueExpensePieData() */
 
     @Test
-    void testgetFormattedRevenueExpensePieDataInvalidYear() {
+    void testGetFormattedRevenueExpensePieDataInvalidYear() {
         IllegalArgumentException ex =
             assertThrows(IllegalArgumentException.class, () -> service.getFormattedRevenueExpensePieData(1000),
         "Invalid year should throw");
@@ -34,7 +34,7 @@ public class TestStatisticsService {
     }
 
     @Test
-    void testgetFormattedRevenueExpensePieDataInvalidYear2() {
+    void testGetFormattedRevenueExpensePieDataInvalidYear2() {
         IllegalArgumentException ex =
             assertThrows(IllegalArgumentException.class, () -> service.getFormattedRevenueExpensePieData(DEFAULT_END_YEAR),
             "Invalid year should throw");
@@ -43,7 +43,7 @@ public class TestStatisticsService {
     }
 
     @Test
-    void testgetFormattedRevenueExpensePieDataValid() {
+    void testGetFormattedRevenueExpensePieDataValid() {
         assertDoesNotThrow(() -> service.getFormattedRevenueExpensePieData(DEFAULT_START_YEAR),
     "Failure - valid year should not throw");
     }
@@ -51,7 +51,7 @@ public class TestStatisticsService {
     /* Tests for getTrendWithRegression() */
 
     @Test
-    void testgetTrendWithRegressionInvalidYearRange() {
+    void testGetTrendWithRegressionInvalidYearRange() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
             () -> service.getTrendWithRegression(DEFAULT_END_YEAR, DEFAULT_START_YEAR, true),
         "Failure - Invalid year range should throw");
@@ -61,7 +61,7 @@ public class TestStatisticsService {
     }
 
     @Test
-    void testgetTrendWithRegressionValid() {
+    void testGetTrendWithRegressionValid() {
         assertDoesNotThrow(() -> service.getTrendWithRegression(DEFAULT_START_YEAR, DEFAULT_END_YEAR, true),
     "Failure - valid year range should not throw");
     }
@@ -69,7 +69,7 @@ public class TestStatisticsService {
     /* Tests for getTopItemsForComboBox() */
 
     @Test
-    void testgetTopItemsForComboBoxInvalidYear() {
+    void testGetTopItemsForComboBoxInvalidYear() {
         assertDoesNotThrow(() -> service.getTopItemsForComboBox(1000, DEFAULT_TOP_N, true),
         "Failure - ivalid year should not throw");
 
@@ -81,7 +81,7 @@ public class TestStatisticsService {
     }
 
     @Test
-    void testgetTopItemsForComboBoxInvalidTopN() {
+    void testGetTopItemsForComboBoxInvalidTopN() {
         assertDoesNotThrow(() -> service.getTopItemsForComboBox(DEFAULT_START_YEAR, -1, true),
         "Failure - ivalid topN should not throw");
 
@@ -93,9 +93,9 @@ public class TestStatisticsService {
     }
 
     @Test
-    void testgetTopItemsForComboBoxValid() {
+    void testGetTopItemsForComboBoxValid() {
         assertDoesNotThrow(() -> service.getTopItemsForComboBox(DEFAULT_START_YEAR, DEFAULT_TOP_N, true),
-        "Failure - ivalid topN should not throw");
+        "Failure - invalid topN should not throw");
 
         var topItems = service.getTopItemsForComboBox(DEFAULT_START_YEAR, DEFAULT_TOP_N, true);
         assertEquals(6, topItems.size(),
@@ -105,7 +105,7 @@ public class TestStatisticsService {
     /* Tests for getSingleItemTrendWithRegression() */
 
     @Test
-    void getSingleItemTrendWithRegressionInvalidYear() {
+    void testGetSingleItemTrendWithRegressionInvalidYear() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
             () -> service.getSingleItemTrendWithRegression(1000, "Taxes", true),
     "Failure - invalid year should throw");
@@ -115,7 +115,7 @@ public class TestStatisticsService {
     }
 
     @Test
-    void getSingleItemTrendWithRegressionInvalidItemName() {
+    void testGetSingleItemTrendWithRegressionInvalidItemName() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
             () -> service.getSingleItemTrendWithRegression(DEFAULT_START_YEAR, "Invalid", true),
         "Failure - invalid name should throw");
@@ -124,7 +124,7 @@ public class TestStatisticsService {
     }
 
     @Test
-    void getSingleItemTrendWithRegressionValid() {
+    void testGetSingleItemTrendWithRegressionValid() {
         assertDoesNotThrow(() -> service.getSingleItemTrendWithRegression(DEFAULT_START_YEAR, "Taxes", true),
         "Failure - valid method call should not throw ");
         var map = service.getSingleItemTrendWithRegression(DEFAULT_START_YEAR, "Taxes", true);
@@ -137,7 +137,7 @@ public class TestStatisticsService {
     /* Tests for getLoansTrendWithRegression() */
 
     @Test
-    void testgetLoansTrendWithRegressionValids() {
+    void testGetLoansTrendWithRegressionValids() {
         assertDoesNotThrow(() -> service.getLoansTrendWithRegression(true),
         "Failure - valid params should not throw");
         var map = service.getLoansTrendWithRegression(true);
@@ -150,7 +150,7 @@ public class TestStatisticsService {
     /* Tests for getNetResultWithRegression() */
 
     @Test
-    void testgetNetResultWithRegression() {
+    void testGetNetResultWithRegression() {
         assertDoesNotThrow(() -> service.getNetResultWithRegression(),
         "Failure - valid method call should not throw");
         var map = service.getNetResultWithRegression();
