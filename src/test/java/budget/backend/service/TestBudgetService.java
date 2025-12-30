@@ -126,4 +126,32 @@ public class TestBudgetService {
         assertThrows(IllegalArgumentException.class,
             () -> service.getLoansTrendSeries(2025, 2024, true));
     }
+
+    //getNetResultSeries
+    @Test
+    void testGetNetResultSeriesInvalidYearThrows() {
+        assertThrows(IllegalArgumentException.class,
+            () -> service.getNetResultSeries(2025, 2024));
+    }
+
+    @Test
+    void testGetNetResultSeriesHasCorrectName() {
+        Series<Number, Number> series = service.getNetResultSeries(2024, 2025);
+        assertEquals(Constants.NET_RESULT_LABEL, series.getName());
+    }
+
+    @Test
+    void testGetNetResultSeriesSkipsMissingBudgets() {
+        Series<Number, Number> series = service.getNetResultSeries(2023, 2025);
+
+        assertEquals(1, series.getData().size());
+        assertEquals(2024, series.getData().get(0).getXValue());
+    }
+
+    @Test
+    void testGetNetResultSeriesReturnCorrectValue() {
+        Series<Number, Number> series = service.getNetResultSeries(2024, 2025);
+        // netResult = 2000.0 + 400.0 - 800.0 - 400.0 = 800.0
+        assertEquals(1200.0, series.getData().get(0).getYValue());
+    }
 }
