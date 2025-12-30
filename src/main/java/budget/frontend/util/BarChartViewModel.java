@@ -45,7 +45,7 @@ public class BarChartViewModel {
      * Loads a single series.
      * @param series the series which will be loaded
      */
-    public void loadSingleSereis(Series<String, Number> series) {
+    public void loadSingleSeries(Series<String, Number> series) {
         chart.getData().clear();
         if (series != null && !series.getData().isEmpty()) {
             chart.getData().add(series);
