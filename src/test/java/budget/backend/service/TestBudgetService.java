@@ -235,4 +235,26 @@ public class TestBudgetService {
         assertTrue(result.containsKey("2024"));
     }
 
+    // getRevenueExpenseBarSeries
+    @Test
+    void getRevenueExpenseBarSeriesInvalidYearThrows() {
+        assertThrows(IllegalArgumentException.class,
+            () -> service.getRevenueExpenseBarSeries(2031));
+    }
+
+    @Test
+    void getRevenueExpenseBarSeriesHasCorrectName() {
+        Series<String, Number> series = service.getRevenueExpenseBarSeries(2024);
+
+        assertEquals(Constants.BUDGET_OVERVIEW_LABEL, series.getName());
+    }
+
+    @Test
+    void getRevenueExpenseBarSeriesValid() {
+        Series<String, Number> series = service.getRevenueExpenseBarSeries(2024);
+
+        assertEquals(2, series.getData().size());
+        assertEquals(2400.0, series.getData().get(0).getYValue());
+        assertEquals(1200.0, series.getData().get(1).getYValue());
+    }
 }
