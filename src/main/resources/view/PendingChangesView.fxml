@@ -65,7 +65,7 @@
         
         <columns>
             <TableColumn fx:id="dateColumn" text="Date &amp; Time" prefWidth="150"/>
-            <TableColumn fx:id="actorColumn" text="User" prefWidth="100"/>
+            <TableColumn fx:id="actorColumn" text="User" prefWidth="150"/>
             <TableColumn fx:id="itemNameColumn" text="Item Name" prefWidth="150"/>
             <TableColumn fx:id="itemIdColumn" text="Item ID" prefWidth="80" styleClass="center-aligned-cell, center-header"/>
             <TableColumn fx:id="oldValueColumn" text="Old Value (€)" prefWidth="150" styleClass="center-aligned-cell, center-header"/>

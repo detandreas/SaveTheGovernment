@@ -165,17 +165,17 @@
       {
         "ID": 14,
         "BILL": "Sales of goods and services",
-        "VALUE": 2.405E9
+        "VALUE": 2.04425E9
       },
       {
         "ID": 15,
         "BILL": "Other current revenue",
-        "VALUE": 2.775E9
+        "VALUE": 3.0525E9
       },
       {
         "ID": 31,
         "BILL": "Fixed Assets",
-        "VALUE": 3.7E7
+        "VALUE": 3.145E7
       },
       {
         "ID": 43,
@@ -217,7 +217,7 @@
       {
         "ID": 22,
         "BILL": "Social benefits",
-        "VALUE": 4.25136E8
+        "VALUE": 3.613656E8
       },
       {
         "ID": 23,
