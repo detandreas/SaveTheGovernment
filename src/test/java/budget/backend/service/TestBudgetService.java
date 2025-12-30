@@ -25,6 +25,7 @@ import budget.backend.repository.BudgetRepository;
 import budget.frontend.constants.Constants;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 
 public class TestBudgetService {
@@ -320,19 +321,19 @@ public class TestBudgetService {
 
     //getTopItemsTrendSeries
     @Test
-    void getTopItemsTrendSeriesInvalidYearRangeThrows() {
+    void testGetTopItemsTrendSeriesInvalidYearRangeThrows() {
         assertThrows(IllegalArgumentException.class,
             () -> service.getTopItemsTrendSeries(2024, 2025, 2024, 2, true));
     }
 
     @Test
-    void getTopItemsTrendSeriesInvalidYearThrows() {
+    void testGetTopItemsTrendSeriesInvalidYearThrows() {
         assertThrows(IllegalArgumentException.class,
             () -> service.getTopItemsTrendSeries(2027, 2027, 2030, 2, true));
     }
 
     @Test
-    void getTopItemsTrendSeriesInvalidTopNThrows() {
+    void testGetTopItemsTrendSeriesInvalidTopNThrows() {
     assertThrows(IllegalArgumentException.class,
         () -> service.getTopItemsTrendSeries(2024, 2023, 2024, 0, true));
     }
@@ -346,4 +347,18 @@ public class TestBudgetService {
         // Το 2025 το revenueItem έχει τιμή 2100.0
         assertEquals(2100.0, result.get("revenueItem").getData().get(1).getYValue());
     }
+
+    //creatRegressionSeries
+    @Test
+    void creatRegressionSeriesLogic() {
+        Series<Number, Number> dataSeries = new Series<>();
+        dataSeries.getData().add(new Data<> (2020, 1000.0));
+        dataSeries.getData().add(new Data<> (2021, 2000.0));
+
+        Series<Number, Number> regression = service.createRegressionSeries(dataSeries);
+
+        assertFalse(regression.getData().isEmpty());
+        assertEquals(11, regression.getData().size());
+    }
+
 }
