@@ -18,6 +18,7 @@ import budget.backend.repository.ChangeLogRepository;
 import budget.frontend.constants.Constants;
 import budget.frontend.util.SceneLoader;
 import budget.frontend.util.SceneLoader.ViewResult;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -75,7 +76,18 @@ public class GovMemberPendingChangesController {
     private BudgetService budgetService;
     private User currentUser;
 
-    public void setCurrentUser(User user) {
+    /**
+     * Sets the current user for the controller.
+     *
+     * @param user the current user
+     */
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2",
+        justification =
+        "Controller needs a reference to the"
+        + " external mutable User object by design."
+    )
+    public final void setCurrentUser(User user) {
         this.currentUser = user;
     }
 
@@ -94,7 +106,6 @@ public class GovMemberPendingChangesController {
         );
     }
 
-    
     private void initServices() {
         try {
             ChangeRequestRepository reqRepo = new ChangeRequestRepository();
@@ -121,12 +132,14 @@ public class GovMemberPendingChangesController {
             LOGGER.log(Level.SEVERE, "Error initializing services", e);
         }
     }
-
-     private void setupTableColumns() {
+    /**
+     * Sets up the table columns with appropriate
+     * cell value factories and formatting.
+     */
+    private void setupTableColumns() {
         // Μέσα στην setupTableColumns()
         dateColumn.setCellValueFactory(cellData -> {
             String rawDate = cellData.getValue().getSubmittedDate();
-            
             if (rawDate == null || rawDate.isEmpty()) {
                 return new SimpleStringProperty("");
             }
@@ -135,32 +148,29 @@ public class GovMemberPendingChangesController {
                 LocalDateTime dateTime = LocalDateTime.parse(
                     rawDate, DateTimeFormatter.ISO_DATE_TIME
                 );
-                
                 DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern(
                     "dd/MM/yyyy HH:mm"
                 );
-                return new SimpleStringProperty(dateTime.format(outputFormatter));
-                
+                return new SimpleStringProperty(
+                    dateTime.format(outputFormatter)
+                );
             } catch (Exception e) {
-                return new SimpleStringProperty(rawDate.replace("T", " "));
+                return new SimpleStringProperty(
+                    rawDate.replace("T", " ")
+                );
             }
         });
 
         actorColumn.setCellValueFactory(cell ->
             new SimpleStringProperty(cell.getValue().getRequestByName()));
-
         itemNameColumn.setCellValueFactory(cell ->
             new SimpleStringProperty(cell.getValue().getBudgetItemName()));
-
         itemIdColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getBudgetItemId()));
-
         oldValueColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getOldValue()));
-
         newValueColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getNewValue()));
-
         valueDifferenceColumn.setCellValueFactory(cell -> {
             double diff =
             cell.getValue().getNewValue() - cell.getValue().getOldValue();
@@ -260,24 +270,34 @@ public class GovMemberPendingChangesController {
         LOGGER.log(Level.INFO, "Navigating to Create New Request view.");
         boolean success = openRequestWindow();
         if (success) {
-            refreshTable(); 
+            refreshTable();
             LOGGER.log(Level.INFO,
                 "New request created successfully. Table refreshed."
             );
         }
     }
+    /**
+     * Opens the Create Change Request window
+     * and handles the submission process.
+     *
+     * @return true if a request was successfully submitted, false otherwise
+     */
     private boolean openRequestWindow() {
         try {
-            ViewResult<CreateChangeRequestController> result = 
-                SceneLoader.loadViewWithController(Constants.CREATE_CHANGE_REQUEST_VIEW);
-            
-            if (result == null) return false;
+            ViewResult<CreateChangeRequestController> result =
+                SceneLoader.loadViewWithController(
+                    Constants.CREATE_CHANGE_REQUEST_VIEW
+                );
+            if (result == null) {
+                return false;
+            }
 
-            Parent root = result.getRoot(); 
-            CreateChangeRequestController popupController = result.getController();
-
+            Parent root = result.getRoot();
+            CreateChangeRequestController popupController =
+                result.getController();
             int currentYear = Year.now().getValue();
-            ObservableList<BudgetItem> items = budgetService.getBudgetItemsForTable(currentYear);
+            ObservableList<BudgetItem> items =
+                budgetService.getBudgetItemsForTable(currentYear);
             ObservableList<BudgetItem> allowedItems;
 
             if (currentUser instanceof GovernmentMember) {
@@ -285,13 +305,15 @@ public class GovMemberPendingChangesController {
                 Ministry myMinistry = govMember.getMinistry();
 
                 allowedItems = items.stream()
-                    .filter(item -> item.getMinistries() != null && 
-                                    item.getMinistries().contains(myMinistry))
-                    .collect(Collectors.toCollection(FXCollections::observableArrayList));
+                    .filter(item -> item.getMinistries() != null
+                            && item.getMinistries().contains(myMinistry))
+                    .collect(Collectors.toCollection(
+                        FXCollections::observableArrayList
+                    ));
 
                 popupController.setBudgetItems(allowedItems);
             } else {
-                LOGGER.log(Level.WARNING, 
+                LOGGER.log(Level.WARNING,
                     "Current user is not a Government Member. No items allowed."
                 );
             }
@@ -301,38 +323,47 @@ public class GovMemberPendingChangesController {
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setResizable(false);
-            
             stage.showAndWait();
 
             // -- SAVE CHANGES TO JSON IF SUBMITTED --
             if (popupController.isSubmitClicked()) {
-                
-                BudgetItem selectedItem = popupController.getSelectedBudgetItem();
+
+                BudgetItem selectedItem =
+                    popupController.getSelectedBudgetItem();
                 Double newValue = popupController.getNewValue();
-
-                if (selectedItem != null && newValue != null && currentUser != null) {
+                if (selectedItem != null
+                    && newValue != null
+                    && currentUser != null
+                ) {
                    try {
-                        userAuthService.checkCanUserSubmitRequest(currentUser, selectedItem);
-
+                        userAuthService.checkCanUserSubmitRequest(
+                            currentUser, selectedItem
+                        );
                         changeRequestService.submitChangeRequest(
-                            currentUser, 
-                            selectedItem, 
+                            currentUser,
+                            selectedItem,
                             newValue
                         );
-                        
-                        LOGGER.log(Level.INFO, "Request submitted successfully.");
+                        LOGGER.log(
+                            Level.INFO,
+                            "Request submitted successfully."
+                        );
                         return true;
-
-                    } catch (UserNotAuthorizedException | IllegalArgumentException e) {
+                    } catch (
+                        UserNotAuthorizedException | IllegalArgumentException e
+                    ) {
                         // Αν αποτύχει ο έλεγχος, εμφανίζουμε Alert στον χρήστη
-                        LOGGER.log(Level.WARNING, "Submission denied: " + e.getMessage());
+                        LOGGER.log(
+                            Level.WARNING,
+                            "Submission denied: " + e.getMessage()
+                        );
                         Alert alert = new Alert(AlertType.ERROR);
                         alert.setTitle("Submission Denied");
                         alert.setHeaderText("Authorization Error");
                         alert.setContentText(
                             "You are not authorized to submit "
                             + "a change request for the selected budget item."
-                        ); 
+                        );
                         alert.showAndWait();
                         return false;
                     }
@@ -342,15 +373,15 @@ public class GovMemberPendingChangesController {
                     );
                 }
             }
-
             return false;
-
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error opening request window", e);
             return false;
         }
     }
-
+    /**
+     * Refreshes the table data from the service.
+     */
     private void refreshTable() {
         try {
             allItems = changeRequestService.getAllPendingChangesSortedByDate();
@@ -372,9 +403,8 @@ public class GovMemberPendingChangesController {
             return;
         }
         if (!isMyRequestsActive) {
-            
+
             LOGGER.log(Level.INFO, "Filtering for My Requests only.");
-            
             filteredItems.setPredicate(change -> {
                 String requestUser = change.getRequestByName();
                 String myUser = currentUser.getFullName();
@@ -384,9 +414,7 @@ public class GovMemberPendingChangesController {
             myRequestsButton.setText("Show All Requests");
             myRequestsButton.getStyleClass().add("btn-reject");
             isMyRequestsActive = true;
-
         } else {
-            
             LOGGER.log(Level.INFO, "Showing All Requests.");
             filteredItems.setPredicate(p -> true);
 
