@@ -52,41 +52,5 @@
     "submittedDate": "2025-12-26T23:43:48.9913885",
     "actorName": "Andreas Papathanasiou",
     "actorId": "550e8400-e29b-41d4-a716-446655440000"
-  },
-  {
-    "id": 10,
-    "budgetItemId": 15,
-    "oldValue": 2.775E9,
-    "newValue": 3.0525E9,
-    "submittedDate": "2025-12-30T13:37:44.5613023",
-    "actorName": "Adonis Georgiadis",
-    "actorId": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d"
-  },
-  {
-    "id": 11,
-    "budgetItemId": 22,
-    "oldValue": 4.25136E8,
-    "newValue": 3.613656E8,
-    "submittedDate": "2025-12-30T13:38:50.7467783",
-    "actorName": "Adonis Georgiadis",
-    "actorId": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d"
-  },
-  {
-    "id": 12,
-    "budgetItemId": 14,
-    "oldValue": 2.405E9,
-    "newValue": 2.04425E9,
-    "submittedDate": "2025-12-30T13:39:32.2427141",
-    "actorName": "Adonis Georgiadis",
-    "actorId": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d"
-  },
-  {
-    "id": 13,
-    "budgetItemId": 31,
-    "oldValue": 3.7E7,
-    "newValue": 3.145E7,
-    "submittedDate": "2025-12-30T13:45:51.1041291",
-    "actorName": "Adonis Georgiadis",
-    "actorId": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d"
   }
 ]

@@ -22,9 +22,9 @@ public final class Constants {
     public static final String CITIZEN_DASHBOARD_VIEW =
                                             "/view/CitizenDashboardView.fxml";
     public static final String GOV_MEMBER_DASHBOARD_VIEW =
-                                        "/view/GovernmentMemberDashboardView.fxml";
+                                    "/view/GovernmentMemberDashboardView.fxml";
     public static final String FINANCE_GOV_VIEW =
-                                    "/view/FinanceGovernmentMemberDashboardView.fxml";
+                            "/view/FinanceGovernmentMemberDashboardView.fxml";
     public static final String PRIME_MINISTER_VIEW =
                                     "/view/PrimeMinisterDashboardView.fxml";
 

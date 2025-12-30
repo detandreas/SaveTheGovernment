@@ -15,7 +15,9 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+/**
+ * Controller class for creating change requests in the budget frontend.
+ */
 public class CreateChangeRequestController {
 
     private static final Logger LOGGER = Logger.getLogger(
@@ -26,10 +28,13 @@ public class CreateChangeRequestController {
     @FXML private TextField oldValueTextField;
     @FXML private TextField newValueTextField;
     @FXML private Button submitButton;
-    @FXML private ToggleGroup percentGroup; 
+    @FXML private ToggleGroup percentGroup;
 
     private boolean submitClicked = false;
-
+    /**
+     * Initializes the controller class.
+     * Sets up the ComboBox converter and listeners for UI components.
+     */
     @FXML
     public void initialize() {
         NumberFormat currencyFormat =
@@ -41,23 +46,26 @@ public class CreateChangeRequestController {
                 return (item == null) ? "" : item.getName();
             }
             @Override
-            public BudgetItem fromString(String string) { return null; }
+            public BudgetItem fromString(String string) {
+                return null;
+            }
         });
 
         budgetItemComboBox.getSelectionModel()
             .selectedItemProperty()
             .addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                oldValueTextField.setText(currencyFormat.format(newVal.getValue()));
+                oldValueTextField.setText(currencyFormat
+                    .format(newVal.getValue()));
                 newValueTextField.clear();
                 if (percentGroup.getSelectedToggle() != null) {
                     percentGroup.getSelectedToggle().setSelected(false);
                 }
             }
         });
-        
-        // Αν ο χρήστης γράψει χειροκίνητα στο New Value, ξε-επιλέγουμε τα ποσοστά
-        newValueTextField.textProperty().addListener((obs, oldText, newText) -> {
+        // Αν ο χρήστης γράψει χειροκίνητα New Value, ξε-επιλέγουμε τα ποσοστά
+        newValueTextField.textProperty()
+            .addListener((obs, oldText, newText) -> {
             if (newValueTextField.isFocused()) {
                  if (percentGroup.getSelectedToggle() != null) {
                     percentGroup.getSelectedToggle().setSelected(false);
@@ -65,19 +73,35 @@ public class CreateChangeRequestController {
             }
         });
     }
-
+    /**
+     * Sets the budget items to be displayed in the ComboBox.
+     *
+     * @param items the list of BudgetItem objects
+     */
     public void setBudgetItems(ObservableList<BudgetItem> items) {
         this.budgetItemComboBox.setItems(items);
     }
-
+    /**
+     * Indicates whether the submit button was clicked.
+     *
+     * @return true if submit was clicked, false otherwise
+     */
     public boolean isSubmitClicked() {
         return submitClicked;
     }
-
+    /**
+     * Returns the selected budget item from the ComboBox.
+     *
+     * @return the selected BudgetItem, or null if none is selected
+     */
     public BudgetItem getSelectedBudgetItem() {
         return budgetItemComboBox.getValue();
     }
-
+    /**
+     * Parses and returns the new value entered by the user.
+     *
+     * @return the new value as a Double, or null if parsing fails
+     */
     public Double getNewValue() {
         try {
             String text = newValueTextField.getText();
@@ -109,15 +133,13 @@ public class CreateChangeRequestController {
                 LOGGER.log(Level.WARNING, "No budget item selected");
                 return;
             }
-
             double currentVal = item.getValue();
             Node source = (Node) event.getSource();
             String userDataStr = (String) source.getUserData();
-            
+
             if (userDataStr != null) {
                 double percent = Double.parseDouble(userDataStr);
                 double newVal = currentVal + (currentVal * percent);
-                
                 newValueTextField.setText(
                     String.format(Locale.GERMANY, "%,.2f", newVal)
                 );
@@ -129,10 +151,10 @@ public class CreateChangeRequestController {
 
     @FXML
     private void handleSubmitRequest() {
-        if (budgetItemComboBox.getValue() == null ||
-            newValueTextField.getText().isEmpty()
+        if (budgetItemComboBox.getValue() == null
+            || newValueTextField.getText().isEmpty()
         ) {
-            return; 
+            return;
         }
         submitClicked = true;
         closeWindow();
