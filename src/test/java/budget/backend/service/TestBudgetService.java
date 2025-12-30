@@ -317,4 +317,33 @@ public class TestBudgetService {
         
         assertTrue(hasOther);
     }
+
+    //getTopItemsTrendSeries
+    @Test
+    void getTopItemsTrendSeriesInvalidYearRangeThrows() {
+        assertThrows(IllegalArgumentException.class,
+            () -> service.getTopItemsTrendSeries(2024, 2025, 2024, 2, true));
+    }
+
+    @Test
+    void getTopItemsTrendSeriesInvalidYearThrows() {
+        assertThrows(IllegalArgumentException.class,
+            () -> service.getTopItemsTrendSeries(2027, 2027, 2030, 2, true));
+    }
+
+    @Test
+    void getTopItemsTrendSeriesInvalidTopNThrows() {
+    assertThrows(IllegalArgumentException.class,
+        () -> service.getTopItemsTrendSeries(2024, 2023, 2024, 0, true));
+    }
+
+    @Test
+    void testGetTopItemsTrendSeriesLogic() {
+        Map<String, Series<Number, Number>> result = 
+            service.getTopItemsTrendSeries(2024, 2024, 2026, 1, true);
+
+        assertTrue(result.containsKey("revenueItem"));
+        // Το 2025 το revenueItem έχει τιμή 2100.0
+        assertEquals(2100.0, result.get("revenueItem").getData().get(1).getYValue());
+    }
 }
