@@ -31,10 +31,9 @@ public class GovernmentMemberDashboardController extends DashboardController {
     private void handleHistory(ActionEvent event) {
         loadCenterView(Constants.HISTORY_VIEW);
     }
-
     /**
      * Handles the Pending Changes menu item click.
-     * Loads the GovMemberPendingChangesView
+     * Loads the Government Member Pending Changes view
      * into the center section of the dashboard.
      * @param event the action event that was triggered
      */
@@ -44,7 +43,11 @@ public class GovernmentMemberDashboardController extends DashboardController {
 
         if (currentUser instanceof GovernmentMember) {
             loadCenterView(
-                Constants.GOV_MEMBER_PENDING_CHANGES_VIEW
+                Constants.GOV_MEMBER_PENDING_CHANGES_VIEW,
+                GovMemberPendingChangesController.class,
+                (controller) -> {
+                    controller.setCurrentUser(currentUser);
+                }
             );
         } else {
             throw new IllegalStateException(
