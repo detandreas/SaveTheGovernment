@@ -5,10 +5,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -153,5 +155,35 @@ public class TestBudgetService {
         Series<Number, Number> series = service.getNetResultSeries(2024, 2025);
         // netResult = 2000.0 + 400.0 - 800.0 - 400.0 = 800.0
         assertEquals(1200.0, series.getData().get(0).getYValue());
+    }
+
+    // getRevenueExpenseTrendSeries
+    @Test
+    void  getRevenueExpenseTrendSeriesInvalidYearThrows() {
+        assertThrows(IllegalArgumentException.class,
+            () -> service.getRevenueExpenseTrendSeries(2025, 2024));
+    }
+
+    @Test
+    void getRevenueExpenseTrendSeriesHasCorrectName() {
+        Map<String, Series<Number, Number>> result = service.getRevenueExpenseTrendSeries(2024, 2026);
+        assertTrue(result.containsKey(Constants.REVENUE_LABEL));
+        // σαν setName οριζεται ως Constants.EXPENSES_LABEL αλλα επιστρεφει Constants.EXPENSE_LABEL
+        assertTrue(result.containsKey(Constants.EXPENSES_LABEL));
+    }
+
+    @Test
+    void getRevenueExpenseTrendSeriesSkipsMissingBudgets() {
+        Map<String, Series<Number, Number>> result = service.getRevenueExpenseTrendSeries(2024, 2026);
+
+        assertEquals(2, result.get(Constants.REVENUE_LABEL).getData().size());
+    }
+
+    @Test
+    void getRevenueExpenseTrendSeriesReturnCorrectValue() {
+        Map<String, Series<Number, Number>> result = service.getRevenueExpenseTrendSeries(2024, 2025);
+
+        assertEquals(2400.0, result.get(Constants.REVENUE_LABEL).getData().get(0).getYValue());
+        assertEquals(1200.0, result.get(Constants.EXPENSE_LABEL).getData().get(0).getYValue());
     }
 }
