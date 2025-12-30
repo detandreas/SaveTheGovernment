@@ -25,7 +25,7 @@ public final class Limits {
     public static final int MAX_PENDING_REQUESTS_PER_USER = 5;
     public static final double SMALL_NUMBER = 0.01;
     public static final int NUMBER_ONE_HUNDRED = 100;
-    public static final int MIN_BUDGET_YEAR = 2000;
+    public static final int MIN_BUDGET_YEAR = 2019;
 
 
 
