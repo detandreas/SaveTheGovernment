@@ -22,6 +22,7 @@ import budget.backend.model.enums.Ministry;
 import budget.backend.repository.BudgetRepository;
 import budget.frontend.constants.Constants;
 import javafx.collections.ObservableList;
+import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart.Series;
 
 public class TestBudgetService {
@@ -88,9 +89,9 @@ public class TestBudgetService {
     void testRecalculateBudgetTotalsValid() {
         service.recalculateBudgetTotals(budget2024);
 
-        assertEquals(2000.0, budget2024.getTotalRevenue());
+        assertEquals(2400.0, budget2024.getTotalRevenue());
         assertEquals(1200, budget2024.getTotalExpense());
-        assertEquals(800.0, budget2024.getNetResult());
+        assertEquals(1200.0, budget2024.getNetResult());
     }
 
     // getBudgetItemsForTable
@@ -104,7 +105,7 @@ public class TestBudgetService {
     //getBudgetItemsSortedByValue
     @Test 
     void testGetBudgetItemsSortedByValueDescending() {
-        ObservableList<BudgetItem> item = service.getBudgetItemsForTable(2024);
+        ObservableList<BudgetItem> item = service.getBudgetItemsSortedByValue(2024);
 
         assertEquals(2000, item.get(0).getValue());
         assertEquals(800, item.get(1).getValue());
@@ -154,19 +155,19 @@ public class TestBudgetService {
     @Test
     void testGetNetResultSeriesReturnCorrectValue() {
         Series<Number, Number> series = service.getNetResultSeries(2024, 2025);
-        // netResult = 2000.0 + 400.0 - 800.0 - 400.0 = 800.0
+        // netResult = 2000.0 + 400.0 - 800.0 - 400.0 = 1200.0
         assertEquals(1200.0, series.getData().get(0).getYValue());
     }
 
     // getRevenueExpenseTrendSeries
     @Test
-    void  TestGetRevenueExpenseTrendSeriesInvalidYearThrows() {
+    void  testGetRevenueExpenseTrendSeriesInvalidYearThrows() {
         assertThrows(IllegalArgumentException.class,
             () -> service.getRevenueExpenseTrendSeries(2025, 2024));
     }
 
     @Test
-    void getRevenueExpenseTrendSeriesHasCorrectName() {
+    void testGetRevenueExpenseTrendSeriesHasCorrectName() {
         Map<String, Series<Number, Number>> result = service.getRevenueExpenseTrendSeries(2024, 2026);
         assertTrue(result.containsKey(Constants.REVENUE_LABEL));
         // σαν setName οριζεται ως Constants.EXPENSES_LABEL αλλα επιστρεφει Constants.EXPENSE_LABEL
@@ -174,14 +175,14 @@ public class TestBudgetService {
     }
 
     @Test
-    void getRevenueExpenseTrendSeriesSkipsMissingBudgets() {
+    void testGetRevenueExpenseTrendSeriesSkipsMissingBudgets() {
         Map<String, Series<Number, Number>> result = service.getRevenueExpenseTrendSeries(2024, 2026);
 
         assertEquals(2, result.get(Constants.REVENUE_LABEL).getData().size());
     }
 
     @Test
-    void getRevenueExpenseTrendSeriesReturnCorrectValue() {
+    void testGetRevenueExpenseTrendSeriesReturnCorrectValue() {
         Map<String, Series<Number, Number>> result = service.getRevenueExpenseTrendSeries(2024, 2025);
 
         assertEquals(2400.0, result.get(Constants.REVENUE_LABEL).getData().get(0).getYValue());
@@ -190,19 +191,19 @@ public class TestBudgetService {
 
     //getTopBudgetItemsSeries
     @Test
-    void getTopBudgetItemsSeriesInvalidYearThrows() {
+    void testGetTopBudgetItemsSeriesInvalidYearThrows() {
         assertThrows(IllegalArgumentException.class, () ->
             service.getTopBudgetItemsSeries(2026, 2, true, true));
     }
 
     @Test
-    void getTopBudgetItemsSeriesInvalidTopNThrows() {
+    void testGetTopBudgetItemsSeriesInvalidTopNThrows() {
         assertThrows(IllegalArgumentException.class,
             () -> service.getTopBudgetItemsSeries(2024, 0, true, true));
     }
 
     @Test
-    void getTopBudgetItemsSeriesHasCorrectName() {
+    void testGetTopBudgetItemsSeriesHasCorrectName() {
         Series<String, Number> series1 = service.getTopBudgetItemsSeries(2024, 2, true, true);
         Series<String, Number> series2 = service.getTopBudgetItemsSeries(2024, 2, false, true);
 
@@ -211,7 +212,7 @@ public class TestBudgetService {
     }
 
     @Test
-    void getTopBudgetItemsSeriesExpensesTopOne() {
+    void testGetTopBudgetItemsSeriesExpensesTopOne() {
         Series<String, Number> series = service.getTopBudgetItemsSeries(2024, 1, false, true);
 
         assertEquals(1, series.getData().size());
@@ -221,13 +222,13 @@ public class TestBudgetService {
 
     //getYearComparisonSeries
     @Test
-    void getYearComparisonSeriesInvalidYearThrows() {
+    void testGetYearComparisonSeriesInvalidYearThrows() {
         assertThrows(IllegalArgumentException.class,
             () -> service.getYearComparisonSeries(2024, 2024));
     }
 
     @Test
-    void getYearComparisonSeriesValid() {
+    void testGetYearComparisonSeriesValid() {
         Map<String, Series<String, Number>> result = service.getYearComparisonSeries(2024, 2025);
 
         assertNotNull(result);
@@ -237,24 +238,41 @@ public class TestBudgetService {
 
     // getRevenueExpenseBarSeries
     @Test
-    void getRevenueExpenseBarSeriesInvalidYearThrows() {
+    void testGetRevenueExpenseBarSeriesInvalidYearThrows() {
         assertThrows(IllegalArgumentException.class,
             () -> service.getRevenueExpenseBarSeries(2031));
     }
 
     @Test
-    void getRevenueExpenseBarSeriesHasCorrectName() {
+    void testGetRevenueExpenseBarSeriesHasCorrectName() {
         Series<String, Number> series = service.getRevenueExpenseBarSeries(2024);
 
         assertEquals(Constants.BUDGET_OVERVIEW_LABEL, series.getName());
     }
 
     @Test
-    void getRevenueExpenseBarSeriesValid() {
+    void testGetRevenueExpenseBarSeriesValid() {
         Series<String, Number> series = service.getRevenueExpenseBarSeries(2024);
 
         assertEquals(2, series.getData().size());
         assertEquals(2400.0, series.getData().get(0).getYValue());
         assertEquals(1200.0, series.getData().get(1).getYValue());
+    }
+
+    //getRevenueExpensePieData
+    @Test
+    void getRevenueExpensePieDataInvalidYearThrows() {
+        assertThrows(IllegalArgumentException.class,
+            () -> service.getRevenueExpensePieData(2030));
+    }
+
+    @Test
+    void testGetRevenueExpensePieDataValid() {
+        ObservableList<PieChart.Data> data = service.getRevenueExpensePieData(2024);
+
+        assertEquals(2, data.size()); // Revenue and Expense
+
+        assertEquals(2400.0, data.get(0).getPieValue()); // Revenue
+        assertEquals(1200.0, data.get(1).getPieValue()); // Expense
     }
 }
