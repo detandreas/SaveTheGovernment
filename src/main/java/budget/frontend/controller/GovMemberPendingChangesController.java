@@ -18,7 +18,6 @@ import budget.backend.repository.ChangeLogRepository;
 import budget.frontend.constants.Constants;
 import budget.frontend.util.SceneLoader;
 import budget.frontend.util.SceneLoader.ViewResult;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -26,7 +25,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -44,7 +42,6 @@ import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.text.NumberFormat;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -365,10 +362,41 @@ public class GovMemberPendingChangesController {
         }
     }
 
+    private boolean isMyRequestsActive = false;
+
     @FXML
     private void handleMyRequests() {
         LOGGER.log(Level.INFO, "Navigating to My Requests view.");
+        if (currentUser == null) {
+            LOGGER.log(Level.WARNING, "Cannot filter: Current user is null.");
+            return;
+        }
+        if (!isMyRequestsActive) {
+            
+            LOGGER.log(Level.INFO, "Filtering for My Requests only.");
+            
+            filteredItems.setPredicate(change -> {
+                String requestUser = change.getRequestByName();
+                String myUser = currentUser.getFullName();
+                return requestUser != null && requestUser.equals(myUser);
+            });
+
+            myRequestsButton.setText("Show All Requests");
+            myRequestsButton.getStyleClass().add("btn-reject");
+            isMyRequestsActive = true;
+
+        } else {
+            
+            LOGGER.log(Level.INFO, "Showing All Requests.");
+            filteredItems.setPredicate(p -> true);
+
+            // Επαναφορά κουμπιού
+            myRequestsButton.setText("My Requests");
+            myRequestsButton.getStyleClass().remove("btn-reject");
+            isMyRequestsActive = false;
+        }
     }
+
     /**
      * Sets up filtering and sorting for the table.
      */
