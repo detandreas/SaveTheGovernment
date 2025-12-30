@@ -174,7 +174,7 @@ public class TestBudgetService {
         Map<String, Series<Number, Number>> result = service.getRevenueExpenseTrendSeries(2024, 2026);
         assertTrue(result.containsKey(Constants.REVENUE_LABEL));
         // σαν setName οριζεται ως Constants.EXPENSES_LABEL αλλα επιστρεφει Constants.EXPENSE_LABEL
-        assertTrue(result.containsKey(Constants.EXPENSES_LABEL));
+        assertTrue(result.containsKey(Constants.EXPENSE_LABEL));
     }
 
     @Test
