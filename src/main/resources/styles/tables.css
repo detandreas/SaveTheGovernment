@@ -54,43 +54,43 @@
 
 /* Scroll Bar Styling */
 
-.table-view .scroll-bar:vertical {
+.scroll-bar:vertical {
     -fx-background-color: transparent;
     -fx-pref-width: 12px;
 }
 
-.table-view .scroll-bar:vertical .track,
-.table-view .scroll-bar:vertical .track-background {
+.scroll-bar:vertical .track,
+.scroll-bar:vertical .track-background {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-background-radius: 0;
 }
 
-.table-view .scroll-bar:vertical .thumb {
+.scroll-bar:vertical .thumb {
     -fx-background-color: #bdc3c7;
     -fx-background-radius: 10px;
     -fx-background-insets: 2;
 }
 
-.table-view .scroll-bar:vertical .thumb:hover {
+.scroll-bar:vertical .thumb:hover {
     -fx-background-color: #95a5a6;
 }
 
-.table-view .scroll-bar:vertical .thumb:pressed {
+.scroll-bar:vertical .thumb:pressed {
     -fx-background-color: #7f8c8d;
 }
 
 /* 4. Hide the up-down arrows (Increment/Decrement Buttons) */
-.table-view .scroll-bar:vertical .increment-button,
-.table-view .scroll-bar:vertical .decrement-button {
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
     -fx-background-color: transparent;
     -fx-padding: 0;
     -fx-pref-height: 0;
     -fx-pref-width: 0;
 }
 
-.table-view .scroll-bar:vertical .increment-arrow,
-.table-view .scroll-bar:vertical .decrement-arrow {
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow {
     -fx-shape: null;
     -fx-padding: 0;
 }
