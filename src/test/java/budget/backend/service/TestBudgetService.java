@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -99,7 +101,7 @@ public class TestBudgetService {
     void tesGetBudgetItemsForTableValidYear() {
         ObservableList<BudgetItem> item = service.getBudgetItemsForTable(2024);
 
-        assertEquals(3,item.size());
+        assertEquals(4,item.size());
     }
 
     //getBudgetItemsSortedByValue
@@ -274,5 +276,45 @@ public class TestBudgetService {
 
         assertEquals(2400.0, data.get(0).getPieValue()); // Revenue
         assertEquals(1200.0, data.get(1).getPieValue()); // Expense
+    }
+
+    //getBudgetItemsforPie
+    @Test
+    void testGetBudgetItemsforPieInvalidYearThrows() {
+        assertThrows(IllegalArgumentException.class,
+            () -> service.getBudgetItemsforPie(2030, true));
+    }
+
+    @Test
+    void testGetBudgetItemsforPieNoOtherWhenTopCoverAll() {
+        ObservableList<PieChart.Data> data = service.getBudgetItemsforPie(2025, true);
+
+        boolean hasOther = data.stream()
+                                .anyMatch(d -> d.getName().contains(Constants.OTHERS_LABEL));
+        //Δεν πρεπει να υπαρχει κατηγορια other για ενα μονο στοιχειο
+        assertFalse(hasOther);
+    }
+
+    @Test
+    void testGetBudgetItemsforPieValid() {
+        BudgetItem bigRevenueItem = new BudgetItem(1, 2026, "Revenue",
+        10000.0, true, List.of(Ministry.FINANCE));
+
+        List<BudgetItem> items2026 = new ArrayList<>();
+        items2026.add(bigRevenueItem);
+
+        for (int i = 0; i < 10; i++) {
+            items2026.add(new BudgetItem(2 + i, 2026, "Revenue",
+                5.0, true, List.of(Ministry.FINANCE)));
+        }
+        Budget budgetWithOthers = new Budget(items2026, 2026);
+        service.recalculateBudgetTotals(budgetWithOthers);
+        repository.save(budgetWithOthers);
+
+        ObservableList<PieChart.Data> data = service.getBudgetItemsforPie(2026, true);
+        boolean hasOther = data.stream()
+                                .anyMatch(d -> d.getName().contains(Constants.OTHERS_LABEL));
+        
+        assertTrue(hasOther);
     }
 }
