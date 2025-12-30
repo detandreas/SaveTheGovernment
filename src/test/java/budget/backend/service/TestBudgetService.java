@@ -17,7 +17,9 @@ import budget.backend.model.domain.Budget;
 import budget.backend.model.domain.BudgetItem;
 import budget.backend.model.enums.Ministry;
 import budget.backend.repository.BudgetRepository;
+import budget.frontend.constants.Constants;
 import javafx.collections.ObservableList;
+import javafx.scene.chart.XYChart.Series;
 
 public class TestBudgetService {
     private BudgetRepository repository;
@@ -47,8 +49,10 @@ public class TestBudgetService {
             800.0, false, List.of(Ministry.LABOUR));
         BudgetItem expenseItem2 = new BudgetItem(3, 2024, "expenseItem2",
             400.0, false, List.of(Ministry.FINANCE));
+        BudgetItem loan = new BudgetItem(4, 2024, Constants.LOANS_ITEM_NAME,
+            400.0, true, List.of(Ministry.FINANCE));
 
-        budget2024 = new Budget(List.of(revenueItem24, expenseItem1, expenseItem2),2024);
+        budget2024 = new Budget(List.of(revenueItem24, expenseItem1, expenseItem2, loan),2024);
         service.recalculateBudgetTotals(budget2024);
         repository.save(budget2024);
 
@@ -71,14 +75,14 @@ public class TestBudgetService {
     
     // recalculateBudgetTotals
     @Test
-    void recalculateBudgetTotalsNullBudgetTrhows() {
+    void testRecalculateBudgetTotalsNullBudgetTrhows() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
             () -> service.recalculateBudgetTotals(null));
         assertEquals("Budget cannot be null", ex.getMessage());
     }
 
     @Test
-    void recalculateBudgetTotalsValid() {
+    void testRecalculateBudgetTotalsValid() {
         service.recalculateBudgetTotals(budget2024);
 
         assertEquals(2000.0, budget2024.getTotalRevenue());
@@ -88,7 +92,7 @@ public class TestBudgetService {
 
     // getBudgetItemsForTable
     @Test
-    void getBudgetItemsForTableValidYear() {
+    void tesGetBudgetItemsForTableValidYear() {
         ObservableList<BudgetItem> item = service.getBudgetItemsForTable(2024);
 
         assertEquals(3,item.size());
@@ -96,11 +100,30 @@ public class TestBudgetService {
 
     //getBudgetItemsSortedByValue
     @Test 
-    void getBudgetItemsSortedByValueDescending() {
+    void testGetBudgetItemsSortedByValueDescending() {
         ObservableList<BudgetItem> item = service.getBudgetItemsForTable(2024);
 
         assertEquals(2000, item.get(0).getValue());
         assertEquals(800, item.get(1).getValue());
         assertEquals(400, item.get(2).getValue());
+    }
+
+    //getLoansTrendSeries
+    @Test
+    void testGetLoansTrendSeries1DataPoint() {
+        Series<Number, Number> series = service.getLoansTrendSeries(2024, 2025, true);
+        assertEquals(1, series.getData().size());
+    }
+
+    @Test
+    void testGetLoansTrendSeriesSumRevenueLoan() {
+        Series<Number, Number> series = service.getLoansTrendSeries(2024, 2025, true);
+        assertEquals(400.0, series.getData().get(0).getYValue());
+    }
+
+    @Test
+    void testGetLoansTrendSeriesInvalidYearThrows() {
+        assertThrows(IllegalArgumentException.class,
+            () -> service.getLoansTrendSeries(2025, 2024, true));
     }
 }
