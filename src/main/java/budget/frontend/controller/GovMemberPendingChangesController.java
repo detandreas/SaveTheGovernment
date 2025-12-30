@@ -38,8 +38,10 @@ import javafx.scene.control.TableView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import java.time.Year;
 
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.List;
@@ -124,11 +126,27 @@ public class GovMemberPendingChangesController {
     }
 
      private void setupTableColumns() {
+        // Μέσα στην setupTableColumns()
         dateColumn.setCellValueFactory(cellData -> {
-            String originalDate = cellData.getValue().getSubmittedDate();
-            return new SimpleStringProperty(
-                originalDate.replace("T", " ")
-            );
+            String rawDate = cellData.getValue().getSubmittedDate();
+            
+            if (rawDate == null || rawDate.isEmpty()) {
+                return new SimpleStringProperty("");
+            }
+
+            try {
+                LocalDateTime dateTime = LocalDateTime.parse(
+                    rawDate, DateTimeFormatter.ISO_DATE_TIME
+                );
+                
+                DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern(
+                    "dd/MM/yyyy HH:mm"
+                );
+                return new SimpleStringProperty(dateTime.format(outputFormatter));
+                
+            } catch (Exception e) {
+                return new SimpleStringProperty(rawDate.replace("T", " "));
+            }
         });
 
         actorColumn.setCellValueFactory(cell ->

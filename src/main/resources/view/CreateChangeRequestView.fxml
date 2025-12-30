@@ -39,12 +39,12 @@
     </HBox>
 
     <HBox alignment="CENTER" maxWidth="500" spacing="10">
-        <RadioButton text="-20%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="-0.20"/>
-        <RadioButton text="-15%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="-0.15"/>
-        <RadioButton text="-10%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="-0.10"/>
-        <RadioButton text="+10%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="0.10"/>
-        <RadioButton text="+15%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="0.15"/>
-        <RadioButton text="+20%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="0.20"/>
+        <RadioButton text="-3%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="-0.03"/>
+        <RadioButton text="-2%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="-0.02"/>
+        <RadioButton text="-1%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="-0.01"/>
+        <RadioButton text="+1%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="0.01"/>
+        <RadioButton text="+2%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="0.02"/>
+        <RadioButton text="+3%" toggleGroup="$percentGroup" onAction="#handlePercentageClick" userData="0.03"/>
     </HBox>
 
     <HBox alignment="CENTER" spacing="20" style="-fx-padding: 20 0 0 0;">
