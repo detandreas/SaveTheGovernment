@@ -11,6 +11,7 @@ import budget.backend.repository.UserRepository;
 import budget.backend.service.BudgetValidationService;
 import budget.backend.service.ChangeLogService;
 import budget.backend.repository.ChangeLogRepository;
+import budget.frontend.util.AlertUtils;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,21 +19,20 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
-import java.util.Optional;
-
 import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /**
@@ -173,23 +173,13 @@ public class PendingChangesController {
             btnAccept.setOnAction(event -> {
                 PendingChange item = getTableView().getItems().get(getIndex());
 
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Approve Confirmation");
-                alert.setHeaderText(
-                    "Approve Pending Change ID: " + item.getId()
+                boolean confirmed = AlertUtils.showConfirmation(
+                    "Approve Confirmation",
+                    "Approve Pending Change ID: " + item.getId(),
+                    "Are you sure you want to approve it?"
                 );
-                alert.setContentText("Are you sure you want to approve it?");
-                DialogPane dialogPane = alert.getDialogPane();
-                dialogPane.getStylesheets().add(
-                    getClass().getResource(
-                        "/styles/dialog.css"
-                    ).toExternalForm()
-                );
-                dialogPane.getStyleClass().add("approve-alert");
-                alert.setGraphic(null);
-                Optional<ButtonType> result = alert.showAndWait();
 
-                if (result.isPresent() && result.get() == ButtonType.OK) {
+                if (confirmed) {
                     handleApprove(item);
                 } else {
                     LOGGER.log(Level.INFO, "Accept cancelled by user.");
@@ -198,24 +188,13 @@ public class PendingChangesController {
             btnReject.setOnAction(event -> {
                 PendingChange item = getTableView().getItems().get(getIndex());
 
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Reject Confirmation");
-                alert.setHeaderText(
-                    "Reject Pending Change ID: " + item.getId()
+                boolean confirmed = AlertUtils.showConfirmation(
+                    "Reject Confirmation",
+                    "Reject Pending Change ID: " + item.getId(),
+                    "Are you sure you want to reject it?"
                 );
-                alert.setContentText("Are you sure you want to reject it?");
 
-                DialogPane dialogPane = alert.getDialogPane();
-                dialogPane.getStylesheets().add(
-                    getClass().getResource(
-                        "/styles/dialog.css"
-                    ).toExternalForm()
-                );
-                dialogPane.getStyleClass().add("reject-alert");
-                alert.setGraphic(null);
-                Optional<ButtonType> result = alert.showAndWait();
-
-                if (result.isPresent() && result.get() == ButtonType.OK) {
+                if (confirmed) {
                     handleReject(item);
                 } else {
                     LOGGER.log(Level.INFO, "Reject cancelled by user.");

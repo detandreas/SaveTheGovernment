@@ -19,6 +19,7 @@ import budget.frontend.constants.Constants;
 import budget.frontend.util.SceneLoader;
 import budget.frontend.util.SceneLoader.ViewResult;
 import budget.frontend.util.UserSession;
+import budget.frontend.util.AlertUtils;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,6 +29,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -231,29 +233,18 @@ public class TotalBudgetController {
 
             loadData();
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setHeaderText(null);
-            alert.setContentText("Item updated successfully!");
-            alert.setGraphic(null);
-            String cssPath = getClass().getResource("/styles/dialog.css")
-                .toExternalForm();
-            alert.getDialogPane().getStylesheets().add(cssPath);
-            alert.getDialogPane().getStyleClass().add("approve-alert");
-            alert.showAndWait();
+            AlertUtils.showSuccess(
+                "Success",
+                "Item updated successfully!"
+            );
         }
     }
     private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("Operation Failed");
-        alert.setContentText(message);
-        alert.setGraphic(null);
-        String cssPath = getClass().getResource("/styles/dialog.css")
-            .toExternalForm();
-        alert.getDialogPane().getStylesheets().add(cssPath);
-        alert.getDialogPane().getStyleClass().add("reject-alert");
-        alert.showAndWait();
+        AlertUtils.showError(
+            "Error",
+            "Operation Failed",
+            message
+        );
     }
     /**
      * Loads budget data into the table and updates summary labels.
