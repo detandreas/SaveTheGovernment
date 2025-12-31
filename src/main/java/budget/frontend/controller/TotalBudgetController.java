@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import budget.backend.model.domain.Budget;
 import budget.backend.model.domain.BudgetItem;
+import budget.backend.model.domain.user.GovernmentMember;
 import budget.backend.model.domain.user.User;
 import budget.backend.model.enums.Ministry;
 import budget.backend.repository.BudgetRepository;
@@ -87,11 +88,17 @@ public class TotalBudgetController {
     }
 
     private boolean isFinanceMinister() {
-        // Υποθέτω ότι παίρνεις τον χρήστη από κάποιο Singleton/Session
+
         User currentUser = UserSession.getInstance().getUser();
-        
-        return currentUser != null && 
-               currentUser.getMinistry() == Ministry.FINANCE; 
+        if (currentUser == null) {
+            return false;
+        }
+        if (currentUser instanceof GovernmentMember) {
+            GovernmentMember minister = (GovernmentMember) currentUser;
+            return minister.getMinistry() == Ministry.FINANCE;
+        }
+
+        return false;
     }
     /**
      * Configures the table columns, including cell value factories
@@ -184,20 +191,18 @@ public class TotalBudgetController {
         });
     }
     private void handleDirectEdit(BudgetItem item) {
-        // 1. Χρήση του SceneLoader για φόρτωση (αντί για new FXMLLoader)
         String fxmlPath = Constants.EDIT_BUDGET_VIEW;
-        ViewResult<EditBudgetController> result = SceneLoader.loadViewWithController(fxmlPath);
+        ViewResult<EditBudgetController> result =
+                SceneLoader.loadViewWithController(fxmlPath);
 
         if (result == null) {
             showError("Could not load edit window.");
-            return; // Αν αποτύχει η φόρτωση, σταματάμε εδώ
+            return;
         }
 
-        // 2. Ανάκτηση Root και Controller από το wrapper class
         Parent page = result.getRoot();
         EditBudgetController controller = result.getController();
 
-        // 3. Δημιουργία του Popup Stage (όπως και πριν)
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Edit Budget Item");
         dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -206,14 +211,12 @@ public class TotalBudgetController {
         Scene scene = new Scene(page);
         dialogStage.setScene(scene);
 
-        // 4. Ρύθμιση του Controller
         controller.setDialogStage(dialogStage);
         controller.setBudgetItem(item);
         //controller.setValidationService(this.validationService); // Σημαντικό!
 
         dialogStage.showAndWait();
 
-        // 6. Διαχείριση αποτελέσματος
         if (controller.isSaveClicked()) {
             double newValue = controller.getResultValue();
             
@@ -226,8 +229,7 @@ public class TotalBudgetController {
             );
 
             loadData();
-            
-            // Προαιρετικό μήνυμα επιτυχίας
+
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");
             alert.setHeaderText(null);
@@ -235,7 +237,6 @@ public class TotalBudgetController {
             String cssPath = getClass().getResource("/styles/dialog.css").toExternalForm();
             alert.getDialogPane().getStylesheets().add(cssPath);
             alert.getDialogPane().getStyleClass().add("approve-alert");
-            alert.showAndWait();
             alert.showAndWait();
         }
     }

@@ -61,3 +61,20 @@
     -fx-background-color: #194f73;
     -fx-text-fill: white;
 }
+
+/* --- Error State για TextFields --- */
+.error-field {
+    -fx-border-color: #a52b1e;
+    -fx-border-width: 2px;
+    -fx-border-radius: 3px;
+}
+
+/* --- Error State για Tooltips --- */
+.error-tooltip {
+    -fx-background-color: #a52b1e;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 5px 10px; /* Λίγο "αέρα" γύρω από το κείμενο */
+    -fx-background-radius: 5px; /* Στρογγυλεμένες γωνίες στο tooltip */
+}

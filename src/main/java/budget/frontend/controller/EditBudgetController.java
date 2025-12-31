@@ -9,40 +9,53 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class EditBudgetController {
+
+    private static final Logger LOGGER =
+        Logger.getLogger(EditBudgetController.class.getName());
 
     @FXML private Label editBudgetLabel;
     @FXML private TextField newValueTextField;
 
     private Stage dialogStage;
-    private BudgetItem originalItem; // Κρατάμε το αρχικό αντικείμενο
-    private BudgetValidationService validationService; // Το Service για τους ελέγχους
-    
+    private BudgetItem originalItem;
+    private BudgetValidationService validationService;
     private boolean saveClicked = false;
     private double resultValue = 0.0;
+    private final NumberFormat currencyFormat =
+        NumberFormat.getInstance(Locale.GERMANY);
 
     @FXML
     private void initialize() {
-        // Καθαρισμός στυλ όταν γράφει ο χρήστης
         newValueTextField.setOnKeyPressed(e -> {
-            newValueTextField.setStyle("");
+            newValueTextField.getStyleClass().remove("error-field");
             newValueTextField.setTooltip(null);
         });
+        currencyFormat.setMinimumFractionDigits(2);
+        currencyFormat.setMaximumFractionDigits(2);
     }
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
     }
 
-    // Inject το Validation Service
-    public void setValidationService(BudgetValidationService validationService) {
+    public void setValidationService(
+        BudgetValidationService validationService
+    ) {
         this.validationService = validationService;
     }
 
     public void setBudgetItem(BudgetItem item) {
         this.originalItem = item;
-        editBudgetLabel.setText("Edit: " + item.getName());
-        newValueTextField.setText(String.valueOf(item.getValue()));
+        editBudgetLabel.setText("Edit: " + item.getName());  
+        newValueTextField.setText(currencyFormat.format(item.getValue()));
+        
         newValueTextField.selectAll();
     }
 
@@ -56,41 +69,42 @@ public class EditBudgetController {
 
     @FXML
     private void handleSave() {
-        // 1. Βασικός έλεγχος μορφής (αν είναι αριθμός)
         if (!isFormatValid()) {
             return;
         }
 
         try {
-            double newValue = Double.parseDouble(newValueTextField.getText().replace(",", "."));
-            
-            // 2. Δημιουργία ενός ΠΡΟΣΩΡΙΝΟΥ αντικειμένου για τον έλεγχο
-            // Υποθέτουμε ότι το BudgetItem έχει constructor copy ή setters. 
-            // Εδώ φτιάχνουμε ένα αντίγραφο για να μην πειράξουμε το original πριν την έγκριση.
+            NumberFormat nf = NumberFormat.getInstance(Locale.GERMANY);
+            double newValue = nf.parse(newValueTextField.getText()).doubleValue();
+
             BudgetItem tempItem = new BudgetItem(
                 originalItem.getId(),
-                originalItem.getYear(),  
+                originalItem.getYear(),
                 originalItem.getName(),
                 newValue,
-                originalItem.getIsRevenue(), 
+                originalItem.getIsRevenue(),
                 originalItem.getMinistries()
             );
 
-            // 3. Κλήση του Service για έλεγχο (Business Logic)
+            // Κλήση του Service
             if (validationService != null) {
                 validationService.validateBudgetItemUpdate(originalItem, tempItem);
             }
 
-            // 4. Αν δεν πετάξει Exception, όλα καλά!
             resultValue = newValue;
             saveClicked = true;
             dialogStage.close();
 
         } catch (ValidationException e) {
-            // 5. Αν το Service βρει λάθος (π.χ. >10% αλλαγή), το δείχνουμε
+            LOGGER.log(Level.WARNING, "Validation failed: {0}", e.getMessage());
             showErrorEffect(e.getMessage());
+            
+        } catch (NumberFormatException e) {
+            showErrorEffect("Invalid number format.");
+            
         } catch (Exception e) {
-            showErrorEffect("Unexpected error: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Unexpected error during save", e);
+            showErrorEffect("System error: " + e.getMessage());
         }
     }
 
@@ -99,7 +113,6 @@ public class EditBudgetController {
         dialogStage.close();
     }
 
-    // Ελέγχει μόνο αν το πεδίο είναι κενό ή δεν είναι αριθμός
     private boolean isFormatValid() {
         String text = newValueTextField.getText();
         if (text == null || text.trim().isEmpty()) {
@@ -107,31 +120,36 @@ public class EditBudgetController {
             return false;
         }
         try {
-            Double.parseDouble(text.replace(",", "."));
+
+            NumberFormat nf = NumberFormat.getInstance(Locale.GERMANY);
+            Number number = nf.parse(text);
+            double val = number.doubleValue();
+
+            if (val < 0) {
+                showErrorEffect("Value cannot be negative");
+                return false;
+            }
+
             return true;
-        } catch (NumberFormatException e) {
-            showErrorEffect("Invalid number format");
+
+        } catch (ParseException e) {
+            showErrorEffect("Invalid format. Use 1.000,00");
             return false;
         }
     }
 
     private void showErrorEffect(String message) {
-        // Κόκκινο περίγραμμα
-        newValueTextField.setStyle("-fx-border-color: #a52b1e; -fx-border-width: 2px; -fx-border-radius: 5px;");
-        
-        // Tooltip για να δει ο χρήστης τι πήγε στραβά (π.χ. "Exceeds limit")
+        if (!newValueTextField.getStyleClass().contains("error-field")) {
+            newValueTextField.getStyleClass().add("error-field");
+        }
+
         Tooltip tooltip = new Tooltip(message);
-        tooltip.setStyle("-fx-background-color: #a52b1e; -fx-text-fill: white; -fx-font-size: 12px;");
+        tooltip.getStyleClass().add("error-tooltip");
+        tooltip.setAutoHide(true);
         newValueTextField.setTooltip(tooltip);
-        
-        // Εμφάνιση του tooltip αμέσως
-        javafx.util.Duration duration = javafx.util.Duration.millis(3000); 
-        // Hack για να εμφανιστεί το tooltip πάνω στο πεδίο
+
         tooltip.show(newValueTextField, 
             newValueTextField.getScene().getWindow().getX() + newValueTextField.getLayoutX(), 
-            newValueTextField.getScene().getWindow().getY() + newValueTextField.getLayoutY());
-            
-        // Προαιρετικά: Αν θες να κρύβεται μόνο του μετά από λίγο
-        // new Timeline(new KeyFrame(duration, event -> tooltip.hide())).play();
+            newValueTextField.getScene().getWindow().getY() + newValueTextField.getLayoutY() + 40);
     }
 }
