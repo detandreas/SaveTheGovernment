@@ -82,12 +82,6 @@ public class BudgetService {
      * @throws IllegalArgumentException if budget is null or items list is null
      */
     private double calculateTotalRevenue(Budget budget) {
-        if (budget == null) {
-            throw new IllegalArgumentException("Budget cannot be null");
-        }
-        if (budget.getItems() == null) {
-            throw new IllegalArgumentException("Budget items cannot be null");
-        }
         return budget.getItems()
                             .stream()
                             .filter(budgetItem -> budgetItem != null
@@ -104,12 +98,6 @@ public class BudgetService {
      * @throws IllegalArgumentException if budget is null or items list is null
      */
     private double calculateTotalExpense(Budget budget) {
-        if (budget == null) {
-            throw new IllegalArgumentException("Budget cannot be null");
-        }
-        if (budget.getItems() == null) {
-            throw new IllegalArgumentException("Budget items cannot be null");
-        }
         return budget.getItems()
                             .stream()
                             .filter(budgetItem -> budgetItem != null
@@ -774,9 +762,8 @@ public class BudgetService {
             );
         }
         Budget budget = budgetOpt.get();
-        Optional<BudgetItem> itemOpt = budget.getItems().stream()
-                .filter(item -> item != null && item.getId() == itemId)
-                .findFirst();
+        Optional<BudgetItem> itemOpt =
+                    budgetRepository.findItemById(itemId, year);
 
         if (itemOpt.isPresent()) {
             BudgetItem item = itemOpt.get();
