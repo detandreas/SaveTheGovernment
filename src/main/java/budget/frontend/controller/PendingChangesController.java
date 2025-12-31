@@ -14,7 +14,6 @@ import budget.backend.repository.ChangeLogRepository;
 import budget.frontend.util.AlertUtils;
 import budget.frontend.util.DateUtils;
 import budget.frontend.util.TableUtils;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -114,7 +113,7 @@ public class PendingChangesController {
     }
 
      private void setupTableColumns() {
-        dateColumn.setCellValueFactory(cellData -> 
+        dateColumn.setCellValueFactory(cellData ->
             DateUtils.formatIsoDate(cellData.getValue().getSubmittedDate())
         );
 
@@ -127,17 +126,18 @@ public class PendingChangesController {
         itemIdColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getBudgetItemId()));
 
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+        NumberFormat currencyFormat =
+            NumberFormat.getCurrencyInstance(Locale.GERMANY);
 
         TableUtils.setupCurrencyColumn(
-            oldValueColumn, 
-            PendingChange::getOldValue, 
+            oldValueColumn,
+            PendingChange::getOldValue,
             currencyFormat
         );
 
         TableUtils.setupCurrencyColumn(
-            newValueColumn, 
-            PendingChange::getNewValue, 
+            newValueColumn,
+            PendingChange::getNewValue,
             currencyFormat
         );
 

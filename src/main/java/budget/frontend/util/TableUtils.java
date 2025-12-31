@@ -9,9 +9,6 @@ import java.util.function.Function;
 
 /**
  * Utility class for configuring JavaFX TableView columns.
- *
- * This class provides static methods to reduce boilerplate code when setting up
- * table columns, specifically for currency formatting and conditional styling.
  */
 public final class TableUtils {
 
@@ -40,7 +37,9 @@ public final class TableUtils {
 
         column.setCellValueFactory(cellData -> {
             Double value = mapper.apply(cellData.getValue());
-            return new SimpleDoubleProperty(value != null ? value : 0.0).asObject();
+            return new SimpleDoubleProperty(
+                value != null ? value : 0.0
+            ).asObject();
         });
 
         column.setCellFactory(createCurrencyCellFactory(format));
@@ -50,13 +49,12 @@ public final class TableUtils {
      * Configures a TableColumn to display currency values
      * with conditional styling.
      *
-     * Positive values are styled with green.
-     * Negative values are styled with red.
      * The displayed value is absolute,
      * relying on color to indicate the sign.
      *
      * @param column The TableColumn to configure.
-     * @param mapper A function that extracts the Double value from the row item.
+     * @param mapper A function that extracts
+     *               the Double value from the row item.
      * @param format The NumberFormat to use for display.
      * @param <S>    The type of the TableView items.
      */
@@ -67,7 +65,9 @@ public final class TableUtils {
 
         column.setCellValueFactory(cellData -> {
             Double value = mapper.apply(cellData.getValue());
-            return new SimpleDoubleProperty(value != null ? value : 0.0).asObject();
+            return new SimpleDoubleProperty(
+                value != null ? value : 0.0
+            ).asObject();
         });
 
         column.setCellFactory(createStyledCurrencyCellFactory(format));
@@ -76,11 +76,16 @@ public final class TableUtils {
     // --- Private Helper Methods ---
 
     /**
-     * Creates a cell factory that formats Double values as currency.
+     * Creates a cell factory that formats Double values
+     * using the specified NumberFormat.
+     *
+     * @param format the NumberFormat to use for string conversion
+     * @param <S>    the type of the TableView items
+     * @return a Callback to create the TableCell
      */
     private static <S> Callback<TableColumn<S, Double>, TableCell<S, Double>>
             createCurrencyCellFactory(NumberFormat format) {
-        
+
         return column -> new TableCell<>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
@@ -97,10 +102,14 @@ public final class TableUtils {
     /**
      * Creates a cell factory that formats Double values
      * and applies CSS classes based on the value.
+     *
+     * @param format the NumberFormat to use for string conversion
+     * @param <S>    the type of the TableView items
+     * @return a Callback to create the styled TableCell
      */
     private static <S> Callback<TableColumn<S, Double>, TableCell<S, Double>>
             createStyledCurrencyCellFactory(NumberFormat format) {
-        
+
         return column -> new TableCell<>() {
             @Override
             protected void updateItem(Double item, boolean empty) {

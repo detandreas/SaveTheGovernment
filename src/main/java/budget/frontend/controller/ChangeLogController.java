@@ -54,8 +54,8 @@ public class ChangeLogController {
      * custom cell factories for currency formatting.
      */
     private void setupTableColumns() {
-        
-        dateColumn.setCellValueFactory(cellData -> 
+
+        dateColumn.setCellValueFactory(cellData ->
             DateUtils.formatIsoDate(cellData.getValue().submittedDate())
         );
 
@@ -67,17 +67,18 @@ public class ChangeLogController {
                 cellData.getValue().budgetItemId()).asObject()
             );
 
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+        NumberFormat currencyFormat =
+            NumberFormat.getCurrencyInstance(Locale.GERMANY);
 
         TableUtils.setupCurrencyColumn(
-            oldValueColumn, 
-            ChangeLog::oldValue, // Method Reference (επειδή είναι Record: .oldValue())
+            oldValueColumn,
+            ChangeLog::oldValue,
             currencyFormat
         );
 
         TableUtils.setupCurrencyColumn(
-            newValueColumn, 
-            ChangeLog::newValue, 
+            newValueColumn,
+            ChangeLog::newValue,
             currencyFormat
         );
 

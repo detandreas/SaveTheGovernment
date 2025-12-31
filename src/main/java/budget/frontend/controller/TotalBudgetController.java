@@ -16,8 +16,6 @@ import budget.backend.repository.BudgetRepository;
 import budget.backend.service.BudgetService;
 import budget.backend.service.BudgetValidationService;
 import budget.frontend.constants.Constants;
-import budget.frontend.util.SceneLoader;
-import budget.frontend.util.SceneLoader.ViewResult;
 import budget.frontend.util.UserSession;
 import budget.frontend.util.WindowUtils;
 import budget.frontend.util.AlertUtils;
@@ -27,8 +25,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -36,8 +32,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 /**
  * Controller class for managing the total budget view
  *                                              in the JavaFX application.
@@ -209,12 +203,14 @@ public class TotalBudgetController {
         if (controller.isSaveClicked()) {
             double newValue = controller.getResultValue();
 
-            budgetService.updateItemValue(item.getId(), item.getYear(), newValue);
+            budgetService.updateItemValue(
+                item.getId(), item.getYear(), newValue
+            );
 
             item.setValue(newValue);
             budgetTable.refresh();
-            
-            LOGGER.log(Level.INFO, "Updated item {0} to new value: {1}", 
+
+            LOGGER.log(Level.INFO, "Updated item {0} to new value: {1}",
                        new Object[]{item.getName(), newValue});
 
             loadData();

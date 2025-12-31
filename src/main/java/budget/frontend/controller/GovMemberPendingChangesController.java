@@ -18,8 +18,6 @@ import budget.backend.repository.ChangeLogRepository;
 import budget.frontend.constants.Constants;
 import budget.frontend.util.AlertUtils;
 import budget.frontend.util.DateUtils;
-import budget.frontend.util.SceneLoader;
-import budget.frontend.util.SceneLoader.ViewResult;
 import budget.frontend.util.TableUtils;
 import budget.frontend.util.WindowUtils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -30,15 +28,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.time.Year;
 import java.text.NumberFormat;
@@ -138,7 +130,7 @@ public class GovMemberPendingChangesController {
      */
     private void setupTableColumns() {
 
-        dateColumn.setCellValueFactory(cellData -> 
+        dateColumn.setCellValueFactory(cellData ->
             DateUtils.formatIsoDate(cellData.getValue().getSubmittedDate())
         );
         actorColumn.setCellValueFactory(cell ->
@@ -147,18 +139,19 @@ public class GovMemberPendingChangesController {
             new SimpleStringProperty(cell.getValue().getBudgetItemName()));
         itemIdColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getBudgetItemId()));
-        
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+
+        NumberFormat currencyFormat =
+            NumberFormat.getCurrencyInstance(Locale.GERMANY);
 
         TableUtils.setupCurrencyColumn(
-            oldValueColumn, 
-            PendingChange::getOldValue, 
+            oldValueColumn,
+            PendingChange::getOldValue,
             currencyFormat
         );
 
         TableUtils.setupCurrencyColumn(
-            newValueColumn, 
-            PendingChange::getNewValue, 
+            newValueColumn,
+            PendingChange::getNewValue,
             currencyFormat
         );
 
@@ -218,7 +211,8 @@ public class GovMemberPendingChangesController {
     private boolean openRequestWindow() {
         try {
             int currentYear = Year.now().getValue();
-            ObservableList<BudgetItem> allItems = budgetService.getBudgetItemsForTable(currentYear);
+            ObservableList<BudgetItem> allItems =
+                budgetService.getBudgetItemsForTable(currentYear);
             ObservableList<BudgetItem> allowedItems;
 
             if (currentUser instanceof GovernmentMember) {
@@ -228,10 +222,17 @@ public class GovMemberPendingChangesController {
                 allowedItems = allItems.stream()
                     .filter(item -> item.getMinistries() != null
                             && item.getMinistries().contains(myMinistry))
-                    .collect(Collectors.toCollection(FXCollections::observableArrayList));
+                    .collect(
+                        Collectors.toCollection(
+                            FXCollections::observableArrayList
+                        )
+                    );
             } else {
-                LOGGER.log(Level.WARNING, "Current user is not a Government Member. No items allowed.");
-                allowedItems = FXCollections.observableArrayList(); 
+                LOGGER.log(
+                    Level.WARNING,
+                    "Current user is not a Government Member."
+                    + " No items allowed.");
+                allowedItems = FXCollections.observableArrayList();
             }
 
             CreateChangeRequestController controller = WindowUtils.openModal(
@@ -251,35 +252,68 @@ public class GovMemberPendingChangesController {
                 BudgetItem selectedItem = controller.getSelectedBudgetItem();
                 Double newValue = controller.getNewValue();
 
-                if (selectedItem != null && newValue != null && currentUser != null) {
+                if (selectedItem != null
+                    && newValue != null
+                    && currentUser != null
+                ) {
                     try {
-                        userAuthService.checkCanUserSubmitRequest(currentUser, selectedItem);
-                        changeRequestService.submitChangeRequest(currentUser, selectedItem, newValue);
-                        
-                        LOGGER.log(Level.INFO, "Request submitted successfully.");
-                        AlertUtils.showSuccess("Success", "Request submitted successfully.");
+                        userAuthService.checkCanUserSubmitRequest(
+                            currentUser, selectedItem
+                        );
+                        changeRequestService.submitChangeRequest(
+                            currentUser, selectedItem, newValue
+                        );
+
+                        LOGGER.log(
+                            Level.INFO,
+                            "Request submitted successfully."
+                        );
+                        AlertUtils.showSuccess(
+                            "Success",
+                            "Request submitted successfully."
+                        );
                         return true;
 
-                    } catch (UserNotAuthorizedException | IllegalArgumentException e) {
-                        LOGGER.log(Level.WARNING, "Submission denied: " + e.getMessage());
-                        
+                    } catch (
+                        UserNotAuthorizedException | IllegalArgumentException e
+                    ) {
+                        LOGGER.log(
+                            Level.WARNING,
+                            "Submission denied: " + e.getMessage()
+                        );
+
                         AlertUtils.showError(
-                            "Submission Denied", 
-                            "Authorization Error", 
-                            "You are not authorized to submit a change request for this budget item."
+                            "Submission Denied",
+                            "Authorization Error",
+                            "You are not authorized to submit"
+                            + " a change request for this budget item."
                         );
                         return false;
                     }
                 } else {
-                    LOGGER.log(Level.WARNING, "Submission failed: Missing item, value, or user.");
-                    AlertUtils.showError("Invalid Input", null, "Please select an item and enter a valid value.");
+                    LOGGER.log(
+                        Level.WARNING,
+                        "Submission failed: Missing item, value, or user."
+                    );
+                    AlertUtils.showError(
+                        "Invalid Input",
+                        null,
+                        "Please select an item and enter a valid value."
+                    );
                 }
             }
             return false;
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Unexpected error in openRequestWindow", e);
-            AlertUtils.showError("System Error", null, "An unexpected error occurred.");
+            LOGGER.log(
+                Level.SEVERE,
+                "Unexpected error in openRequestWindow", e
+            );
+            AlertUtils.showError(
+                "System Error",
+                null,
+                "An unexpected error occurred."
+            );
             return false;
         }
     }

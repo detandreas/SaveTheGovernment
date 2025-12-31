@@ -14,7 +14,7 @@ public final class AlertUtils {
 
     private static final String CSS_PATH = "/styles/dialog.css";
 
-    private AlertUtils() {}
+    private AlertUtils() { }
 
     /**
      * Shows a success information alert.
@@ -24,7 +24,7 @@ public final class AlertUtils {
      */
     public static void showSuccess(String title, String content) {
         showStyledAlert(
-            AlertType.INFORMATION, 
+            AlertType.INFORMATION,
             title,
             null,
             content,
@@ -121,7 +121,8 @@ public final class AlertUtils {
         // Styling
         DialogPane dialogPane = alert.getDialogPane();
         try {
-            String css = AlertUtils.class.getResource(CSS_PATH).toExternalForm();
+            String css =
+                AlertUtils.class.getResource(CSS_PATH).toExternalForm();
             dialogPane.getStylesheets().add(css);
             dialogPane.getStyleClass().add(cssClass);
         } catch (Exception e) {

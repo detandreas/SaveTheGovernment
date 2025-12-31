@@ -5,10 +5,16 @@ import javafx.beans.value.ObservableValue;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class DateUtils {
+public final class DateUtils {
 
-    private static final DateTimeFormatter OUTPUT_FORMATTER = 
+    private static final DateTimeFormatter OUTPUT_FORMATTER =
         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
+    private DateUtils() {
+    }
 
     /**
      * Converts a raw ISO Date String (e.g., "2024-05-20T14:30:00")
