@@ -6,16 +6,15 @@ import java.util.Locale;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.util.Callback;
 
 import budget.backend.model.domain.ChangeLog;
 import budget.backend.repository.ChangeLogRepository;
 import budget.backend.service.ChangeLogService;
+import budget.frontend.util.DateUtils;
+import budget.frontend.util.TableUtils;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -55,13 +54,10 @@ public class ChangeLogController {
      * custom cell factories for currency formatting.
      */
     private void setupTableColumns() {
-        // Because change log is record, we use lamda expressions
-        dateColumn.setCellValueFactory(cellData -> {
-            String originalDate = cellData.getValue().submittedDate();
-            return new SimpleStringProperty(
-                originalDate.replace("T", " ")
-            );
-        });
+        
+        dateColumn.setCellValueFactory(cellData -> 
+            DateUtils.formatIsoDate(cellData.getValue().submittedDate())
+        );
 
         actorColumn.setCellValueFactory(cellData ->
             new SimpleStringProperty(cellData.getValue().actorName()));
@@ -71,82 +67,25 @@ public class ChangeLogController {
                 cellData.getValue().budgetItemId()).asObject()
             );
 
-        oldValueColumn.setCellValueFactory(cellData ->
-            new SimpleDoubleProperty(
-                cellData.getValue().oldValue()).asObject()
-            );
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
 
-        newValueColumn.setCellValueFactory(cellData ->
-            new SimpleDoubleProperty(
-                cellData.getValue().newValue()).asObject()
-            );
-
-        valueDifferenceColumn.setCellValueFactory(cellData -> {
-            double difference =
-                cellData.getValue().newValue() - cellData.getValue().oldValue();
-            return new SimpleDoubleProperty(difference).asObject();
-        });
-
-        NumberFormat currencyFormat = NumberFormat
-            .getCurrencyInstance(Locale.GERMANY);
-
-        // Custom Cell Factory για τις στήλες τιμών
-        var currencyCellFactory = createCurrencyCellFactory(currencyFormat);
-        oldValueColumn.setCellFactory(currencyCellFactory);
-        newValueColumn.setCellFactory(currencyCellFactory);
-        valueDifferenceColumn.setCellFactory(
-            createStyledCurrencyCellFactory(currencyFormat)
+        TableUtils.setupCurrencyColumn(
+            oldValueColumn, 
+            ChangeLog::oldValue, // Method Reference (επειδή είναι Record: .oldValue())
+            currencyFormat
         );
-    }
 
-    /**
-     * Helper method to create a formatted currency cell.
-     * @param format the NumberFormat instance for currency formatting
-     * @return a Callback for TableCell creation
-     */
-    private Callback<TableColumn<ChangeLog, Double>,
-        TableCell<ChangeLog, Double>>
-        createCurrencyCellFactory(NumberFormat format) {
-        return column -> new TableCell<ChangeLog, Double>() {
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(format.format(item));
-                }
-            }
-        };
-    }
+        TableUtils.setupCurrencyColumn(
+            newValueColumn, 
+            ChangeLog::newValue, 
+            currencyFormat
+        );
 
-    /**
-     * Helper method to create a formatted currency cell
-     * with conditional styling.
-     * @param format the NumberFormat instance for currency formatting
-     * @return a Callback for TableCell creation
-     */
-    private Callback<TableColumn<ChangeLog, Double>,
-        TableCell<ChangeLog, Double>>
-        createStyledCurrencyCellFactory(NumberFormat format) {
-        return column -> new TableCell<ChangeLog, Double>() {
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                getStyleClass().removeAll("status-green", "status-red");
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    double absValue = Math.abs(item);
-                    setText(format.format(absValue));
-                    if (item > 0) {
-                        getStyleClass().add("status-green");
-                    } else if (item < 0) {
-                        getStyleClass().add("status-red");
-                    }
-                }
-            }
-        };
+        TableUtils.setupStyledCurrencyColumn(
+            valueDifferenceColumn,
+            log -> log.newValue() - log.oldValue(),
+            currencyFormat
+        );
     }
 
     /**

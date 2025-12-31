@@ -16,8 +16,10 @@ import budget.backend.service.UserAuthorizationService;
 import budget.backend.service.ChangeLogService;
 import budget.backend.repository.ChangeLogRepository;
 import budget.frontend.constants.Constants;
+import budget.frontend.util.DateUtils;
 import budget.frontend.util.SceneLoader;
 import budget.frontend.util.SceneLoader.ViewResult;
+import budget.frontend.util.TableUtils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,16 +33,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
-import java.time.LocalDateTime;
 import java.time.Year;
-import java.time.format.DateTimeFormatter;
 import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.Locale;
@@ -137,104 +135,37 @@ public class GovMemberPendingChangesController {
      * cell value factories and formatting.
      */
     private void setupTableColumns() {
-        // Μέσα στην setupTableColumns()
-        dateColumn.setCellValueFactory(cellData -> {
-            String rawDate = cellData.getValue().getSubmittedDate();
-            if (rawDate == null || rawDate.isEmpty()) {
-                return new SimpleStringProperty("");
-            }
 
-            try {
-                LocalDateTime dateTime = LocalDateTime.parse(
-                    rawDate, DateTimeFormatter.ISO_DATE_TIME
-                );
-                DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern(
-                    "dd/MM/yyyy HH:mm"
-                );
-                return new SimpleStringProperty(
-                    dateTime.format(outputFormatter)
-                );
-            } catch (Exception e) {
-                return new SimpleStringProperty(
-                    rawDate.replace("T", " ")
-                );
-            }
-        });
-
+        dateColumn.setCellValueFactory(cellData -> 
+            DateUtils.formatIsoDate(cellData.getValue().getSubmittedDate())
+        );
         actorColumn.setCellValueFactory(cell ->
             new SimpleStringProperty(cell.getValue().getRequestByName()));
         itemNameColumn.setCellValueFactory(cell ->
             new SimpleStringProperty(cell.getValue().getBudgetItemName()));
         itemIdColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getBudgetItemId()));
-        oldValueColumn.setCellValueFactory(cell ->
-            new SimpleObjectProperty<>(cell.getValue().getOldValue()));
-        newValueColumn.setCellValueFactory(cell ->
-            new SimpleObjectProperty<>(cell.getValue().getNewValue()));
-        valueDifferenceColumn.setCellValueFactory(cell -> {
-            double diff =
-            cell.getValue().getNewValue() - cell.getValue().getOldValue();
-            return new SimpleObjectProperty<>(diff);
-        });
+        
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
 
-        NumberFormat currencyFormat = NumberFormat
-            .getCurrencyInstance(Locale.GERMANY);
-
-        // Custom Cell Factory για τις στήλες τιμών
-        var currencyCellFactory = createCurrencyCellFactory(currencyFormat);
-        oldValueColumn.setCellFactory(currencyCellFactory);
-        newValueColumn.setCellFactory(currencyCellFactory);
-        valueDifferenceColumn.setCellFactory(
-            createStyledCurrencyCellFactory(currencyFormat)
+        TableUtils.setupCurrencyColumn(
+            oldValueColumn, 
+            PendingChange::getOldValue, 
+            currencyFormat
         );
-    }
-    /**
-     * Helper method to create a formatted currency cell
-     * with conditional styling.
-     * @param format the NumberFormat instance for currency formatting
-     * @return a Callback for TableCell creation
-     */
-    private Callback<TableColumn<PendingChange, Double>,
-        TableCell<PendingChange, Double>>
-        createStyledCurrencyCellFactory(NumberFormat format) {
-        return column -> new TableCell<PendingChange, Double>() {
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                getStyleClass().removeAll("status-green", "status-red");
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    double absValue = Math.abs(item);
-                    setText(format.format(absValue));
-                    if (item > 0) {
-                        getStyleClass().add("status-green");
-                    } else if (item < 0) {
-                        getStyleClass().add("status-red");
-                    }
-                }
-            }
-        };
-    }
-    /**
-     * Helper method to create a formatted currency cell.
-     * @param format the NumberFormat instance for currency formatting
-     * @return a Callback for TableCell creation
-     */
-    private Callback<TableColumn<PendingChange, Double>,
-        TableCell<PendingChange, Double>>
-        createCurrencyCellFactory(NumberFormat format) {
-        return column -> new TableCell<PendingChange, Double>() {
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(format.format(item));
-                }
-            }
-        };
+
+        TableUtils.setupCurrencyColumn(
+            newValueColumn, 
+            PendingChange::getNewValue, 
+            currencyFormat
+        );
+
+        TableUtils.setupStyledCurrencyColumn(
+            valueDifferenceColumn,
+            item -> item.getNewValue() - item.getOldValue(),
+            currencyFormat
+        );
+
     }
     /**
      * Loads data into the table from the service.

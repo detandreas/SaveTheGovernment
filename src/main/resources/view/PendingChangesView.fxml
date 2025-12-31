@@ -64,10 +64,10 @@
     <TableView fx:id="pendingChangesTable" VBox.vgrow="ALWAYS">
         
         <columns>
-            <TableColumn fx:id="dateColumn" text="Date &amp; Time" prefWidth="150"/>
+            <TableColumn fx:id="dateColumn" text="Date &amp; Time" prefWidth="140"/>
             <TableColumn fx:id="actorColumn" text="User" prefWidth="150"/>
             <TableColumn fx:id="itemNameColumn" text="Item Name" prefWidth="150"/>
-            <TableColumn fx:id="itemIdColumn" text="Item ID" prefWidth="80" styleClass="center-aligned-cell, center-header"/>
+            <TableColumn fx:id="itemIdColumn" text="Item ID" prefWidth="100" styleClass="center-aligned-cell, center-header"/>
             <TableColumn fx:id="oldValueColumn" text="Old Value (€)" prefWidth="150" styleClass="center-aligned-cell, center-header"/>
             <TableColumn fx:id="newValueColumn" text="New Value (€)" prefWidth="150" styleClass="center-aligned-cell, center-header"/>
             <TableColumn fx:id="valueDifferenceColumn" text="Difference (€)" prefWidth="150" styleClass="center-aligned-cell, center-header"/>
