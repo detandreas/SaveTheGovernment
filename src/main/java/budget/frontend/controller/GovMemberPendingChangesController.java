@@ -16,10 +16,12 @@ import budget.backend.service.UserAuthorizationService;
 import budget.backend.service.ChangeLogService;
 import budget.backend.repository.ChangeLogRepository;
 import budget.frontend.constants.Constants;
+import budget.frontend.util.AlertUtils;
 import budget.frontend.util.DateUtils;
 import budget.frontend.util.SceneLoader;
 import budget.frontend.util.SceneLoader.ViewResult;
 import budget.frontend.util.TableUtils;
+import budget.frontend.util.WindowUtils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -215,98 +217,69 @@ public class GovMemberPendingChangesController {
      */
     private boolean openRequestWindow() {
         try {
-            ViewResult<CreateChangeRequestController> result =
-                SceneLoader.loadViewWithController(
-                    Constants.CREATE_CHANGE_REQUEST_VIEW
-                );
-            if (result == null) {
-                return false;
-            }
-
-            Parent root = result.getRoot();
-            CreateChangeRequestController popupController =
-                result.getController();
             int currentYear = Year.now().getValue();
-            ObservableList<BudgetItem> items =
-                budgetService.getBudgetItemsForTable(currentYear);
+            ObservableList<BudgetItem> allItems = budgetService.getBudgetItemsForTable(currentYear);
             ObservableList<BudgetItem> allowedItems;
 
             if (currentUser instanceof GovernmentMember) {
                 GovernmentMember govMember = (GovernmentMember) currentUser;
                 Ministry myMinistry = govMember.getMinistry();
 
-                allowedItems = items.stream()
+                allowedItems = allItems.stream()
                     .filter(item -> item.getMinistries() != null
                             && item.getMinistries().contains(myMinistry))
-                    .collect(Collectors.toCollection(
-                        FXCollections::observableArrayList
-                    ));
-
-                popupController.setBudgetItems(allowedItems);
+                    .collect(Collectors.toCollection(FXCollections::observableArrayList));
             } else {
-                LOGGER.log(Level.WARNING,
-                    "Current user is not a Government Member. No items allowed."
-                );
+                LOGGER.log(Level.WARNING, "Current user is not a Government Member. No items allowed.");
+                allowedItems = FXCollections.observableArrayList(); 
             }
 
-            Stage stage = new Stage();
-            stage.setTitle("New Budget Change Request");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setResizable(false);
-            stage.showAndWait();
+            CreateChangeRequestController controller = WindowUtils.openModal(
+                Constants.CREATE_CHANGE_REQUEST_VIEW,
+                "New Budget Change Request",
+                pendingChangesTable.getScene().getWindow(),
+                (popupController, stage) -> {
+                    popupController.setBudgetItems(allowedItems);
+                }
+            );
 
-            // -- SAVE CHANGES TO JSON IF SUBMITTED --
-            if (popupController.isSubmitClicked()) {
+            if (controller == null) {
+                return false;
+            }
 
-                BudgetItem selectedItem =
-                    popupController.getSelectedBudgetItem();
-                Double newValue = popupController.getNewValue();
-                if (selectedItem != null
-                    && newValue != null
-                    && currentUser != null
-                ) {
-                   try {
-                        userAuthService.checkCanUserSubmitRequest(
-                            currentUser, selectedItem
-                        );
-                        changeRequestService.submitChangeRequest(
-                            currentUser,
-                            selectedItem,
-                            newValue
-                        );
-                        LOGGER.log(
-                            Level.INFO,
-                            "Request submitted successfully."
-                        );
+            if (controller.isSubmitClicked()) {
+                BudgetItem selectedItem = controller.getSelectedBudgetItem();
+                Double newValue = controller.getNewValue();
+
+                if (selectedItem != null && newValue != null && currentUser != null) {
+                    try {
+                        userAuthService.checkCanUserSubmitRequest(currentUser, selectedItem);
+                        changeRequestService.submitChangeRequest(currentUser, selectedItem, newValue);
+                        
+                        LOGGER.log(Level.INFO, "Request submitted successfully.");
+                        AlertUtils.showSuccess("Success", "Request submitted successfully.");
                         return true;
-                    } catch (
-                        UserNotAuthorizedException | IllegalArgumentException e
-                    ) {
-                        // Αν αποτύχει ο έλεγχος, εμφανίζουμε Alert στον χρήστη
-                        LOGGER.log(
-                            Level.WARNING,
-                            "Submission denied: " + e.getMessage()
+
+                    } catch (UserNotAuthorizedException | IllegalArgumentException e) {
+                        LOGGER.log(Level.WARNING, "Submission denied: " + e.getMessage());
+                        
+                        AlertUtils.showError(
+                            "Submission Denied", 
+                            "Authorization Error", 
+                            "You are not authorized to submit a change request for this budget item."
                         );
-                        Alert alert = new Alert(AlertType.ERROR);
-                        alert.setTitle("Submission Denied");
-                        alert.setHeaderText("Authorization Error");
-                        alert.setContentText(
-                            "You are not authorized to submit "
-                            + "a change request for the selected budget item."
-                        );
-                        alert.showAndWait();
                         return false;
                     }
                 } else {
-                    LOGGER.log(Level.WARNING,
-                        "Submission failed: Missing item, value, or user."
-                    );
+                    LOGGER.log(Level.WARNING, "Submission failed: Missing item, value, or user.");
+                    AlertUtils.showError("Invalid Input", null, "Please select an item and enter a valid value.");
                 }
             }
             return false;
+
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error opening request window", e);
+            LOGGER.log(Level.SEVERE, "Unexpected error in openRequestWindow", e);
+            AlertUtils.showError("System Error", null, "An unexpected error occurred.");
             return false;
         }
     }

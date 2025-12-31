@@ -28,8 +28,9 @@ public final class TableUtils {
      * and the cellFactory (to format the data).
      *
      * @param column The TableColumn to configure.
-     * @param mapper A function that extracts the Double value from the row item (e.g., Item::getValue).
-     * @param format The NumberFormat to use for display (e.g., Locale.GERMANY).
+     * @param mapper A function that extracts the Double value
+     *               from the row item (e.g., Item::getValue).
+     * @param format The NumberFormat to use for display.
      * @param <S>    The type of the TableView items.
      */
     public static <S> void setupCurrencyColumn(
@@ -37,22 +38,22 @@ public final class TableUtils {
             Function<S, Double> mapper,
             NumberFormat format) {
 
-        // 1. Set the CellValueFactory using the provided mapper
         column.setCellValueFactory(cellData -> {
             Double value = mapper.apply(cellData.getValue());
             return new SimpleDoubleProperty(value != null ? value : 0.0).asObject();
         });
 
-        // 2. Set the CellFactory for formatting
         column.setCellFactory(createCurrencyCellFactory(format));
     }
 
     /**
-     * Configures a TableColumn to display currency values with conditional styling.
+     * Configures a TableColumn to display currency values
+     * with conditional styling.
      *
-     * Positive values are styled with the CSS class "status-green".
-     * Negative values are styled with the CSS class "status-red".
-     * The displayed value is absolute (no negative sign), relying on color to indicate the sign.
+     * Positive values are styled with green.
+     * Negative values are styled with red.
+     * The displayed value is absolute,
+     * relying on color to indicate the sign.
      *
      * @param column The TableColumn to configure.
      * @param mapper A function that extracts the Double value from the row item.
@@ -64,13 +65,11 @@ public final class TableUtils {
             Function<S, Double> mapper,
             NumberFormat format) {
 
-        // 1. Set the CellValueFactory
         column.setCellValueFactory(cellData -> {
             Double value = mapper.apply(cellData.getValue());
             return new SimpleDoubleProperty(value != null ? value : 0.0).asObject();
         });
 
-        // 2. Set the CellFactory for formatting and styling
         column.setCellFactory(createStyledCurrencyCellFactory(format));
     }
 
@@ -96,7 +95,8 @@ public final class TableUtils {
         };
     }
     /**
-     * Creates a cell factory that formats Double values and applies CSS classes based on the value.
+     * Creates a cell factory that formats Double values
+     * and applies CSS classes based on the value.
      */
     private static <S> Callback<TableColumn<S, Double>, TableCell<S, Double>>
             createStyledCurrencyCellFactory(NumberFormat format) {

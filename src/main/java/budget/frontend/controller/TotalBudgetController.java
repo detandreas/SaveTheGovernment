@@ -19,6 +19,7 @@ import budget.frontend.constants.Constants;
 import budget.frontend.util.SceneLoader;
 import budget.frontend.util.SceneLoader.ViewResult;
 import budget.frontend.util.UserSession;
+import budget.frontend.util.WindowUtils;
 import budget.frontend.util.AlertUtils;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -28,8 +29,6 @@ import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -192,44 +191,31 @@ public class TotalBudgetController {
         });
     }
     private void handleDirectEdit(BudgetItem item) {
-        String fxmlPath = Constants.EDIT_BUDGET_VIEW;
-        ViewResult<EditBudgetController> result =
-                SceneLoader.loadViewWithController(fxmlPath);
+        EditBudgetController controller = WindowUtils.openModal(
+            Constants.EDIT_BUDGET_VIEW,
+            "Edit Budget Item",
+            budgetTable.getScene().getWindow(),
+            (ctrl, stage) -> {
+                ctrl.setDialogStage(stage);
+                ctrl.setBudgetItem(item);
+                ctrl.setValidationService(this.validationService);
+            }
+        );
 
-        if (result == null) {
-            showError("Could not load edit window.");
+        if (controller == null) {
             return;
         }
 
-        Parent page = result.getRoot();
-        EditBudgetController controller = result.getController();
-
-        Stage dialogStage = new Stage();
-        dialogStage.setTitle("Edit Budget Item");
-        dialogStage.initModality(Modality.WINDOW_MODAL);
-        dialogStage.initOwner(
-            actionColumn.getTableView().getScene().getWindow()
-        );
-        Scene scene = new Scene(page);
-        dialogStage.setScene(scene);
-        controller.setDialogStage(dialogStage);
-        controller.setBudgetItem(item);
-        controller.setValidationService(this.validationService);
-
-        dialogStage.showAndWait();
-
         if (controller.isSaveClicked()) {
             double newValue = controller.getResultValue();
+
+            budgetService.updateItemValue(item.getId(), item.getYear(), newValue);
+
             item.setValue(newValue);
-            budgetService.updateItemValue(
-                item.getId(), item.getYear(), newValue
-            );
             budgetTable.refresh();
-            LOGGER.log(
-                Level.INFO,
-                "Updated item {0} to new value: {1}",
-                new Object[]{item.getName(), newValue}
-            );
+            
+            LOGGER.log(Level.INFO, "Updated item {0} to new value: {1}", 
+                       new Object[]{item.getName(), newValue});
 
             loadData();
 
@@ -238,13 +224,6 @@ public class TotalBudgetController {
                 "Item updated successfully!"
             );
         }
-    }
-    private void showError(String message) {
-        AlertUtils.showError(
-            "Error",
-            "Operation Failed",
-            message
-        );
     }
     /**
      * Loads budget data into the table and updates summary labels.
@@ -351,5 +330,4 @@ public class TotalBudgetController {
         totalExpensesLabel.setText(currencyFormat.format(0.0));
         totalRevenueLabel.setText(currencyFormat.format(0.0));
     }
-
 }
