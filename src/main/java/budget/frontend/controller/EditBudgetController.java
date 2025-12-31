@@ -2,6 +2,7 @@ package budget.frontend.controller;
 
 import budget.backend.model.domain.BudgetItem;
 import budget.backend.service.BudgetValidationService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import budget.backend.exceptions.ValidationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -40,7 +41,12 @@ public class EditBudgetController {
         currencyFormat.setMinimumFractionDigits(2);
         currencyFormat.setMaximumFractionDigits(2);
     }
-
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2",
+        justification =
+          "JavaFX Stage is a heavy mutable object "
+          + "and must be passed by reference."
+    )
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
     }
@@ -50,7 +56,12 @@ public class EditBudgetController {
     ) {
         this.validationService = validationService;
     }
-
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2",
+        justification =
+          "Controller needs reference to the"
+          + " original mutable BudgetItem to perform updates."
+    )
     public void setBudgetItem(BudgetItem item) {
         this.originalItem = item;
         editBudgetLabel.setText("Edit: " + item.getName());  

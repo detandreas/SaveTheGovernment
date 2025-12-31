@@ -659,4 +659,42 @@ public class BudgetRepository
 
         return itemJson;
     }
+    /**
+     * Updates the value of a specific budget item and saves the changes to the file.
+     *
+     * @param itemId   The ID of the item to update.
+     * @param year     The year of the budget containing the item.
+     * @param newValue The new value to set.
+     * @return true if the item was found and updated, false otherwise.
+     */
+    public boolean updateItemValue(int itemId, int year, double newValue) {
+        synchronized (LOCK) {
+            Optional<Budget> budgetOpt = findById(year);
+            
+            if (budgetOpt.isEmpty()) {
+                LOGGER.warning("Cannot update item: Budget year " + year + " not found.");
+                return false;
+            }
+
+            Budget budget = budgetOpt.get();
+
+            Optional<BudgetItem> itemOpt = budget.getItems().stream()
+                    .filter(item -> item.getId() == itemId)
+                    .findFirst();
+
+            if (itemOpt.isPresent()) {
+                BudgetItem itemToUpdate = itemOpt.get();
+                
+                itemToUpdate.setValue(newValue);
+
+                save(budget);
+                
+                LOGGER.info("Successfully updated item " + itemId + " to value " + newValue);
+                return true;
+            } else {
+                LOGGER.warning("Item with ID " + itemId + " not found in year " + year);
+                return false;
+            }
+        }
+    }
 }

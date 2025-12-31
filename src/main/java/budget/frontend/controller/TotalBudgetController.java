@@ -219,9 +219,8 @@ public class TotalBudgetController {
 
         if (controller.isSaveClicked()) {
             double newValue = controller.getResultValue();
-            
-            // TODO: Εδώ καλείς το backend για update
-            // budgetService.updateItemValue(item, newValue); 
+            item.setValue(newValue);
+            budgetTable.refresh();
             LOGGER.log(
                 Level.INFO,
                 "Updated item {0} to new value: {1}",
@@ -234,6 +233,7 @@ public class TotalBudgetController {
             alert.setTitle("Success");
             alert.setHeaderText(null);
             alert.setContentText("Item updated successfully!");
+            alert.setGraphic(null);
             String cssPath = getClass().getResource("/styles/dialog.css").toExternalForm();
             alert.getDialogPane().getStylesheets().add(cssPath);
             alert.getDialogPane().getStyleClass().add("approve-alert");
