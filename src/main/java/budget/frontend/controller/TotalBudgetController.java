@@ -220,6 +220,7 @@ public class TotalBudgetController {
         if (controller.isSaveClicked()) {
             double newValue = controller.getResultValue();
             item.setValue(newValue);
+            budgetService.updateItemValue(item.getId(), item.getYear(), newValue);
             budgetTable.refresh();
             LOGGER.log(
                 Level.INFO,
