@@ -55,7 +55,6 @@ public class EditBudgetController {
         this.originalItem = item;
         editBudgetLabel.setText("Edit: " + item.getName());  
         newValueTextField.setText(currencyFormat.format(item.getValue()));
-        
         newValueTextField.selectAll();
     }
 

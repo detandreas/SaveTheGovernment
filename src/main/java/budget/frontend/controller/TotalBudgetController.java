@@ -14,13 +14,12 @@ import budget.backend.model.domain.user.User;
 import budget.backend.model.enums.Ministry;
 import budget.backend.repository.BudgetRepository;
 import budget.backend.service.BudgetService;
+import budget.backend.service.BudgetValidationService;
 import budget.frontend.constants.Constants;
 import budget.frontend.util.SceneLoader;
 import budget.frontend.util.SceneLoader.ViewResult;
 import budget.frontend.util.UserSession;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -50,7 +49,6 @@ public class TotalBudgetController {
     @FXML private Label totalExpensesLabel;
     @FXML private Label totalRevenueLabel;
     @FXML private Label budgetLabel;
-
     @FXML private TableView<BudgetItem> budgetTable;
     @FXML private TableColumn<BudgetItem, String> nameColumn;
     @FXML private TableColumn<BudgetItem, String> typeColumn;
@@ -61,6 +59,8 @@ public class TotalBudgetController {
     private final BudgetRepository budgetRepository = new BudgetRepository();
     private final BudgetService budgetService =
                                 new BudgetService(budgetRepository);
+    private final BudgetValidationService validationService =
+                                new BudgetValidationService(budgetRepository);
     private static final int CURRENT_YEAR = 2026;
     private static final int DEFAULT_START_YEAR = 2019;
     private final NumberFormat currencyFormat =
@@ -213,7 +213,7 @@ public class TotalBudgetController {
 
         controller.setDialogStage(dialogStage);
         controller.setBudgetItem(item);
-        //controller.setValidationService(this.validationService); // Σημαντικό!
+        controller.setValidationService(this.validationService);
 
         dialogStage.showAndWait();
 

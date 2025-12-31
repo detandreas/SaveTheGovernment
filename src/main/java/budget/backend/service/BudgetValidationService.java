@@ -309,8 +309,7 @@ public class BudgetValidationService {
             throw new ValidationException(
                 String.format(
                     "The change in amount (%.2f%%) exceeds "
-                    + "the allowed limit ±%.2f%%. "
-                    + "Additional approval required.",
+                    + "the allowed limit ±%.2f%%. ",
                     changePercent * Limits.NUMBER_ONE_HUNDRED,
                     Limits.EDIT_CHANGE_LIMIT_PERCENT
                                                 * Limits.NUMBER_ONE_HUNDRED
