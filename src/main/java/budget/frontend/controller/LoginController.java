@@ -14,6 +14,7 @@ import budget.backend.util.InputValidator;
 import budget.constants.Message;
 import budget.frontend.constants.Constants;
 import budget.frontend.util.SceneLoader;
+import budget.frontend.util.UserSession;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -157,12 +158,18 @@ public class LoginController {
                 return;
             }
 
+            UserSession.getInstance().setUser(user);
+            LOGGER.log(
+                Level.INFO,
+                "User stored in Session: {0}",
+                user.getUserName()
+            );
             LOGGER.log(
                 Level.INFO,
                 "--- [4] User Role: {0}",
                 user.getUserRole()
             );
-
+            
             ViewPathInfo viewInfo = determineViewPathAndTitle(user);
 
             if (viewInfo != null && !viewInfo.getPath().isEmpty()) {
@@ -289,17 +296,11 @@ public class LoginController {
      * @return ViewPathInfo for the government member
      */
     private ViewPathInfo determineGovernmentMemberView(GovernmentMember gm) {
-        if (gm.getMinistry() == Ministry.FINANCE) {
-            return new ViewPathInfo(
-                Constants.FINANCE_GOV_VIEW,
-                "Finance Government Member Dashboard"
-            );
-        } else {
             return new ViewPathInfo(
                 Constants.GOV_VIEW,
                 "Government Member Dashboard"
             );
-        }
+    
     }
     /**
      * Handles showing the password in plain text when the eye icon is clicked.

@@ -171,3 +171,19 @@
 .btn-reject:hover {
     -fx-background-color: #7a1e14; /* Λίγο πιο σκούρο όταν περνάει το ποντίκι */
 }
+
+/* Κουμπί Edit μέσα στον πίνακα */
+.btn-edit {
+    -fx-background-color: #FF9800; /* Πορτοκαλί */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-padding: 5px 10px;
+    -fx-background-radius: 3px;
+}
+
+.btn-edit:hover {
+    -fx-background-color: #F57C00; /* Πιο σκούρο πορτοκαλί στο ποντίκι */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}

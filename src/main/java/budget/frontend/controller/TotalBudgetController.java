@@ -9,20 +9,34 @@ import java.util.logging.Logger;
 
 import budget.backend.model.domain.Budget;
 import budget.backend.model.domain.BudgetItem;
+import budget.backend.model.domain.user.User;
+import budget.backend.model.enums.Ministry;
 import budget.backend.repository.BudgetRepository;
 import budget.backend.service.BudgetService;
+import budget.frontend.constants.Constants;
+import budget.frontend.util.SceneLoader;
+import budget.frontend.util.SceneLoader.ViewResult;
+import budget.frontend.util.UserSession;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 /**
  * Controller class for managing the total budget view
  *                                              in the JavaFX application.
@@ -40,7 +54,7 @@ public class TotalBudgetController {
     @FXML private TableColumn<BudgetItem, String> nameColumn;
     @FXML private TableColumn<BudgetItem, String> typeColumn;
     @FXML private TableColumn<BudgetItem, Double> valueColumn;
-
+    @FXML private TableColumn<BudgetItem, Void> actionColumn;
     @FXML private ComboBox<Integer> budgetYearComboBox;
 
     private final BudgetRepository budgetRepository = new BudgetRepository();
@@ -63,7 +77,21 @@ public class TotalBudgetController {
     public void initialize() {
         setupTableColumns();
         setUpComboBox();
+        if (isFinanceMinister()) {
+            setupActionColumn();
+            actionColumn.setVisible(true);
+        } else {
+            actionColumn.setVisible(false);
+        }
         loadData();
+    }
+
+    private boolean isFinanceMinister() {
+        // Υποθέτω ότι παίρνεις τον χρήστη από κάποιο Singleton/Session
+        User currentUser = UserSession.getInstance().getUser();
+        
+        return currentUser != null && 
+               currentUser.getMinistry() == Ministry.FINANCE; 
     }
     /**
      * Configures the table columns, including cell value factories
@@ -127,6 +155,100 @@ public class TotalBudgetController {
         budgetYearComboBox.setItems(years);
         budgetYearComboBox.setValue(CURRENT_YEAR);
         budgetYearComboBox.setOnAction(e -> loadData());
+    }
+    /**
+     * Configures the action column with edit button.
+     * The edit button opens the EditBudgetView for the selected budget item.
+     */
+    private void setupActionColumn() {
+        actionColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button editButton = new Button("Edit");
+            {
+                editButton.getStyleClass().add("btn-edit"); 
+                
+                editButton.setOnAction(event -> {
+                    BudgetItem item = getTableView().getItems().get(getIndex());
+                    handleDirectEdit(item);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(editButton);
+                }
+            }
+        });
+    }
+    private void handleDirectEdit(BudgetItem item) {
+        // 1. Χρήση του SceneLoader για φόρτωση (αντί για new FXMLLoader)
+        String fxmlPath = Constants.EDIT_BUDGET_VIEW;
+        ViewResult<EditBudgetController> result = SceneLoader.loadViewWithController(fxmlPath);
+
+        if (result == null) {
+            showError("Could not load edit window.");
+            return; // Αν αποτύχει η φόρτωση, σταματάμε εδώ
+        }
+
+        // 2. Ανάκτηση Root και Controller από το wrapper class
+        Parent page = result.getRoot();
+        EditBudgetController controller = result.getController();
+
+        // 3. Δημιουργία του Popup Stage (όπως και πριν)
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle("Edit Budget Item");
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.initOwner(actionColumn.getTableView().getScene().getWindow());
+        
+        Scene scene = new Scene(page);
+        dialogStage.setScene(scene);
+
+        // 4. Ρύθμιση του Controller
+        controller.setDialogStage(dialogStage);
+        controller.setBudgetItem(item);
+        //controller.setValidationService(this.validationService); // Σημαντικό!
+
+        dialogStage.showAndWait();
+
+        // 6. Διαχείριση αποτελέσματος
+        if (controller.isSaveClicked()) {
+            double newValue = controller.getResultValue();
+            
+            // TODO: Εδώ καλείς το backend για update
+            // budgetService.updateItemValue(item, newValue); 
+            LOGGER.log(
+                Level.INFO,
+                "Updated item {0} to new value: {1}",
+                new Object[]{item.getName(), newValue}
+            );
+
+            loadData();
+            
+            // Προαιρετικό μήνυμα επιτυχίας
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText(null);
+            alert.setContentText("Item updated successfully!");
+            String cssPath = getClass().getResource("/styles/dialog.css").toExternalForm();
+            alert.getDialogPane().getStylesheets().add(cssPath);
+            alert.getDialogPane().getStyleClass().add("approve-alert");
+            alert.showAndWait();
+            alert.showAndWait();
+        }
+    }
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Operation Failed"); 
+        alert.setContentText(message);
+        alert.setGraphic(null);
+        String cssPath = getClass().getResource("/styles/dialog.css").toExternalForm();
+        alert.getDialogPane().getStylesheets().add(cssPath);
+        alert.getDialogPane().getStyleClass().add("reject-alert");
+        alert.showAndWait();
     }
     /**
      * Loads budget data into the table and updates summary labels.

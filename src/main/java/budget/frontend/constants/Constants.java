@@ -23,14 +23,14 @@ public final class Constants {
                                             "/view/CitizenDashboardView.fxml";
     public static final String GOV_MEMBER_DASHBOARD_VIEW =
                                     "/view/GovernmentMemberDashboardView.fxml";
-    public static final String FINANCE_GOV_VIEW =
-                            "/view/FinanceGovernmentMemberDashboardView.fxml";
     public static final String PRIME_MINISTER_VIEW =
                                     "/view/PrimeMinisterDashboardView.fxml";
 
     // Pop-up Window view
     public static final String CREATE_CHANGE_REQUEST_VIEW =
                                     "/view/CreateChangeRequestView.fxml";
+    public static final String EDIT_BUDGET_VIEW =
+                                    "/view/EditBudgetView.fxml";
     // Legacy names for backward compatibility
     public static final String CITIZEN_VIEW = CITIZEN_DASHBOARD_VIEW;
     public static final String GOV_VIEW = GOV_MEMBER_DASHBOARD_VIEW;

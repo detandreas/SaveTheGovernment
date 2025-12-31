@@ -84,6 +84,14 @@
       "fullName": "Poulis Gay",
       "password": "29864e923a5a4efd8e378c9b5825644b89d8ca738c4c6b75694222c87ed91594",
       "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "FINANCE",
+      "id": "5c2b5ce9-83af-4a20-917e-01e77aaa79ab",
+      "userName": "kammenos",
+      "fullName": "Panos Kammenos",
+      "password": "29864e923a5a4efd8e378c9b5825644b89d8ca738c4c6b75694222c87ed91594",
+      "userRole": "GOVERNMENT_MEMBER"
     }
   ],
   "primeMinister": {

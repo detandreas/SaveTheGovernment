@@ -1,37 +1,39 @@
 [
   {
     "id": 1,
-    "budgetItemId": 101,
+    "budgetItemId": 21,
+    "budgetItemName": "Employee benefits",
     "budgetItemYear": 2025,
-    "requestByName": "andreas",
-    "requestById": "550e8400-e29b-41d4-a716-446655440000",
-    "oldValue": 1000.0,
-    "newValue": 1500.0,
-    "status": "APPROVED",
-    "submittedDate": "2024-01-15T10:30:00"
+    "requestByName": "Adonis Georgiadis",
+    "requestById": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d",
+    "oldValue": 1.4889199E10,
+    "newValue": 1.459141502E10,
+    "status": "PENDING",
+    "submittedDate": "2025-12-30T16:29:57.2111606"
   },
   {
     "id": 3,
-    "budgetItemId": 103,
+    "budgetItemId": 13,
+    "budgetItemName": "Transfers",
     "budgetItemYear": 2025,
-    "requestByName": "Nais",
-    "requestById": "c41f50ca-bdf8-4c2f-bc22-95cee5543eda",
-    "oldValue": 500.0,
-    "newValue": 750.25,
-    "status": "REJECTED",
-    "submittedDate": "2024-01-13T09:15:30"
+    "requestByName": "Adonis Georgiadis",
+    "requestById": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d",
+    "oldValue": 8.131E9,
+    "newValue": 8.29362E9,
+    "status": "PENDING",
+    "submittedDate": "2025-12-30T16:30:32.1980654"
   },
   {
     "id": 4,
-    "budgetItemId": 57,
-    "budgetItemName": "Financial derivatives",
+    "budgetItemId": 23,
+    "budgetItemName": "Transfers",
     "budgetItemYear": 2025,
-    "requestByName": "andreas1",
-    "requestById": "550e8400-e29b-41d4-a716-446655440000",
-    "oldValue": 12000.0,
-    "newValue": 15000.0,
-    "status": "APPROVED",
-    "submittedDate": "2024-01-16T16:45:00"
+    "requestByName": "Adonis Georgiadis",
+    "requestById": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d",
+    "oldValue": 3.4741365E10,
+    "newValue": 3.40465377E10,
+    "status": "PENDING",
+    "submittedDate": "2025-12-30T16:30:43.1164727"
   },
   {
     "id": 5,
@@ -44,5 +46,17 @@
     "newValue": 1000.0,
     "status": "REJECTED",
     "submittedDate": "2024-01-17T11:00:00"
+  },
+  {
+    "id": 2,
+    "budgetItemId": 24,
+    "budgetItemName": "Purchases of goods and services",
+    "budgetItemYear": 2025,
+    "requestByName": "Adonis Georgiadis",
+    "requestById": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d",
+    "oldValue": 2.039542E9,
+    "newValue": 1.99875116E9,
+    "status": "PENDING",
+    "submittedDate": "2025-12-30T16:30:21.4502359"
   }
 ]
