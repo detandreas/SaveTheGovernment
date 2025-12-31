@@ -188,7 +188,7 @@ public class PendingChangesController {
             btnReject.setOnAction(event -> {
                 PendingChange item = getTableView().getItems().get(getIndex());
 
-                boolean confirmed = AlertUtils.showConfirmation(
+                boolean confirmed = AlertUtils.showRejectConfirmation(
                     "Reject Confirmation",
                     "Reject Pending Change ID: " + item.getId(),
                     "Are you sure you want to reject it?"

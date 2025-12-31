@@ -1,15 +1,15 @@
 [
   {
     "id": 1,
-    "budgetItemId": 21,
-    "budgetItemName": "Employee benefits",
+    "budgetItemId": 14,
+    "budgetItemName": "Sales of goods and services",
     "budgetItemYear": 2025,
     "requestByName": "Adonis Georgiadis",
     "requestById": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d",
-    "oldValue": 1.4889199E10,
-    "newValue": 1.459141502E10,
-    "status": "PENDING",
-    "submittedDate": "2025-12-30T16:29:57.2111606"
+    "oldValue": 2.405E9,
+    "newValue": 2.3569E9,
+    "status": "APPROVED",
+    "submittedDate": "2025-12-31T15:17:01.8993857"
   },
   {
     "id": 3,

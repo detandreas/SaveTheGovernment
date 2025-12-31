@@ -70,7 +70,28 @@ public final class AlertUtils {
         Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.OK;
     }
-
+        /**
+     * Shows a reject confirmation dialog
+     * and returns true if OK was pressed.
+     *
+     * @param title   The title of the window.
+     * @param header  The header text.
+     * @param content The question to ask.
+     * @return true if user clicked OK, false otherwise.
+     */
+    public static boolean showRejectConfirmation(
+        String title, String header, String content
+    ) {
+        Alert alert = createStyledAlert(
+            AlertType.CONFIRMATION,
+            title,
+            header,
+            content,
+            "reject-alert"
+        );
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
+    }
     // --- Private Helper Method ---
 
     private static void showStyledAlert(
