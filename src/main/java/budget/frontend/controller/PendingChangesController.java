@@ -11,7 +11,9 @@ import budget.backend.repository.UserRepository;
 import budget.backend.service.BudgetValidationService;
 import budget.backend.service.ChangeLogService;
 import budget.backend.repository.ChangeLogRepository;
-
+import budget.frontend.util.AlertUtils;
+import budget.frontend.util.DateUtils;
+import budget.frontend.util.TableUtils;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -24,11 +26,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
-
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
-import java.util.Optional;
 
 import java.text.NumberFormat;
 import java.util.Comparator;
@@ -116,12 +113,9 @@ public class PendingChangesController {
     }
 
      private void setupTableColumns() {
-        dateColumn.setCellValueFactory(cellData -> {
-            String originalDate = cellData.getValue().getSubmittedDate();
-            return new SimpleStringProperty(
-                originalDate.replace("T", " ")
-            );
-        });
+        dateColumn.setCellValueFactory(cellData ->
+            DateUtils.formatIsoDate(cellData.getValue().getSubmittedDate())
+        );
 
         actorColumn.setCellValueFactory(cell ->
             new SimpleStringProperty(cell.getValue().getRequestByName()));
@@ -132,27 +126,25 @@ public class PendingChangesController {
         itemIdColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getBudgetItemId()));
 
-        oldValueColumn.setCellValueFactory(cell ->
-            new SimpleObjectProperty<>(cell.getValue().getOldValue()));
+        NumberFormat currencyFormat =
+            NumberFormat.getCurrencyInstance(Locale.GERMANY);
 
-        newValueColumn.setCellValueFactory(cell ->
-            new SimpleObjectProperty<>(cell.getValue().getNewValue()));
+        TableUtils.setupCurrencyColumn(
+            oldValueColumn,
+            PendingChange::getOldValue,
+            currencyFormat
+        );
 
-        valueDifferenceColumn.setCellValueFactory(cell -> {
-            double diff =
-            cell.getValue().getNewValue() - cell.getValue().getOldValue();
-            return new SimpleObjectProperty<>(diff);
-        });
+        TableUtils.setupCurrencyColumn(
+            newValueColumn,
+            PendingChange::getNewValue,
+            currencyFormat
+        );
 
-        NumberFormat currencyFormat = NumberFormat
-            .getCurrencyInstance(Locale.GERMANY);
-
-        // Custom Cell Factory για τις στήλες τιμών
-        var currencyCellFactory = createCurrencyCellFactory(currencyFormat);
-        oldValueColumn.setCellFactory(currencyCellFactory);
-        newValueColumn.setCellFactory(currencyCellFactory);
-        valueDifferenceColumn.setCellFactory(
-            createStyledCurrencyCellFactory(currencyFormat)
+        TableUtils.setupStyledCurrencyColumn(
+            valueDifferenceColumn,
+            item -> item.getNewValue() - item.getOldValue(),
+            currencyFormat
         );
 
         setupActionColumnButtons();
@@ -173,23 +165,13 @@ public class PendingChangesController {
             btnAccept.setOnAction(event -> {
                 PendingChange item = getTableView().getItems().get(getIndex());
 
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Approve Confirmation");
-                alert.setHeaderText(
-                    "Approve Pending Change ID: " + item.getId()
+                boolean confirmed = AlertUtils.showConfirmation(
+                    "Approve Confirmation",
+                    "Approve Pending Change ID: " + item.getId(),
+                    "Are you sure you want to approve it?"
                 );
-                alert.setContentText("Are you sure you want to approve it?");
-                DialogPane dialogPane = alert.getDialogPane();
-                dialogPane.getStylesheets().add(
-                    getClass().getResource(
-                        "/styles/dialog.css"
-                    ).toExternalForm()
-                );
-                dialogPane.getStyleClass().add("approve-alert");
-                alert.setGraphic(null);
-                Optional<ButtonType> result = alert.showAndWait();
 
-                if (result.isPresent() && result.get() == ButtonType.OK) {
+                if (confirmed) {
                     handleApprove(item);
                 } else {
                     LOGGER.log(Level.INFO, "Accept cancelled by user.");
@@ -198,24 +180,13 @@ public class PendingChangesController {
             btnReject.setOnAction(event -> {
                 PendingChange item = getTableView().getItems().get(getIndex());
 
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Reject Confirmation");
-                alert.setHeaderText(
-                    "Reject Pending Change ID: " + item.getId()
+                boolean confirmed = AlertUtils.showRejectConfirmation(
+                    "Reject Confirmation",
+                    "Reject Pending Change ID: " + item.getId(),
+                    "Are you sure you want to reject it?"
                 );
-                alert.setContentText("Are you sure you want to reject it?");
 
-                DialogPane dialogPane = alert.getDialogPane();
-                dialogPane.getStylesheets().add(
-                    getClass().getResource(
-                        "/styles/dialog.css"
-                    ).toExternalForm()
-                );
-                dialogPane.getStyleClass().add("reject-alert");
-                alert.setGraphic(null);
-                Optional<ButtonType> result = alert.showAndWait();
-
-                if (result.isPresent() && result.get() == ButtonType.OK) {
+                if (confirmed) {
                     handleReject(item);
                 } else {
                     LOGGER.log(Level.INFO, "Reject cancelled by user.");
@@ -234,54 +205,6 @@ public class PendingChangesController {
             }
         };
         actionColumn.setCellFactory(cellFactory);
-    }
-    /**
-     * Helper method to create a formatted currency cell
-     * with conditional styling.
-     * @param format the NumberFormat instance for currency formatting
-     * @return a Callback for TableCell creation
-     */
-    private Callback<TableColumn<PendingChange, Double>,
-        TableCell<PendingChange, Double>>
-        createStyledCurrencyCellFactory(NumberFormat format) {
-        return column -> new TableCell<PendingChange, Double>() {
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                getStyleClass().removeAll("status-green", "status-red");
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    double absValue = Math.abs(item);
-                    setText(format.format(absValue));
-                    if (item > 0) {
-                        getStyleClass().add("status-green");
-                    } else if (item < 0) {
-                        getStyleClass().add("status-red");
-                    }
-                }
-            }
-        };
-    }
-    /**
-     * Helper method to create a formatted currency cell.
-     * @param format the NumberFormat instance for currency formatting
-     * @return a Callback for TableCell creation
-     */
-    private Callback<TableColumn<PendingChange, Double>,
-        TableCell<PendingChange, Double>>
-        createCurrencyCellFactory(NumberFormat format) {
-        return column -> new TableCell<PendingChange, Double>() {
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(format.format(item));
-                }
-            }
-        };
     }
     /**
      * Loads data into the table from the service.

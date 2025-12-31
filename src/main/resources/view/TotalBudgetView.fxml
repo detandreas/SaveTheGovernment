@@ -92,7 +92,8 @@
         <columns>
             <TableColumn fx:id="nameColumn" prefWidth="200" text="Budget Item" />
             <TableColumn fx:id="valueColumn" prefWidth="150" text="Amount (€)" />
-            <TableColumn fx:id="typeColumn" prefWidth="100" text="Type" />       
+            <TableColumn fx:id="typeColumn" prefWidth="100" text="Type" />
+            <TableColumn fx:id="actionColumn" prefWidth="80" sortable="false" style="-fx-alignment: CENTER;"/>
         </columns>
         
         <columnResizePolicy>

@@ -16,8 +16,10 @@ import budget.backend.service.UserAuthorizationService;
 import budget.backend.service.ChangeLogService;
 import budget.backend.repository.ChangeLogRepository;
 import budget.frontend.constants.Constants;
-import budget.frontend.util.SceneLoader;
-import budget.frontend.util.SceneLoader.ViewResult;
+import budget.frontend.util.AlertUtils;
+import budget.frontend.util.DateUtils;
+import budget.frontend.util.TableUtils;
+import budget.frontend.util.WindowUtils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,21 +28,11 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.util.Callback;
 
-import java.time.LocalDateTime;
 import java.time.Year;
-import java.time.format.DateTimeFormatter;
 import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.Locale;
@@ -137,104 +129,38 @@ public class GovMemberPendingChangesController {
      * cell value factories and formatting.
      */
     private void setupTableColumns() {
-        // Μέσα στην setupTableColumns()
-        dateColumn.setCellValueFactory(cellData -> {
-            String rawDate = cellData.getValue().getSubmittedDate();
-            if (rawDate == null || rawDate.isEmpty()) {
-                return new SimpleStringProperty("");
-            }
 
-            try {
-                LocalDateTime dateTime = LocalDateTime.parse(
-                    rawDate, DateTimeFormatter.ISO_DATE_TIME
-                );
-                DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern(
-                    "dd/MM/yyyy HH:mm"
-                );
-                return new SimpleStringProperty(
-                    dateTime.format(outputFormatter)
-                );
-            } catch (Exception e) {
-                return new SimpleStringProperty(
-                    rawDate.replace("T", " ")
-                );
-            }
-        });
-
+        dateColumn.setCellValueFactory(cellData ->
+            DateUtils.formatIsoDate(cellData.getValue().getSubmittedDate())
+        );
         actorColumn.setCellValueFactory(cell ->
             new SimpleStringProperty(cell.getValue().getRequestByName()));
         itemNameColumn.setCellValueFactory(cell ->
             new SimpleStringProperty(cell.getValue().getBudgetItemName()));
         itemIdColumn.setCellValueFactory(cell ->
             new SimpleObjectProperty<>(cell.getValue().getBudgetItemId()));
-        oldValueColumn.setCellValueFactory(cell ->
-            new SimpleObjectProperty<>(cell.getValue().getOldValue()));
-        newValueColumn.setCellValueFactory(cell ->
-            new SimpleObjectProperty<>(cell.getValue().getNewValue()));
-        valueDifferenceColumn.setCellValueFactory(cell -> {
-            double diff =
-            cell.getValue().getNewValue() - cell.getValue().getOldValue();
-            return new SimpleObjectProperty<>(diff);
-        });
 
-        NumberFormat currencyFormat = NumberFormat
-            .getCurrencyInstance(Locale.GERMANY);
+        NumberFormat currencyFormat =
+            NumberFormat.getCurrencyInstance(Locale.GERMANY);
 
-        // Custom Cell Factory για τις στήλες τιμών
-        var currencyCellFactory = createCurrencyCellFactory(currencyFormat);
-        oldValueColumn.setCellFactory(currencyCellFactory);
-        newValueColumn.setCellFactory(currencyCellFactory);
-        valueDifferenceColumn.setCellFactory(
-            createStyledCurrencyCellFactory(currencyFormat)
+        TableUtils.setupCurrencyColumn(
+            oldValueColumn,
+            PendingChange::getOldValue,
+            currencyFormat
         );
-    }
-    /**
-     * Helper method to create a formatted currency cell
-     * with conditional styling.
-     * @param format the NumberFormat instance for currency formatting
-     * @return a Callback for TableCell creation
-     */
-    private Callback<TableColumn<PendingChange, Double>,
-        TableCell<PendingChange, Double>>
-        createStyledCurrencyCellFactory(NumberFormat format) {
-        return column -> new TableCell<PendingChange, Double>() {
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                getStyleClass().removeAll("status-green", "status-red");
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    double absValue = Math.abs(item);
-                    setText(format.format(absValue));
-                    if (item > 0) {
-                        getStyleClass().add("status-green");
-                    } else if (item < 0) {
-                        getStyleClass().add("status-red");
-                    }
-                }
-            }
-        };
-    }
-    /**
-     * Helper method to create a formatted currency cell.
-     * @param format the NumberFormat instance for currency formatting
-     * @return a Callback for TableCell creation
-     */
-    private Callback<TableColumn<PendingChange, Double>,
-        TableCell<PendingChange, Double>>
-        createCurrencyCellFactory(NumberFormat format) {
-        return column -> new TableCell<PendingChange, Double>() {
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(format.format(item));
-                }
-            }
-        };
+
+        TableUtils.setupCurrencyColumn(
+            newValueColumn,
+            PendingChange::getNewValue,
+            currencyFormat
+        );
+
+        TableUtils.setupStyledCurrencyColumn(
+            valueDifferenceColumn,
+            item -> item.getNewValue() - item.getOldValue(),
+            currencyFormat
+        );
+
     }
     /**
      * Loads data into the table from the service.
@@ -284,19 +210,8 @@ public class GovMemberPendingChangesController {
      */
     private boolean openRequestWindow() {
         try {
-            ViewResult<CreateChangeRequestController> result =
-                SceneLoader.loadViewWithController(
-                    Constants.CREATE_CHANGE_REQUEST_VIEW
-                );
-            if (result == null) {
-                return false;
-            }
-
-            Parent root = result.getRoot();
-            CreateChangeRequestController popupController =
-                result.getController();
             int currentYear = Year.now().getValue();
-            ObservableList<BudgetItem> items =
+            ObservableList<BudgetItem> allItems =
                 budgetService.getBudgetItemsForTable(currentYear);
             ObservableList<BudgetItem> allowedItems;
 
@@ -304,78 +219,101 @@ public class GovMemberPendingChangesController {
                 GovernmentMember govMember = (GovernmentMember) currentUser;
                 Ministry myMinistry = govMember.getMinistry();
 
-                allowedItems = items.stream()
+                allowedItems = allItems.stream()
                     .filter(item -> item.getMinistries() != null
                             && item.getMinistries().contains(myMinistry))
-                    .collect(Collectors.toCollection(
-                        FXCollections::observableArrayList
-                    ));
-
-                popupController.setBudgetItems(allowedItems);
+                    .collect(
+                        Collectors.toCollection(
+                            FXCollections::observableArrayList
+                        )
+                    );
             } else {
-                LOGGER.log(Level.WARNING,
-                    "Current user is not a Government Member. No items allowed."
-                );
+                LOGGER.log(
+                    Level.WARNING,
+                    "Current user is not a Government Member."
+                    + " No items allowed.");
+                allowedItems = FXCollections.observableArrayList();
             }
 
-            Stage stage = new Stage();
-            stage.setTitle("New Budget Change Request");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setResizable(false);
-            stage.showAndWait();
+            CreateChangeRequestController controller = WindowUtils.openModal(
+                Constants.CREATE_CHANGE_REQUEST_VIEW,
+                "New Budget Change Request",
+                pendingChangesTable.getScene().getWindow(),
+                (popupController, stage) -> {
+                    popupController.setBudgetItems(allowedItems);
+                }
+            );
 
-            // -- SAVE CHANGES TO JSON IF SUBMITTED --
-            if (popupController.isSubmitClicked()) {
+            if (controller == null) {
+                return false;
+            }
 
-                BudgetItem selectedItem =
-                    popupController.getSelectedBudgetItem();
-                Double newValue = popupController.getNewValue();
+            if (controller.isSubmitClicked()) {
+                BudgetItem selectedItem = controller.getSelectedBudgetItem();
+                Double newValue = controller.getNewValue();
+
                 if (selectedItem != null
                     && newValue != null
                     && currentUser != null
                 ) {
-                   try {
+                    try {
                         userAuthService.checkCanUserSubmitRequest(
                             currentUser, selectedItem
                         );
                         changeRequestService.submitChangeRequest(
-                            currentUser,
-                            selectedItem,
-                            newValue
+                            currentUser, selectedItem, newValue
                         );
+
                         LOGGER.log(
                             Level.INFO,
                             "Request submitted successfully."
                         );
+                        AlertUtils.showSuccess(
+                            "Success",
+                            "Request submitted successfully."
+                        );
                         return true;
+
                     } catch (
                         UserNotAuthorizedException | IllegalArgumentException e
                     ) {
-                        // Αν αποτύχει ο έλεγχος, εμφανίζουμε Alert στον χρήστη
                         LOGGER.log(
                             Level.WARNING,
                             "Submission denied: " + e.getMessage()
                         );
-                        Alert alert = new Alert(AlertType.ERROR);
-                        alert.setTitle("Submission Denied");
-                        alert.setHeaderText("Authorization Error");
-                        alert.setContentText(
-                            "You are not authorized to submit "
-                            + "a change request for the selected budget item."
+
+                        AlertUtils.showError(
+                            "Submission Denied",
+                            "Authorization Error",
+                            "You are not authorized to submit"
+                            + " a change request for this budget item."
                         );
-                        alert.showAndWait();
                         return false;
                     }
                 } else {
-                    LOGGER.log(Level.WARNING,
+                    LOGGER.log(
+                        Level.WARNING,
                         "Submission failed: Missing item, value, or user."
+                    );
+                    AlertUtils.showError(
+                        "Invalid Input",
+                        null,
+                        "Please select an item and enter a valid value."
                     );
                 }
             }
             return false;
+
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error opening request window", e);
+            LOGGER.log(
+                Level.SEVERE,
+                "Unexpected error in openRequestWindow", e
+            );
+            AlertUtils.showError(
+                "System Error",
+                null,
+                "An unexpected error occurred."
+            );
             return false;
         }
     }

@@ -9,14 +9,23 @@ import java.util.logging.Logger;
 
 import budget.backend.model.domain.Budget;
 import budget.backend.model.domain.BudgetItem;
+import budget.backend.model.domain.user.GovernmentMember;
+import budget.backend.model.domain.user.User;
+import budget.backend.model.enums.Ministry;
 import budget.backend.repository.BudgetRepository;
 import budget.backend.service.BudgetService;
+import budget.backend.service.BudgetValidationService;
+import budget.frontend.constants.Constants;
+import budget.frontend.util.UserSession;
+import budget.frontend.util.WindowUtils;
+import budget.frontend.util.AlertUtils;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -35,17 +44,18 @@ public class TotalBudgetController {
     @FXML private Label totalExpensesLabel;
     @FXML private Label totalRevenueLabel;
     @FXML private Label budgetLabel;
-
     @FXML private TableView<BudgetItem> budgetTable;
     @FXML private TableColumn<BudgetItem, String> nameColumn;
     @FXML private TableColumn<BudgetItem, String> typeColumn;
     @FXML private TableColumn<BudgetItem, Double> valueColumn;
-
+    @FXML private TableColumn<BudgetItem, Void> actionColumn;
     @FXML private ComboBox<Integer> budgetYearComboBox;
 
     private final BudgetRepository budgetRepository = new BudgetRepository();
     private final BudgetService budgetService =
                                 new BudgetService(budgetRepository);
+    private final BudgetValidationService validationService =
+                                new BudgetValidationService(budgetRepository);
     private static final int CURRENT_YEAR = 2026;
     private static final int DEFAULT_START_YEAR = 2019;
     private final NumberFormat currencyFormat =
@@ -63,7 +73,27 @@ public class TotalBudgetController {
     public void initialize() {
         setupTableColumns();
         setUpComboBox();
+        if (isFinanceMinister()) {
+            setupActionColumn();
+            actionColumn.setVisible(true);
+        } else {
+            actionColumn.setVisible(false);
+        }
         loadData();
+    }
+
+    private boolean isFinanceMinister() {
+
+        User currentUser = UserSession.getInstance().getUser();
+        if (currentUser == null) {
+            return false;
+        }
+        if (currentUser instanceof GovernmentMember) {
+            GovernmentMember minister = (GovernmentMember) currentUser;
+            return minister.getMinistry() == Ministry.FINANCE;
+        }
+
+        return false;
     }
     /**
      * Configures the table columns, including cell value factories
@@ -127,6 +157,69 @@ public class TotalBudgetController {
         budgetYearComboBox.setItems(years);
         budgetYearComboBox.setValue(CURRENT_YEAR);
         budgetYearComboBox.setOnAction(e -> loadData());
+    }
+    /**
+     * Configures the action column with edit button.
+     * The edit button opens the EditBudgetView for the selected budget item.
+     */
+    private void setupActionColumn() {
+        actionColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button editButton = new Button("Edit");
+            {
+                editButton.getStyleClass().add("btn-edit");
+                editButton.setOnAction(event -> {
+                    BudgetItem item = getTableView().getItems().get(getIndex());
+                    handleDirectEdit(item);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(editButton);
+                }
+            }
+        });
+    }
+    private void handleDirectEdit(BudgetItem item) {
+        EditBudgetController controller = WindowUtils.openModal(
+            Constants.EDIT_BUDGET_VIEW,
+            "Edit Budget Item",
+            budgetTable.getScene().getWindow(),
+            (ctrl, stage) -> {
+                ctrl.setDialogStage(stage);
+                ctrl.setBudgetItem(item);
+                ctrl.setValidationService(this.validationService);
+            }
+        );
+
+        if (controller == null) {
+            return;
+        }
+
+        if (controller.isSaveClicked()) {
+            double newValue = controller.getResultValue();
+
+            budgetService.updateItemValue(
+                item.getId(), item.getYear(), newValue
+            );
+
+            item.setValue(newValue);
+            budgetTable.refresh();
+
+            LOGGER.log(Level.INFO, "Updated item {0} to new value: {1}",
+                       new Object[]{item.getName(), newValue});
+
+            loadData();
+
+            AlertUtils.showSuccess(
+                "Success",
+                "Item updated successfully!"
+            );
+        }
     }
     /**
      * Loads budget data into the table and updates summary labels.
@@ -233,5 +326,4 @@ public class TotalBudgetController {
         totalExpensesLabel.setText(currencyFormat.format(0.0));
         totalRevenueLabel.setText(currencyFormat.format(0.0));
     }
-
 }
