@@ -752,7 +752,8 @@ public class BudgetService {
         return budgetOpt.get();
     }
     /**
-     * Updates the value of a specific budget item, recalculates the budget totals,
+     * Updates the value of a specific budget item,
+     * recalculates the budget totals,
      * and persists the changes using the repository.
      *
      * @param itemId   the ID of the item to update
@@ -772,7 +773,6 @@ public class BudgetService {
                 )
             );
         }
-
         Budget budget = budgetOpt.get();
         Optional<BudgetItem> itemOpt = budget.getItems().stream()
                 .filter(item -> item != null && item.getId() == itemId)
@@ -783,10 +783,12 @@ public class BudgetService {
             item.setValue(newValue);
             recalculateBudgetTotals(budget);
             budgetRepository.save(budget);
-            
         } else {
             throw new IllegalArgumentException(
-                String.format("Item with ID %d not found in budget year %d", itemId, year)
+                String.format(
+                    "Item with ID %d not found in budget year %d",
+                    itemId, year
+                )
             );
         }
     }

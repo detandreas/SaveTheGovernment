@@ -31,6 +31,7 @@ public class EditBudgetController {
     private double resultValue = 0.0;
     private final NumberFormat currencyFormat =
         NumberFormat.getInstance(Locale.GERMANY);
+    private static final double TOOLTIP_Y_OFFSET = 40.0;
 
     @FXML
     private void initialize() {
@@ -41,6 +42,11 @@ public class EditBudgetController {
         currencyFormat.setMinimumFractionDigits(2);
         currencyFormat.setMaximumFractionDigits(2);
     }
+    /**
+     * Sets the stage of this dialog.
+     *
+     * @param dialogStage the stage for this dialog
+     */
     @SuppressFBWarnings(
         value = "EI_EXPOSE_REP2",
         justification =
@@ -50,12 +56,22 @@ public class EditBudgetController {
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
     }
-
+    /**
+     * Sets the validation service used to verify budget changes.
+     *
+     * @param validationService the service to handle validation logic
+     */
     public void setValidationService(
         BudgetValidationService validationService
     ) {
         this.validationService = validationService;
     }
+    /**
+     * Sets the budget item to be edited.
+     * Initializes the UI fields with the item's current values.
+     *
+     * @param item the budget item to edit
+     */
     @SuppressFBWarnings(
         value = "EI_EXPOSE_REP2",
         justification =
@@ -64,15 +80,23 @@ public class EditBudgetController {
     )
     public void setBudgetItem(BudgetItem item) {
         this.originalItem = item;
-        editBudgetLabel.setText("Edit: " + item.getName());  
+        editBudgetLabel.setText("Edit: " + item.getName());
         newValueTextField.setText(currencyFormat.format(item.getValue()));
         newValueTextField.selectAll();
     }
-
+    /**
+     * Returns true if the user clicked Save, false otherwise.
+     *
+     * @return true if the save button was clicked
+     */
     public boolean isSaveClicked() {
         return saveClicked;
     }
-
+    /**
+     * Returns the new value entered by the user.
+     *
+     * @return the new validated budget value
+     */
     public double getResultValue() {
         return resultValue;
     }
@@ -85,7 +109,9 @@ public class EditBudgetController {
 
         try {
             NumberFormat nf = NumberFormat.getInstance(Locale.GERMANY);
-            double newValue = nf.parse(newValueTextField.getText()).doubleValue();
+            double newValue = nf.parse(
+                newValueTextField.getText()
+            ).doubleValue();
 
             BudgetItem tempItem = new BudgetItem(
                 originalItem.getId(),
@@ -98,7 +124,9 @@ public class EditBudgetController {
 
             // Κλήση του Service
             if (validationService != null) {
-                validationService.validateBudgetItemUpdate(originalItem, tempItem);
+                validationService.validateBudgetItemUpdate(
+                    originalItem, tempItem
+                );
             }
 
             resultValue = newValue;
@@ -108,10 +136,10 @@ public class EditBudgetController {
         } catch (ValidationException e) {
             LOGGER.log(Level.WARNING, "Validation failed: {0}", e.getMessage());
             showErrorEffect(e.getMessage());
-            
+
         } catch (NumberFormatException e) {
             showErrorEffect("Invalid number format.");
-            
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Unexpected error during save", e);
             showErrorEffect("System error: " + e.getMessage());
@@ -158,8 +186,10 @@ public class EditBudgetController {
         tooltip.setAutoHide(true);
         newValueTextField.setTooltip(tooltip);
 
-        tooltip.show(newValueTextField, 
-            newValueTextField.getScene().getWindow().getX() + newValueTextField.getLayoutX(), 
-            newValueTextField.getScene().getWindow().getY() + newValueTextField.getLayoutY() + 40);
+        tooltip.show(newValueTextField,
+            newValueTextField.getScene().getWindow().getX()
+            + newValueTextField.getLayoutX(),
+            newValueTextField.getScene().getWindow().getY()
+            + newValueTextField.getLayoutY() + TOOLTIP_Y_OFFSET);
     }
 }

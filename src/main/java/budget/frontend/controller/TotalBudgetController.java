@@ -171,8 +171,7 @@ public class TotalBudgetController {
         actionColumn.setCellFactory(param -> new TableCell<>() {
             private final Button editButton = new Button("Edit");
             {
-                editButton.getStyleClass().add("btn-edit"); 
-                
+                editButton.getStyleClass().add("btn-edit");
                 editButton.setOnAction(event -> {
                     BudgetItem item = getTableView().getItems().get(getIndex());
                     handleDirectEdit(item);
@@ -206,11 +205,11 @@ public class TotalBudgetController {
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Edit Budget Item");
         dialogStage.initModality(Modality.WINDOW_MODAL);
-        dialogStage.initOwner(actionColumn.getTableView().getScene().getWindow());
-        
+        dialogStage.initOwner(
+            actionColumn.getTableView().getScene().getWindow()
+        );
         Scene scene = new Scene(page);
         dialogStage.setScene(scene);
-
         controller.setDialogStage(dialogStage);
         controller.setBudgetItem(item);
         controller.setValidationService(this.validationService);
@@ -220,7 +219,9 @@ public class TotalBudgetController {
         if (controller.isSaveClicked()) {
             double newValue = controller.getResultValue();
             item.setValue(newValue);
-            budgetService.updateItemValue(item.getId(), item.getYear(), newValue);
+            budgetService.updateItemValue(
+                item.getId(), item.getYear(), newValue
+            );
             budgetTable.refresh();
             LOGGER.log(
                 Level.INFO,
@@ -235,7 +236,8 @@ public class TotalBudgetController {
             alert.setHeaderText(null);
             alert.setContentText("Item updated successfully!");
             alert.setGraphic(null);
-            String cssPath = getClass().getResource("/styles/dialog.css").toExternalForm();
+            String cssPath = getClass().getResource("/styles/dialog.css")
+                .toExternalForm();
             alert.getDialogPane().getStylesheets().add(cssPath);
             alert.getDialogPane().getStyleClass().add("approve-alert");
             alert.showAndWait();
@@ -244,10 +246,11 @@ public class TotalBudgetController {
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
-        alert.setHeaderText("Operation Failed"); 
+        alert.setHeaderText("Operation Failed");
         alert.setContentText(message);
         alert.setGraphic(null);
-        String cssPath = getClass().getResource("/styles/dialog.css").toExternalForm();
+        String cssPath = getClass().getResource("/styles/dialog.css")
+            .toExternalForm();
         alert.getDialogPane().getStylesheets().add(cssPath);
         alert.getDialogPane().getStyleClass().add("reject-alert");
         alert.showAndWait();
