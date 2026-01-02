@@ -521,6 +521,36 @@ public class BudgetRepository
                     .findFirst();
         }
     }
+
+    /**
+     * Finds a BudgetItem by id in the given budget.
+     * @param id the item id.
+     * @param budget the budget we are searching the item in.
+     * @return an Optional containing the BudgetItem if found, or empty if not
+     */
+    public Optional<BudgetItem> findItemById(int id, Budget budget,
+        boolean isRevenue
+    ) {
+        synchronized (LOCK) {
+            if (id <= 0) {
+                LOGGER.warning("Cannot search with a invalid item ID");
+                return Optional.empty();
+            }
+            if (budget == null) {
+                LOGGER.warning("Cannot search with null budget");
+                return Optional.empty();
+            }
+
+            List<BudgetItem> items = budget.getItems();
+
+            return items
+                .stream()
+                .filter(item -> item != null)
+                .filter(item -> item.getId() == id
+                        && item.getIsRevenue() == isRevenue)
+                .findFirst();
+        }
+    }
     /**
      * Deletes budgets that match the year of the provided Budget entity.
      * When a matching entry is found it is removed and the updated collection.

@@ -766,7 +766,7 @@ public class BudgetService {
         }
         Budget budget = budgetOpt.get();
         Optional<BudgetItem> itemOpt =
-                    budgetRepository.findItemById(itemId, year, isRevenue);
+                    budgetRepository.findItemById(itemId, budget, isRevenue);
 
         if (itemOpt.isPresent()) {
             BudgetItem item = itemOpt.get();
