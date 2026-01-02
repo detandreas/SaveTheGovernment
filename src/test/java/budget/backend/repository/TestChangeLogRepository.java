@@ -6,10 +6,12 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
@@ -213,6 +215,80 @@ public class TestChangeLogRepository {
         List<ChangeLog> result = repository.load();
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void testExistsById_ExistingId_ReturnsTrue() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        boolean exists = repository.existsById(1);
+
+        assertTrue(exists);
+    }
+
+    @Test
+    void testExistsById_NonExistingId_ReturnsFalse() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        boolean exists = repository.existsById(999);
+
+        assertFalse(exists);
+    }
+
+    @Test
+    void testExistsById_NullId_ReturnsFalse() {
+        boolean exists = repository.existsById(null);
+        assertFalse(exists);
+    }
+
+    @Test
+    void testExistsById_EmptyList_ReturnsFalse() throws IOException {
+        Files.writeString(testFilePath, "[]");
+
+        boolean exists = repository.existsById(1);
+
+        assertFalse(exists);
+    }
+
+    @Test
+    void testFindById_ExistingId_ReturnsOptionalWithValue() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2, testLog3};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        Optional<ChangeLog> result = repository.findById(2);
+
+        assertTrue(result.isPresent());
+        assertEquals(2, result.get().id());
+        assertEquals(testLog2.actorName(), result.get().actorName());
+        assertEquals(testLog2.budgetItemId(), result.get().budgetItemId());
+    }
+
+    @Test
+    void testFindById_NonExistingId_ReturnsEmptyOptional() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        Optional<ChangeLog> result = repository.findById(999);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testFindById_NullId_ReturnsEmptyOptional() {
+        Optional<ChangeLog> result = repository.findById(null);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testFindById_EmptyList_ReturnsEmptyOptional() throws IOException {
+        Files.writeString(testFilePath, "[]");
+
+        Optional<ChangeLog> result = repository.findById(1);
+
+        assertTrue(result.isEmpty());
+    }
+
 
     private class TestableChangeLogRepository extends ChangeLogRepository {
 
