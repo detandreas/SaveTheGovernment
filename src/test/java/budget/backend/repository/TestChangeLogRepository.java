@@ -13,6 +13,7 @@ import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -288,6 +289,72 @@ public class TestChangeLogRepository {
 
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void testGetLogsForItem_ValidItemId_ReturnsFilteredLogs() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2, testLog3};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        List<ChangeLog> result = repository.getLogsForItem(100);
+
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(log -> log.budgetItemId() == 100));
+        assertTrue(result.contains(testLog1));
+        assertTrue(result.contains(testLog2));
+    }
+
+    @Test
+    void testGetLogsForItem_NoMatchingLogs_ReturnsEmptyList() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        List<ChangeLog> result = repository.getLogsForItem(999);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetLogsForItem_NullItemId_ThrowsException() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> repository.getLogsForItem(null)
+        );
+        assertEquals("Item ID cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void testGetLogsByUser_ValidUserId_ReturnsFilteredLogs() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2, testLog3};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        List<ChangeLog> result = repository.getLogsByUser(userId1);
+
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(log -> log.actorId().equals(userId1)));
+        assertTrue(result.contains(testLog1));
+        assertTrue(result.contains(testLog3));
+    }
+
+    @Test
+    void testGetLogsByUser_NoMatchingLogs_ReturnsEmptyList() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        UUID randomUserId = UUID.randomUUID();
+        List<ChangeLog> result = repository.getLogsByUser(randomUserId);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetLogsByUser_NullUserId_ThrowsException() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> repository.getLogsByUser(null)
+        );
+        assertEquals("User ID cannot be null", exception.getMessage());
+    }
+
 
 
     private class TestableChangeLogRepository extends ChangeLogRepository {
