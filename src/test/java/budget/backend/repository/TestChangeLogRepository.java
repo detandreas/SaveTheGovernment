@@ -155,6 +155,64 @@ public class TestChangeLogRepository {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void testSave_NewEntity_AddsToList() throws IOException {
+        Files.writeString(testFilePath, "[]");
+
+        repository.save(testLog1);
+
+        List<ChangeLog> result = repository.load();
+        assertEquals(1, result.size());
+        assertEquals(testLog1.id(), result.get(0).id());
+        assertEquals(testLog1.actorName(), result.get(0).actorName());
+        assertEquals(testLog1.oldValue(), result.get(0).oldValue());
+        assertEquals(testLog1.newValue(), result.get(0).newValue());
+    }
+
+    @Test
+    void testSave_MultipleNewEntities_AddsAllToList() throws IOException {
+        Files.writeString(testFilePath, "[]");
+
+        repository.save(testLog1);
+        repository.save(testLog2);
+        repository.save(testLog3);
+
+        List<ChangeLog> result = repository.load();
+        assertEquals(3, result.size());
+    }
+
+    @Test
+    void testSave_ExistingEntity_UpdatesInList() throws IOException {
+        ChangeLog[] initialLogs = {testLog1};
+        Files.writeString(testFilePath, gson.toJson(initialLogs));
+
+        ChangeLog updatedLog = new ChangeLog(
+            1,
+            100,
+            0.0,
+            2000.0,
+            LocalDateTime.now().format(DATE_FORMATTER),
+            "John Doe Updated",
+            testLog1.actorId()
+        );
+
+        repository.save(updatedLog);
+
+        List<ChangeLog> result = repository.load();
+        assertEquals(1, result.size());
+        assertEquals(2000.0, result.get(0).newValue());
+        assertEquals("John Doe Updated", result.get(0).actorName());
+    }
+
+    @Test
+    void testSave_NullEntity_DoesNothing() throws IOException {
+        Files.writeString(testFilePath, "[]");
+
+        repository.save(null);
+
+        List<ChangeLog> result = repository.load();
+        assertTrue(result.isEmpty());
+    }
 
     private class TestableChangeLogRepository extends ChangeLogRepository {
 
