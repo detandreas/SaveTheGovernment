@@ -159,7 +159,7 @@ public class ChangeRequestService {
         validateBudgetExists(item.getYear());
 
         Optional<BudgetItem> existingItemOpt = budgetRepository
-                                 .findItemById(item.getId(), item.getYear(), item.getIsRevenue());
+            .findItemById(item.getId(), item.getYear(), item.getIsRevenue());
 
          if (existingItemOpt.isEmpty()) {
             throw new IllegalArgumentException(

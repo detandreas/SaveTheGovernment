@@ -315,6 +315,26 @@ public class TestBudgetRepository {
     }
 
     @Test
+    void testFindItemByIdWithBudgetFail() {
+        var opt1 = repository.findItemById(-1, new Budget(List.of(), 2025, 0, 0, 0), true);
+        assertTrue(opt1.isEmpty(),"Failure - negative id should return empty optional");
+        var opt2 = repository.findItemById(1,null, true);
+        assertTrue(opt1.isEmpty(), "Failure - null budget should return empty optional");
+    }
+
+    @Test
+    void testFindItemByIdWithBudget() {
+        BudgetItem r = new BudgetItem(10, 2025, "RevenueX", 500.0, true, List.of(Ministry.FINANCE));
+        BudgetItem e = new BudgetItem(11, 2025, "ExpenseY", 200.0, false, List.of(Ministry.HEALTH));
+        Budget b = new Budget(List.of(r, e), 2025, 500.0, 200.0, 300.0);
+
+        repository.save(b);
+
+        var itemOpt = repository.findItemById(r.getId(), b, r.getIsRevenue());
+        assertTrue(itemOpt.isPresent(), "Failure - findItemById not working properly");
+    }
+
+    @Test
     void testDeleteExistingAndNonExistingAndNull() {
         BudgetItem item = new BudgetItem(50, 2050, "D", 10, true, List.of());
         Budget b = new Budget(List.of(item), 2050, 10, 0, 10);

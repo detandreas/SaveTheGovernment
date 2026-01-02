@@ -491,6 +491,7 @@ public class BudgetRepository
      * Finds a BudgetItem by id across all budgets.
      * @param id the item id.
      * @param year the year of the budget to search in.
+     * @param isRevenue item type
      * @return an Optional containing the BudgetItem if found, or empty if not
      */
     public Optional<BudgetItem> findItemById(int id, int year,
@@ -517,7 +518,8 @@ public class BudgetRepository
             return items
                     .stream()
                     .filter(item -> item != null)
-                    .filter(item -> item.getId() == id && item.getIsRevenue() == isRevenue)
+                    .filter(item -> item.getId() == id
+                                && item.getIsRevenue() == isRevenue)
                     .findFirst();
         }
     }
@@ -526,6 +528,7 @@ public class BudgetRepository
      * Finds a BudgetItem by id in the given budget.
      * @param id the item id.
      * @param budget the budget we are searching the item in.
+     * @param isRevenue item type
      * @return an Optional containing the BudgetItem if found, or empty if not
      */
     public Optional<BudgetItem> findItemById(int id, Budget budget,
