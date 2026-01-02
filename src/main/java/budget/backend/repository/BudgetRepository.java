@@ -493,7 +493,9 @@ public class BudgetRepository
      * @param year the year of the budget to search in.
      * @return an Optional containing the BudgetItem if found, or empty if not
      */
-    public Optional<BudgetItem> findItemById(int id, int year) {
+    public Optional<BudgetItem> findItemById(int id, int year,
+                                                boolean isRevenue
+    ) {
         synchronized (LOCK) {
             if (id <= 0) {
                 LOGGER.warning("Cannot search with a invalid item ID");
@@ -515,7 +517,7 @@ public class BudgetRepository
             return items
                     .stream()
                     .filter(item -> item != null)
-                    .filter(item -> item.getId() == id)
+                    .filter(item -> item.getId() == id && item.getIsRevenue() == isRevenue)
                     .findFirst();
         }
     }

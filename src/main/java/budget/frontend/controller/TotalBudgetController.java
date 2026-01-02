@@ -16,9 +16,9 @@ import budget.backend.repository.BudgetRepository;
 import budget.backend.service.BudgetService;
 import budget.backend.service.BudgetValidationService;
 import budget.frontend.constants.Constants;
+import budget.frontend.util.AlertUtils;
 import budget.frontend.util.UserSession;
 import budget.frontend.util.WindowUtils;
-import budget.frontend.util.AlertUtils;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -204,7 +204,7 @@ public class TotalBudgetController {
             double newValue = controller.getResultValue();
 
             budgetService.updateItemValue(
-                item.getId(), item.getYear(), newValue
+                item.getId(), item.getYear(), newValue, item.getIsRevenue()
             );
 
             item.setValue(newValue);
