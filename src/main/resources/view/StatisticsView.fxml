@@ -16,7 +16,13 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="15.0" styleClass="content-container" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="budget.frontend.controller.StatisticsController">
+<VBox
+    spacing="15.0"
+    styleClass="content-container"
+    stylesheets="@../styles/main.css"
+    xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="budget.frontend.controller.StatisticsController">
 
     <HBox alignment="CENTER_LEFT" spacing="10.0">
         <children>
