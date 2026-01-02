@@ -9,16 +9,17 @@ import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import budget.backend.model.domain.ChangeLog;
-
-
-
 
 public class TestChangeLogRepository {
     private ChangeLogRepository repository;
@@ -95,6 +96,65 @@ public class TestChangeLogRepository {
             Files.delete(testFilePath);
         }
     }
+
+    @Test
+    void testLoad_EmptyFile_ReturnsEmptyList() throws IOException {
+        Files.writeString(testFilePath, "[]");
+
+        List<ChangeLog> result = repository.load();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testLoad_ValidJsonFile_ReturnsChangeLogList() throws IOException {
+        ChangeLog[] logs = {testLog1};
+        String json = gson.toJson(logs);
+        Files.writeString(testFilePath, json);
+
+        List<ChangeLog> result = repository.load();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(1, result.get(0).id());
+        assertEquals(100, result.get(0).budgetItemId());
+        assertEquals(0.0, result.get(0).oldValue());
+        assertEquals(1000.0, result.get(0).newValue());
+    }
+
+    @Test
+    void testLoad_MultipleRecords_ReturnsAllRecords() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2, testLog3};
+        String json = gson.toJson(logs);
+        Files.writeString(testFilePath, json);
+
+        List<ChangeLog> result = repository.load();
+
+        assertNotNull(result);
+        assertEquals(3, result.size());
+    }
+
+    @Test
+    void testLoad_InvalidJson_ReturnsEmptyList() throws IOException {
+        Files.writeString(testFilePath, "{ invalid json }");
+
+        List<ChangeLog> result = repository.load();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testLoad_NullJson_ReturnsEmptyList() throws IOException {
+        Files.writeString(testFilePath, "null");
+
+        List<ChangeLog> result = repository.load();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
 
     private class TestableChangeLogRepository extends ChangeLogRepository {
 
