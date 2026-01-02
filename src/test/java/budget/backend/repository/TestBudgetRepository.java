@@ -269,7 +269,7 @@ public class TestBudgetRepository {
         assertTrue(repository.existsByItemId(40, 2060));
         assertFalse(repository.existsByItemId(999, 2060));
 
-        Optional<BudgetItem> found = repository.findItemById(41, 2060);
+        Optional<BudgetItem> found = repository.findItemById(41, 2060, false);
         assertTrue(found.isPresent());
         assertEquals("ExpenseB", found.get().getName());
     }
@@ -303,9 +303,9 @@ public class TestBudgetRepository {
     @Test
     void testFindItemById() {
         List<Optional<BudgetItem>> listOfBudgetItems = new ArrayList<>();
-        var b1 = repository.findItemById(-1, 2025);
-        var b2 = repository.findItemById(1, 1999);
-        var b3 = repository.findItemById(1, 2060);
+        var b1 = repository.findItemById(-1, 2025, true);
+        var b2 = repository.findItemById(1, 1999, false);
+        var b3 = repository.findItemById(1, 2060, true);
 
         listOfBudgetItems.addAll(List.of(b1,b2,b3));
 
