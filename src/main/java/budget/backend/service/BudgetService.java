@@ -770,7 +770,6 @@ public class BudgetService {
 
         if (itemOpt.isPresent()) {
             BudgetItem item = itemOpt.get();
-            System.out.print(item);
             item.setValue(newValue);
             recalculateBudgetTotals(budget);
             budgetRepository.save(budget);

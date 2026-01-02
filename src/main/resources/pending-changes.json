@@ -1,14 +1,15 @@
 [
   {
     "id": 1,
-    "budgetItemId": 101,
-    "budgetItemYear": 2025,
-    "requestByName": "andreas",
-    "requestById": "550e8400-e29b-41d4-a716-446655440000",
-    "oldValue": 1000.0,
-    "newValue": 1500.0,
-    "status": "APPROVED",
-    "submittedDate": "2024-01-15T10:30:00"
+    "budgetItemId": 31,
+    "budgetItemName": "Fixed assets",
+    "budgetItemYear": 2026,
+    "requestByName": "Adonis Georgiadis",
+    "requestById": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d",
+    "oldValue": 3.355541E9,
+    "newValue": 3.38909641E9,
+    "status": "PENDING",
+    "submittedDate": "2026-01-02T16:15:23.300981"
   },
   {
     "id": 3,
