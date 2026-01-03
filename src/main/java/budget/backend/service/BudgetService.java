@@ -747,9 +747,12 @@ public class BudgetService {
      * @param itemId   the ID of the item to update
      * @param year     the year of the budget containing the item
      * @param newValue the new value to set
+     * @param isRevenue the type of item we are updating
      * @throws IllegalArgumentException if the budget or item is not found
      */
-    public void updateItemValue(int itemId, int year, double newValue) {
+    public void updateItemValue(int itemId, int year,
+                                double newValue, boolean isRevenue
+    ) {
         validateYear(year);
 
         Optional<Budget> budgetOpt = budgetRepository.findById(year);
@@ -763,7 +766,7 @@ public class BudgetService {
         }
         Budget budget = budgetOpt.get();
         Optional<BudgetItem> itemOpt =
-                    budgetRepository.findItemById(itemId, year);
+                    budgetRepository.findItemById(itemId, budget, isRevenue);
 
         if (itemOpt.isPresent()) {
             BudgetItem item = itemOpt.get();

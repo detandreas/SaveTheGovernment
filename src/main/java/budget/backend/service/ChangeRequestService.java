@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import budget.backend.exceptions.ValidationException;
 import budget.backend.model.domain.Budget;
@@ -22,6 +20,8 @@ import budget.backend.repository.UserRepository;
 import budget.constants.Limits;
 import budget.constants.Message;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 /**
  * Service for handling change requests to budget items.
  * Responsible for submitting, approving, and rejecting change requests.
@@ -159,7 +159,7 @@ public class ChangeRequestService {
         validateBudgetExists(item.getYear());
 
         Optional<BudgetItem> existingItemOpt = budgetRepository
-                                 .findItemById(item.getId(), item.getYear());
+            .findItemById(item.getId(), item.getYear(), item.getIsRevenue());
 
          if (existingItemOpt.isEmpty()) {
             throw new IllegalArgumentException(

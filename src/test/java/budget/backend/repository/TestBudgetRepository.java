@@ -269,7 +269,7 @@ public class TestBudgetRepository {
         assertTrue(repository.existsByItemId(40, 2060));
         assertFalse(repository.existsByItemId(999, 2060));
 
-        Optional<BudgetItem> found = repository.findItemById(41, 2060);
+        Optional<BudgetItem> found = repository.findItemById(41, 2060, false);
         assertTrue(found.isPresent());
         assertEquals("ExpenseB", found.get().getName());
     }
@@ -303,15 +303,35 @@ public class TestBudgetRepository {
     @Test
     void testFindItemById() {
         List<Optional<BudgetItem>> listOfBudgetItems = new ArrayList<>();
-        var b1 = repository.findItemById(-1, 2025);
-        var b2 = repository.findItemById(1, 1999);
-        var b3 = repository.findItemById(1, 2060);
+        var b1 = repository.findItemById(-1, 2025, true);
+        var b2 = repository.findItemById(1, 1999, false);
+        var b3 = repository.findItemById(1, 2060, true);
 
         listOfBudgetItems.addAll(List.of(b1,b2,b3));
 
         for (var b : listOfBudgetItems) {
             assertTrue(b.isEmpty(), "Failure - optional should be empty");
         }
+    }
+
+    @Test
+    void testFindItemByIdWithBudgetFail() {
+        var opt1 = repository.findItemById(-1, new Budget(List.of(), 2025, 0, 0, 0), true);
+        assertTrue(opt1.isEmpty(),"Failure - negative id should return empty optional");
+        var opt2 = repository.findItemById(1,null, true);
+        assertTrue(opt1.isEmpty(), "Failure - null budget should return empty optional");
+    }
+
+    @Test
+    void testFindItemByIdWithBudget() {
+        BudgetItem r = new BudgetItem(10, 2025, "RevenueX", 500.0, true, List.of(Ministry.FINANCE));
+        BudgetItem e = new BudgetItem(11, 2025, "ExpenseY", 200.0, false, List.of(Ministry.HEALTH));
+        Budget b = new Budget(List.of(r, e), 2025, 500.0, 200.0, 300.0);
+
+        repository.save(b);
+
+        var itemOpt = repository.findItemById(r.getId(), b, r.getIsRevenue());
+        assertTrue(itemOpt.isPresent(), "Failure - findItemById not working properly");
     }
 
     @Test

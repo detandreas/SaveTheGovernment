@@ -426,7 +426,7 @@ public class TestBudgetService {
     @Test
     void testUpdateItemYearDoesntExistThrows() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                                                () -> service.updateItemValue(1, 2027, 2000.0));
+                                                () -> service.updateItemValue(1, 2027, 2000.0, true));
         assertEquals(String.format(
             "Cannot update item. Budget for year %d not found.", 2027),
             ex.getMessage());
@@ -434,14 +434,14 @@ public class TestBudgetService {
 
     @Test
     void testUpdateItemValid() {
-        assertDoesNotThrow(() -> service.updateItemValue(1, 2024, 2000.0), 
+        assertDoesNotThrow(() -> service.updateItemValue(1, 2024, 2000.0, true),
             "Failure - Should not throw when updating valid item");
     }
 
     @Test
     void testUpdateItemButItDoesntExist() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-            () -> service.updateItemValue(11, 2024, 2000.0));
+            () -> service.updateItemValue(11, 2024, 2000.0, false));
         assertEquals(String.format(
             "Item with ID %d not found in budget year %d",
             11, 2024),
