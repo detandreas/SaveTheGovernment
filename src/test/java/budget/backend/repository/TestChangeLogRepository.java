@@ -448,6 +448,73 @@ public class TestChangeLogRepository {
         assertEquals(6, newId);
     }
 
+    @Test
+    void testChangeLog_ValueTracking_RecordsOldAndNewValues() throws IOException {
+        Files.writeString(testFilePath, "[]");
+
+        ChangeLog changeLog = new ChangeLog(
+            1,
+            100,
+            500.0,
+            750.0,
+            LocalDateTime.now().format(DATE_FORMATTER),
+            "Budget Manager",
+            UUID.randomUUID()
+        );
+
+        repository.save(changeLog);
+
+        Optional<ChangeLog> result = repository.findById(1);
+        assertTrue(result.isPresent());
+        assertEquals(500.0, result.get().oldValue());
+        assertEquals(750.0, result.get().newValue());
+    }
+
+    @Test
+    void testConcurrentOperations_SaveAndLoad_MaintainsDataIntegrity()
+            throws IOException, InterruptedException {
+        Files.writeString(testFilePath, "[]");
+
+        Thread thread1 = new Thread(() -> repository.save(testLog1));
+        Thread thread2 = new Thread(() -> repository.save(testLog2));
+
+        thread1.start();
+        thread2.start();
+
+        thread1.join();
+        thread2.join();
+
+        List<ChangeLog> result = repository.load();
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void testChangeLog_DateFormat_IsStoredCorrectly() throws IOException {
+        Files.writeString(testFilePath, "[]");
+
+        String expectedDate = "2024-12-15 14:30:00";
+        ChangeLog changeLog = new ChangeLog(
+            1,
+            100,
+            100.0,
+            200.0,
+            expectedDate,
+            "Test Actor",
+            UUID.randomUUID()
+        );
+
+        repository.save(changeLog);
+
+        Optional<ChangeLog> result = repository.findById(1);
+        assertTrue(result.isPresent());
+        assertEquals(expectedDate, result.get().submittedDate());
+    }
+
+
+    /**
+     * Inner class that extends ChangeLogRepository to override file paths
+     * for testing purposes
+     */
 
     private class TestableChangeLogRepository extends ChangeLogRepository {
 
