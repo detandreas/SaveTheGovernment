@@ -412,7 +412,41 @@ public class TestChangeLogRepository {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void testGenerateId_EmptyList_ReturnsOne() throws IOException {
+        Files.writeString(testFilePath, "[]");
 
+        int newId = repository.generateId();
+
+        assertEquals(1, newId);
+    }
+
+    @Test
+    void testGenerateId_WithExistingLogs_ReturnsMaxPlusOne() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2, testLog3};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        int newId = repository.generateId();
+
+        assertEquals(4, newId);
+    }
+
+    @Test
+    void testGenerateId_WithNonSequentialIds_ReturnsMaxPlusOne() throws IOException {
+        ChangeLog log1 = new ChangeLog(1, 100, 0.0, 100.0,
+            LocalDateTime.now().format(DATE_FORMATTER), "Actor 1", UUID.randomUUID());
+        ChangeLog log2 = new ChangeLog(5, 100, 100.0, 200.0,
+            LocalDateTime.now().format(DATE_FORMATTER), "Actor 2", UUID.randomUUID());
+        ChangeLog log3 = new ChangeLog(3, 100, 200.0, 300.0,
+            LocalDateTime.now().format(DATE_FORMATTER), "Actor 3", UUID.randomUUID());
+
+        ChangeLog[] logs = {log1, log2, log3};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        int newId = repository.generateId();
+
+        assertEquals(6, newId);
+    }
 
 
     private class TestableChangeLogRepository extends ChangeLogRepository {
