@@ -355,6 +355,64 @@ public class TestChangeLogRepository {
         assertEquals("User ID cannot be null", exception.getMessage());
     }
 
+    @Test
+    void testDelete_ExistingEntity_RemovesFromList() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2, testLog3};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        repository.delete(testLog1);
+
+        List<ChangeLog> result = repository.load();
+        assertEquals(2, result.size());
+        assertFalse(result.stream().anyMatch(log -> log.id() == testLog1.id()));
+        assertTrue(result.contains(testLog2));
+        assertTrue(result.contains(testLog3));
+    }
+
+    @Test
+    void testDelete_NonExistingEntity_DoesNotChangeList() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        ChangeLog nonExistingLog = new ChangeLog(
+            999,
+            300,
+            100.0,
+            200.0,
+            LocalDateTime.now().format(DATE_FORMATTER),
+            "Non Existing",
+            UUID.randomUUID()
+        );
+
+        repository.delete(nonExistingLog);
+
+        List<ChangeLog> result = repository.load();
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void testDelete_NullEntity_DoesNothing() throws IOException {
+        ChangeLog[] logs = {testLog1, testLog2};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        repository.delete(null);
+
+        List<ChangeLog> result = repository.load();
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void testDelete_LastEntity_LeavesEmptyList() throws IOException {
+        ChangeLog[] logs = {testLog1};
+        Files.writeString(testFilePath, gson.toJson(logs));
+
+        repository.delete(testLog1);
+
+        List<ChangeLog> result = repository.load();
+        assertTrue(result.isEmpty());
+    }
+
+
 
 
     private class TestableChangeLogRepository extends ChangeLogRepository {
