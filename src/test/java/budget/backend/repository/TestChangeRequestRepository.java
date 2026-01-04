@@ -50,6 +50,7 @@ public class TestChangeRequestRepository {
     }
 
     private PendingChange createTestChange(
+        int id,
         int budgetItemId,
         String requestByName,
         double oldValue,
@@ -57,6 +58,7 @@ public class TestChangeRequestRepository {
     ) {
         
         return new PendingChange(
+            id,
             budgetItemId,
             2024,
             "Test Budget Item",
@@ -78,8 +80,8 @@ public class TestChangeRequestRepository {
 
     @Test
     void testLoadWithData() {
-        PendingChange change1 = createTestChange(1, "TestName", 1000.0, 1100.0);
-        PendingChange change2 = createTestChange(2, "TestName2", 1500.0, 1600.0);
+        PendingChange change1 = createTestChange(1,1, "TestName", 1000.0, 1100.0);
+        PendingChange change2 = createTestChange(2, 2, "TestName2", 1500.0, 1600.0);
         repository.save(change1);
         repository.save(change2);
 
@@ -111,7 +113,7 @@ public class TestChangeRequestRepository {
 
     @Test
     void testSaveNewChange() {
-        PendingChange change = createTestChange(1, "User", 100.0, 200.0);
+        PendingChange change = createTestChange(1, 1, "User", 100.0, 200.0);
         repository.save(change);
 
         List<PendingChange> changes = repository.load();
@@ -142,7 +144,7 @@ public class TestChangeRequestRepository {
 
     @Test
     void testSaveUpdateChange() {
-        PendingChange change = createTestChange(1, "User", 100, 200);
+        PendingChange change = createTestChange(1, 1, "User", 100, 200);
         repository.save(change);
 
         change.approve();
@@ -169,7 +171,7 @@ public class TestChangeRequestRepository {
 
     @Test
     void testExistsByIdTrue() {
-        PendingChange change = createTestChange(1, "User", 100.0, 150.0);
+        PendingChange change = createTestChange(1, 1, "User", 100.0, 150.0);
         repository.save(change);
 
         int id = change.getId();
@@ -179,7 +181,7 @@ public class TestChangeRequestRepository {
 
     @Test
     void testExistsByIdFalse() {
-        PendingChange change = createTestChange(1, "User", 100.0, 150.0);
+        PendingChange change = createTestChange(1, 1, "User", 100.0, 150.0);
         repository.save(change);
 
         assertFalse(repository.existsById(0),
@@ -196,7 +198,7 @@ public class TestChangeRequestRepository {
 
     @Test
     void testDeleteExisting() {
-        PendingChange change = createTestChange(1, "User", 100.0, 150.0);
+        PendingChange change = createTestChange(1, 1, "User", 100.0, 150.0);
         repository.save(change);
         repository.delete(change);
         List<PendingChange> changes = repository.load();
@@ -205,7 +207,7 @@ public class TestChangeRequestRepository {
     
     @Test
     void testDeleteNonExisting() {
-        PendingChange change = createTestChange(1, "User", 100.0, 150.0);
+        PendingChange change = createTestChange(1, 1, "User", 100.0, 150.0);
         assertDoesNotThrow(() -> repository.delete(change),
         "Failure - should not throw for deleting non-existing change");
     }
@@ -220,7 +222,7 @@ public class TestChangeRequestRepository {
 
     @Test
     void testFindByIdExisting() {
-        PendingChange change = createTestChange(1, "User", 100.0, 150.0);
+        PendingChange change = createTestChange(1, 1, "User", 100.0, 150.0);
         repository.save(change);
         Optional<PendingChange> found_change = repository.findById(change.getId());
         assertTrue(found_change.isPresent(),
@@ -245,7 +247,7 @@ public class TestChangeRequestRepository {
 
     @Test
     void testFullCrudCycle() {
-        PendingChange change = createTestChange(1, "User", 100.0, 150.0);
+        PendingChange change = createTestChange(1, 1, "User", 100.0, 150.0);
         //Create
         repository.save(change);
 
@@ -279,9 +281,9 @@ public class TestChangeRequestRepository {
 
     @Test
     void testMultipleChanges() {
-        PendingChange change1 = createTestChange(1, "User1", 100.0, 150.0);
-        PendingChange change2 = createTestChange(2, "User2", 200.0, 250.0);
-        PendingChange change3 = createTestChange(3, "User3", 300.0, 350.0);
+        PendingChange change1 = createTestChange(1, 1, "User1", 100.0, 150.0);
+        PendingChange change2 = createTestChange(2, 2, "User2", 200.0, 250.0);
+        PendingChange change3 = createTestChange(3, 3, "User3", 300.0, 350.0);
 
         repository.save(change1);
         repository.save(change2);

@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import budget.backend.model.enums.Status;
 
@@ -16,7 +15,6 @@ import budget.backend.model.enums.Status;
  * proposed values, current review status and submission timestamp.
  */
 public class PendingChange {
-    private static final AtomicInteger NEXT_ID = new AtomicInteger(1);
 
     private final int id;
     private final int budgetItemId;
@@ -29,10 +27,11 @@ public class PendingChange {
     private Status status;
     private final String submittedDate;
     /**
-     * Constructs a new pending change with the specified parameters.
-     * The change is automatically assigned a unique ID and set to
-     * PENDING status.
+     * Constructs a new pending change with an explicit ID.
+     * Used by repository when loading from storage or when generating
+     * a new ID is needed to avoid collisions.
      *
+     * @param id the unique identifier for this pending change
      * @param budgetItemId the ID of the budget item to be modified
      * @param budgetItemYear the year of the Budget that
      *                                      the budgetItem belongs to
@@ -43,6 +42,7 @@ public class PendingChange {
      * @param newValue the proposed new value for the budget item
      */
     public PendingChange(
+        int id,
         int budgetItemId,
         int budgetItemYear,
         String budgetItemName,
@@ -51,7 +51,7 @@ public class PendingChange {
         double oldValue,
         double newValue
     ) {
-        this.id = NEXT_ID.getAndIncrement();
+        this.id = id;
         this.budgetItemName = budgetItemName;
         this.budgetItemId = budgetItemId;
         this.budgetItemYear = budgetItemYear;

@@ -70,7 +70,7 @@ public class TestChangeLogService {
     void testRecordChangeApprovedDoesNotThrow() {
         // Use fullName for requestByName (as done in ChangeRequestService)
         PendingChange change = new PendingChange(
-                1, 2025, "Budget Item 1",
+                3, 1, 2025, "Budget Item 1",
                 testUser.getFullName(), testUser.getId(),
                 1000.0, 1200.0
         );
@@ -92,7 +92,7 @@ public class TestChangeLogService {
     void testRecordChangeApprovedWithUserNameMatches() {
         // Test that userName also matches (fallback check)
         PendingChange change = new PendingChange(
-                1, 2025, "Budget Item 1",
+                1, 1, 2025, "Budget Item 1",
                 testUser.getUserName(), testUser.getId(),
                 1000.0, 1200.0
         );
@@ -104,7 +104,7 @@ public class TestChangeLogService {
     @Test
     void testRecordChangeNotApprovedThrows() {
         PendingChange change = new PendingChange(
-                2, 2025, "Budget Item 2",
+                2, 2, 2025, "Budget Item 2",
                 testUser.getFullName(), testUser.getId(),
                 2000.0, 2500.0
         );
@@ -125,7 +125,7 @@ public class TestChangeLogService {
     @Test
     void testRecordChangeNoAuthenticatedUserThrows() {
         PendingChange change = new PendingChange(
-                3, 2025, "Budget Item 3",
+                4, 3, 2025, "Budget Item 3",
                 testUser.getFullName(), testUser.getId(),
                 3000.0, 3300.0
         );
@@ -140,7 +140,7 @@ public class TestChangeLogService {
     @Test
     void testRecordChangeAuthenticatedUserNullUsernameThrows() {
         PendingChange change = new PendingChange(
-                4, 2025, "Budget Item 4",
+                5, 4, 2025, "Budget Item 4",
                 "dummy", testUser.getId(),
                 4000.0, 4500.0
         );
@@ -157,7 +157,7 @@ public class TestChangeLogService {
     @Test
     void testRecordChangeAuthenticatedUserNullFullNameThrows() {
         PendingChange change = new PendingChange(
-                5, 2025, "Budget Item 5",
+                6, 5, 2025, "Budget Item 5",
                 testUser.getFullName(), testUser.getId(),
                 5000.0, 5500.0
         );
@@ -174,7 +174,7 @@ public class TestChangeLogService {
     @Test
     void testRecordChangeUserIdMismatchThrows() {
         PendingChange change = new PendingChange(
-                6, 2025, "Budget Item 6",
+                7, 6, 2025, "Budget Item 6",
                 testUser.getFullName(), UUID.randomUUID(), // Different user ID
                 6000.0, 6500.0
         );
@@ -192,7 +192,7 @@ public class TestChangeLogService {
         // Note: This is tricky since PendingChange constructor doesn't allow null
         // But we test the validation logic
         PendingChange change = new PendingChange(
-                7, 2025, "Budget Item 7",
+                8, 7, 2025, "Budget Item 7",
                 null, testUser.getId(),
                 7000.0, 7500.0
         );
@@ -208,7 +208,7 @@ public class TestChangeLogService {
     @Test
     void testRecordChangeUserNameMismatchThrows() {
         PendingChange change = new PendingChange(
-                8, 2025, "Budget Item 8",
+                9, 8, 2025, "Budget Item 8",
                 "Different Name", testUser.getId(), // Name doesn't match
                 8000.0, 8500.0
         );
@@ -232,7 +232,7 @@ public class TestChangeLogService {
     void testRecordMultipleApprovedChanges() {
         for (int i = 1; i <= 3; i++) {
             PendingChange change = new PendingChange(
-                    i, 2025, "Budget Item " + i,
+                    i, i, 2025, "Budget Item " + i,
                     testUser.getFullName(), testUser.getId(),
                     1000.0 * i, 1200.0 * i
             );

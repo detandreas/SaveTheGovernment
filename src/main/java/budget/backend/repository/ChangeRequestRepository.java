@@ -194,6 +194,20 @@ implements GenericInterfaceRepository<PendingChange, Integer> {
     }
 
     /**
+     * Generates a new unique ID based on the highest current ID in the list.
+     * @return a new unique integer ID
+     */
+    public int generateId() {
+        synchronized (LOCK) {
+            return load()
+                    .stream()
+                    .mapToInt(PendingChange::getId)
+                    .max()
+                    .orElse(0) + 1;
+        }
+    }
+
+    /**
      * Serializes the supplied pending changes collection to the backing JSON
      * file using the configured {@link Gson} instance. Any I/O failure is
      * logged and swallowed so that callers are not forced to handle checked

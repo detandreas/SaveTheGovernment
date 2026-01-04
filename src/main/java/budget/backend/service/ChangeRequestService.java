@@ -95,6 +95,7 @@ public class ChangeRequestService {
 
     /**
      * Creates a new pending change request.
+     * @param id pending change id
      * @param item the budget item to be changed
      * @param user the user submitting the request
      * @param oldValue the current value of the budget item
@@ -102,12 +103,14 @@ public class ChangeRequestService {
      * @return a new PendingChange instance
      */
     private PendingChange createPendingChange(
+        int id,
         BudgetItem item,
         User user,
         double oldValue,
         double newValue
     ) {
         return new PendingChange(
+            id,
             item.getId(),
             item.getYear(),
             item.getName(),
@@ -168,8 +171,9 @@ public class ChangeRequestService {
         BudgetItem existingItem = existingItemOpt.get();
         BudgetItem updatedItem = createUpdatedItem(existingItem, newValue);
         validateBudgetItemChange(existingItem, updatedItem);
+        int newId = changeRequestRepository.generateId();
         PendingChange change = createPendingChange(
-            item, user, existingItem.getValue(), newValue
+            newId, item, user, existingItem.getValue(), newValue
         );
         validatePendingChange(change);
         changeRequestRepository.save(change);

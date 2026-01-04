@@ -8,4 +8,5 @@
     <suppress files=".*" checks="HiddenField"/>
     <suppress files=".*" checks="FinalParameters"/>
     <suppress files="ChartConfigurationHelper\.java" checks="ParameterNumber"/>
+    <suppress files="PendingChange\.java" checks="ParameterNumber"/>
 </suppressions>

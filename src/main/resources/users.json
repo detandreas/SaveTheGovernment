@@ -92,6 +92,22 @@
       "fullName": "Panos Kammenos",
       "password": "29864e923a5a4efd8e378c9b5825644b89d8ca738c4c6b75694222c87ed91594",
       "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "FINANCE",
+      "id": "0b103ceb-91ff-4800-bfa5-9c2c192f4450",
+      "userName": "varoufakis",
+      "fullName": "Giannis Varoufakis",
+      "password": "700a90a11fe6d6547e4dfa62a49a7a7d628bd1c3d4f5a7c57d4ea7122705d137",
+      "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "DEFENSE",
+      "id": "3fe20c3d-a6cb-40aa-ba68-c6e372d3c10c",
+      "userName": "tzoxatzopoulos",
+      "fullName": "Akis Tzoxatzopoulos",
+      "password": "29864e923a5a4efd8e378c9b5825644b89d8ca738c4c6b75694222c87ed91594",
+      "userRole": "GOVERNMENT_MEMBER"
     }
   ],
   "primeMinister": {

@@ -1,15 +1,12 @@
 package budget.backend.model.domain;
 
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import budget.backend.model.enums.Status;
@@ -24,19 +21,10 @@ public class TestPendingChange {
     private static final double OLD_VALUE = 500;
     private static final double NEW_VALUE = 1000;
 
-    @BeforeEach
-    void resetIdCounter() throws Exception {
-        Field idField = PendingChange.class.getDeclaredField("NEXT_ID");
-        idField.setAccessible(true);
-        
-        // Παίρνουμε το υπάρχον AtomicInteger και θέτουμε την τιμή του σε 1
-        AtomicInteger currentCounter = (AtomicInteger) idField.get(null);
-        currentCounter.set(1);
-    }
-
     @Test
     void testConstructorAndGetters() {
         PendingChange pc = new PendingChange(
+            1,
                 BUDGET_ITEM_ID,
                 BUDGET_ITEM_YEAR,
                 BUDGET_ITEM_NAME,
@@ -65,8 +53,8 @@ public class TestPendingChange {
 
     @Test
     void testAutoIncrementIds() {
-        PendingChange pc1 = new PendingChange(BUDGET_ITEM_ID, BUDGET_ITEM_YEAR, BUDGET_ITEM_NAME, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
-        PendingChange pc2 = new PendingChange(BUDGET_ITEM_ID, BUDGET_ITEM_YEAR, BUDGET_ITEM_NAME, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
+        PendingChange pc1 = new PendingChange(1, BUDGET_ITEM_ID, BUDGET_ITEM_YEAR, BUDGET_ITEM_NAME, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
+        PendingChange pc2 = new PendingChange(2, BUDGET_ITEM_ID, BUDGET_ITEM_YEAR, BUDGET_ITEM_NAME, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
 
         assertEquals(1, pc1.getId(), "Failure - wrong first id");
         assertEquals(2, pc2.getId(), "Failure - wrong second id");
@@ -74,7 +62,7 @@ public class TestPendingChange {
 
     @Test
     void testApprove() {
-        PendingChange pc = new PendingChange(BUDGET_ITEM_ID, BUDGET_ITEM_YEAR, BUDGET_ITEM_NAME, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
+        PendingChange pc = new PendingChange(1, BUDGET_ITEM_ID, BUDGET_ITEM_YEAR, BUDGET_ITEM_NAME, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
 
         pc.approve();
         assertEquals(Status.APPROVED, pc.getStatus(), "Failure - wrong status after approve");
@@ -82,7 +70,7 @@ public class TestPendingChange {
 
     @Test
     void testReject() {
-        PendingChange pc = new PendingChange(BUDGET_ITEM_ID, BUDGET_ITEM_YEAR, BUDGET_ITEM_NAME, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
+        PendingChange pc = new PendingChange(1, BUDGET_ITEM_ID, BUDGET_ITEM_YEAR, BUDGET_ITEM_NAME, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
 
         pc.reject();
         assertEquals(Status.REJECTED, pc.getStatus(), "Failure - wrong status after reject");
@@ -90,7 +78,7 @@ public class TestPendingChange {
 
     @Test
     void testToStringContainsAllFields() {
-        PendingChange pc = new PendingChange(BUDGET_ITEM_ID, BUDGET_ITEM_YEAR, BUDGET_ITEM_NAME, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
+        PendingChange pc = new PendingChange(1, BUDGET_ITEM_ID, BUDGET_ITEM_YEAR, BUDGET_ITEM_NAME, REQUESTER_NAME, REQUESTER_ID, OLD_VALUE, NEW_VALUE);
         String out = pc.toString();
 
         assertTrue(out.contains("id=1"), "Failure - wrong toString");
