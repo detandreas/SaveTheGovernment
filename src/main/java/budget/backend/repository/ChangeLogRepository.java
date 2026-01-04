@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.UUID;
@@ -186,7 +187,7 @@ public class ChangeLogRepository
 
             return  load()
                     .stream()
-                    .filter(log -> log.actorId() == userId)
+                    .filter(log -> Objects.equals(log.actorId(), userId))
                     .toList();
         }
     }
