@@ -1,112 +1,258 @@
 {
-  "2025": {
+  "2026": {
     "esoda": [
       {
         "ID": 11,
         "BILL": "Taxes",
-        "VALUE": 62055000000.0
+        "VALUE": 6.5586E10
       },
       {
         "ID": 12,
         "BILL": "Social Contributions",
-        "VALUE": 60000000.0
+        "VALUE": 6.0E7
       },
       {
         "ID": 13,
         "BILL": "Transfers",
-        "VALUE": 8131000000.0
+        "VALUE": 1.0943E10
       },
       {
         "ID": 14,
         "BILL": "Sales of goods and services",
-        "VALUE": 2405000000.0
+        "VALUE": 1.201E9
       },
       {
         "ID": 15,
         "BILL": "Other current revenue",
-        "VALUE": 2775000000.0
+        "VALUE": 2.407E9
       },
       {
         "ID": 31,
         "BILL": "Fixed Assets",
-        "VALUE": 37000000.0
+        "VALUE": 5.1E7
       },
       {
         "ID": 43,
         "BILL": "Debt Securities",
-        "VALUE": 11000000.0
+        "VALUE": 1.1E7
       },
       {
         "ID": 44,
         "BILL": "Loans",
-        "VALUE": 20000000.0
+        "VALUE": 5.525E9
       },
       {
         "ID": 45,
         "BILL": "Equity securities and investment fund shares",
-        "VALUE": 467000000.0
+        "VALUE": 2.28E8
+      },
+      {
+        "ID": 52,
+        "BILL": "Currency and deposits liabilities",
+        "VALUE": 6.3E7
       },
       {
         "ID": 53,
         "BILL": "Debt Securities (liabilities)",
-        "VALUE": 25973000000.0
+        "VALUE": 2.3875E10
       },
       {
         "ID": 54,
         "BILL": "Loans",
-        "VALUE": 1202027000000.0
+        "VALUE": 1.654726E12
       },
       {
         "ID": 57,
         "BILL": "Financial derivatives",
-        "VALUE": 800000000.0
+        "VALUE": 9.59E8
       }
     ],
     "eksoda": [
       {
         "ID": 21,
         "BILL": "Employee benefits",
-        "VALUE": 14889199000.0
+        "VALUE": 1.568849E10
       },
       {
         "ID": 22,
         "BILL": "Social benefits",
-        "VALUE": 425136000.0
+        "VALUE": 6.27779E8
       },
       {
         "ID": 23,
         "BILL": "Transfers",
-        "VALUE": 34741365000.0
+        "VALUE": 3.5897013E10
       },
       {
         "ID": 24,
         "BILL": "Purchases of goods and services",
-        "VALUE": 2039542000.0
+        "VALUE": 2.388349E9
       },
       {
         "ID": 25,
         "BILL": "Subsidies",
-        "VALUE": 80630000.0
+        "VALUE": 8.033E7
       },
       {
         "ID": 26,
         "BILL": "Interest",
-        "VALUE": 7701101000.0
+        "VALUE": 7.91742E9
       },
       {
         "ID": 27,
         "BILL": "Other expenses",
-        "VALUE": 101553000.0
+        "VALUE": 1.01259E8
       },
       {
         "ID": 29,
         "BILL": "Credits under allocation",
-        "VALUE": 17283053000.0
+        "VALUE": 1.9989259E10
       },
       {
         "ID": 31,
         "BILL": "Fixed assets",
-        "VALUE": 2609600000.0
+        "VALUE": 3.355541E9
+      },
+      {
+        "ID": 33,
+        "BILL": "Compensation",
+        "VALUE": 84000.0
+      },
+      {
+        "ID": 44,
+        "BILL": "Loans",
+        "VALUE": 1.2079352E10
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 1.587084E9
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt securities (liabilities)",
+        "VALUE": 2.4909729E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 1.659113701E12
+      },
+      {
+        "ID": 57,
+        "BILL": "Financial derivatives",
+        "VALUE": 3.41662E8
+      }
+    ]
+  },
+  "2025": {
+    "esoda": [
+      {
+        "ID": 11,
+        "BILL": "Taxes",
+        "VALUE": 6.2055E10
+      },
+      {
+        "ID": 12,
+        "BILL": "Social Contributions",
+        "VALUE": 6.0E7
+      },
+      {
+        "ID": 13,
+        "BILL": "Transfers",
+        "VALUE": 8.131E9
+      },
+      {
+        "ID": 14,
+        "BILL": "Sales of goods and services",
+        "VALUE": 2.405E9
+      },
+      {
+        "ID": 15,
+        "BILL": "Other current revenue",
+        "VALUE": 2.775E9
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed Assets",
+        "VALUE": 3.7E7
+      },
+      {
+        "ID": 43,
+        "BILL": "Debt Securities",
+        "VALUE": 1.1E7
+      },
+      {
+        "ID": 44,
+        "BILL": "Loans",
+        "VALUE": 2.0E7
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 4.67E8
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt Securities (liabilities)",
+        "VALUE": 2.5973E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 1.202027E12
+      },
+      {
+        "ID": 57,
+        "BILL": "Financial derivatives",
+        "VALUE": 15000.0
+      }
+    ],
+    "eksoda": [
+      {
+        "ID": 21,
+        "BILL": "Employee benefits",
+        "VALUE": 1.4889199E10
+      },
+      {
+        "ID": 22,
+        "BILL": "Social benefits",
+        "VALUE": 4.25136E8
+      },
+      {
+        "ID": 23,
+        "BILL": "Transfers",
+        "VALUE": 3.4741365E10
+      },
+      {
+        "ID": 24,
+        "BILL": "Purchases of goods and services",
+        "VALUE": 2.039542E9
+      },
+      {
+        "ID": 25,
+        "BILL": "Subsidies",
+        "VALUE": 8.063E7
+      },
+      {
+        "ID": 26,
+        "BILL": "Interest",
+        "VALUE": 7.701101E9
+      },
+      {
+        "ID": 27,
+        "BILL": "Other expenses",
+        "VALUE": 1.01553E8
+      },
+      {
+        "ID": 29,
+        "BILL": "Credits under allocation",
+        "VALUE": 1.7283053E10
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed assets",
+        "VALUE": 2.6096E9
       },
       {
         "ID": 33,
@@ -116,17 +262,833 @@
       {
         "ID": 44,
         "BILL": "Loans",
-        "VALUE": 3741000000.0
+        "VALUE": 3.741E9
       },
       {
         "ID": 45,
         "BILL": "Equity securities and investment fund shares",
-        "VALUE": 1755112000.0
+        "VALUE": 1.755112E9
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt securities (liabilities)",
+        "VALUE": 1.9375E10
       },
       {
         "ID": 54,
         "BILL": "Loans",
-        "VALUE": 1203165130000.0
+        "VALUE": 1.20316513E12
+      }
+    ]
+  },
+  "2024": {
+    "esoda": [
+      {
+        "ID": 11,
+        "BILL": "Taxes",
+        "VALUE": 5.6597E10
+      },
+      {
+        "ID": 12,
+        "BILL": "Social Contributions",
+        "VALUE": 5.6E7
+      },
+      {
+        "ID": 13,
+        "BILL": "Transfers",
+        "VALUE": 7.96E9
+      },
+      {
+        "ID": 14,
+        "BILL": "Sales of goods and services",
+        "VALUE": 5.547E9
+      },
+      {
+        "ID": 15,
+        "BILL": "Other current revenue",
+        "VALUE": 2.555E9
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed Assets",
+        "VALUE": 2.3E7
+      },
+      {
+        "ID": 43,
+        "BILL": "Debt Securities",
+        "VALUE": 1.1E7
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 1.095E9
+      },
+      {
+        "ID": 52,
+        "BILL": "Currency and deposits liabilities",
+        "VALUE": 5.5E7
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt Securities (liabilities)",
+        "VALUE": 2.8205E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 1.004195E12
+      },
+      {
+        "ID": 57,
+        "BILL": "Financial derivatives",
+        "VALUE": 1.35E9
+      }
+    ],
+    "eksoda": [
+      {
+        "ID": 21,
+        "BILL": "Employee benefits",
+        "VALUE": 1.4849625E10
+      },
+      {
+        "ID": 22,
+        "BILL": "Social benefits",
+        "VALUE": 4.1054E8
+      },
+      {
+        "ID": 23,
+        "BILL": "Transfers",
+        "VALUE": 3.3228722E10
+      },
+      {
+        "ID": 24,
+        "BILL": "Purchases of goods and services",
+        "VALUE": 1.79202E9
+      },
+      {
+        "ID": 25,
+        "BILL": "Subsidies",
+        "VALUE": 8.06E7
+      },
+      {
+        "ID": 26,
+        "BILL": "Interest",
+        "VALUE": 7.701105E9
+      },
+      {
+        "ID": 27,
+        "BILL": "Other expenses",
+        "VALUE": 1.11364E8
+      },
+      {
+        "ID": 29,
+        "BILL": "Credits under allocation",
+        "VALUE": 1.4835189E10
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed assets",
+        "VALUE": 2.727126E9
+      },
+      {
+        "ID": 33,
+        "BILL": "Compensation",
+        "VALUE": 81000.0
+      },
+      {
+        "ID": 44,
+        "BILL": "Loans",
+        "VALUE": 2.031E9
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 1.557768E9
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt securities (liabilities)",
+        "VALUE": 2.661E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 1.00225313E12
+      }
+    ]
+  },
+  "2023": {
+    "esoda": [
+      {
+        "ID": 11,
+        "BILL": "Taxes",
+        "VALUE": 5.1579E10
+      },
+      {
+        "ID": 12,
+        "BILL": "Social Contributions",
+        "VALUE": 5.5E7
+      },
+      {
+        "ID": 13,
+        "BILL": "Transfers",
+        "VALUE": 7.953E9
+      },
+      {
+        "ID": 14,
+        "BILL": "Sales of goods and services",
+        "VALUE": 2.405E9
+      },
+      {
+        "ID": 15,
+        "BILL": "Other current revenue",
+        "VALUE": 1.869E9
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed Assets",
+        "VALUE": 2.4E7
+      },
+      {
+        "ID": 43,
+        "BILL": "Debt Securities",
+        "VALUE": 2.3E7
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 3.87E8
+      },
+      {
+        "ID": 52,
+        "BILL": "Currency and deposits liabilities",
+        "VALUE": 4.4E7
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt Securities (liabilities)",
+        "VALUE": 3.1554E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 7.01846E11
+      },
+      {
+        "ID": 57,
+        "BILL": "Financial derivatives",
+        "VALUE": 3.0E8
+      }
+    ],
+    "eksoda": [
+      {
+        "ID": 21,
+        "BILL": "Employee benefits",
+        "VALUE": 1.3795795E10
+      },
+      {
+        "ID": 22,
+        "BILL": "Social benefits",
+        "VALUE": 3.97439E8
+      },
+      {
+        "ID": 23,
+        "BILL": "Transfers",
+        "VALUE": 3.2475557E10
+      },
+      {
+        "ID": 24,
+        "BILL": "Purchases of goods and services",
+        "VALUE": 1.540686E9
+      },
+      {
+        "ID": 25,
+        "BILL": "Subsidies",
+        "VALUE": 8.03E7
+      },
+      {
+        "ID": 26,
+        "BILL": "Interest",
+        "VALUE": 5.851155E9
+      },
+      {
+        "ID": 27,
+        "BILL": "Other expenses",
+        "VALUE": 8.1257E7
+      },
+      {
+        "ID": 29,
+        "BILL": "Credits under allocation",
+        "VALUE": 1.5117638E10
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed assets",
+        "VALUE": 2.530934E9
+      },
+      {
+        "ID": 33,
+        "BILL": "Compensation",
+        "VALUE": 62000.0
+      },
+      {
+        "ID": 44,
+        "BILL": "Loans",
+        "VALUE": 3.394E9
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 1.05824E9
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt securities (liabilities)",
+        "VALUE": 2.7924E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 7.0263113E11
+      }
+    ]
+  },
+  "2022": {
+    "esoda": [
+      {
+        "ID": 11,
+        "BILL": "Taxes",
+        "VALUE": 4.5654498E10
+      },
+      {
+        "ID": 12,
+        "BILL": "Social Contributions",
+        "VALUE": 5.5E7
+      },
+      {
+        "ID": 13,
+        "BILL": "Transfers",
+        "VALUE": 7.376E9
+      },
+      {
+        "ID": 14,
+        "BILL": "Sales of goods and services",
+        "VALUE": 2.092E9
+      },
+      {
+        "ID": 15,
+        "BILL": "Other current revenue",
+        "VALUE": 1.911E9
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed Assets",
+        "VALUE": 1.3E7
+      },
+      {
+        "ID": 43,
+        "BILL": "Debt Securities",
+        "VALUE": 3.1E7
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 6.87E8
+      },
+      {
+        "ID": 52,
+        "BILL": "Currency and deposits liabilities",
+        "VALUE": 6000000.0
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt Securities (liabilities)",
+        "VALUE": 3.6954E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 7.01846E11
+      }
+    ],
+    "eksoda": [
+      {
+        "ID": 21,
+        "BILL": "Employee benefits",
+        "VALUE": 1.3610168E10
+      },
+      {
+        "ID": 22,
+        "BILL": "Social benefits",
+        "VALUE": 2.20643E8
+      },
+      {
+        "ID": 23,
+        "BILL": "Transfers",
+        "VALUE": 3.0583382E10
+      },
+      {
+        "ID": 24,
+        "BILL": "Purchases of goods and services",
+        "VALUE": 1.355222E9
+      },
+      {
+        "ID": 25,
+        "BILL": "Subsidies",
+        "VALUE": 8.006E7
+      },
+      {
+        "ID": 26,
+        "BILL": "Interest",
+        "VALUE": 4.60045E9
+      },
+      {
+        "ID": 27,
+        "BILL": "Other expenses",
+        "VALUE": 1.01387E8
+      },
+      {
+        "ID": 29,
+        "BILL": "Credits under allocation",
+        "VALUE": 1.392151E10
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed assets",
+        "VALUE": 3.455707E9
+      },
+      {
+        "ID": 33,
+        "BILL": "Compensation",
+        "VALUE": 56000.0
+      },
+      {
+        "ID": 44,
+        "BILL": "Loans",
+        "VALUE": 3.5095E9
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 1.06248E9
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt securities (liabilities)",
+        "VALUE": 2.9153E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 7.0368713E11
+      },
+      {
+        "ID": 57,
+        "BILL": "Financial derivatives",
+        "VALUE": 1.4E9
+      }
+    ]
+  },
+  "2021": {
+    "esoda": [
+      {
+        "ID": 11,
+        "BILL": "Taxes",
+        "VALUE": 4.3587E10
+      },
+      {
+        "ID": 12,
+        "BILL": "Social Contributions",
+        "VALUE": 5.3E7
+      },
+      {
+        "ID": 13,
+        "BILL": "Transfers",
+        "VALUE": 6.951E9
+      },
+      {
+        "ID": 14,
+        "BILL": "Sales of goods and services",
+        "VALUE": 5.95E8
+      },
+      {
+        "ID": 15,
+        "BILL": "Other current revenue",
+        "VALUE": 1.454E9
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed Assets",
+        "VALUE": 3.3E8
+      },
+      {
+        "ID": 43,
+        "BILL": "Debt Securities",
+        "VALUE": 3.052E7
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 1.453E9
+      },
+      {
+        "ID": 52,
+        "BILL": "Currency and deposits liabilities",
+        "VALUE": 8620000.0
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt Securities (liabilities)",
+        "VALUE": 3.7E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 7.01846E11
+      }
+    ],
+    "eksoda": [
+      {
+        "ID": 21,
+        "BILL": "Employee benefits",
+        "VALUE": 1.3544417E10
+      },
+      {
+        "ID": 22,
+        "BILL": "Social benefits",
+        "VALUE": 1.98872E8
+      },
+      {
+        "ID": 23,
+        "BILL": "Transfers",
+        "VALUE": 3.139433E10
+      },
+      {
+        "ID": 24,
+        "BILL": "Purchases of goods and services",
+        "VALUE": 1.25082425E9
+      },
+      {
+        "ID": 25,
+        "BILL": "Subsidies",
+        "VALUE": 8.006E7
+      },
+      {
+        "ID": 26,
+        "BILL": "Interest",
+        "VALUE": 4.5101E9
+      },
+      {
+        "ID": 27,
+        "BILL": "Other expenses",
+        "VALUE": 9.1379E7
+      },
+      {
+        "ID": 29,
+        "BILL": "Credits under allocation",
+        "VALUE": 1.409439475E10
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed assets",
+        "VALUE": 2.646191E9
+      },
+      {
+        "ID": 33,
+        "BILL": "Compensation",
+        "VALUE": 52000.0
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 1.56248E9
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt securities (liabilities)",
+        "VALUE": 2.6504E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 7.0487113E11
+      },
+      {
+        "ID": 57,
+        "BILL": "Financial derivatives",
+        "VALUE": 1.45E9
+      }
+    ]
+  },
+  "2020": {
+    "esoda": [
+      {
+        "ID": 11,
+        "BILL": "Taxes",
+        "VALUE": 4.7228E10
+      },
+      {
+        "ID": 12,
+        "BILL": "Social Contributions",
+        "VALUE": 5.5E7
+      },
+      {
+        "ID": 13,
+        "BILL": "Transfers",
+        "VALUE": 3.88E9
+      },
+      {
+        "ID": 14,
+        "BILL": "Sales of goods and services",
+        "VALUE": 6.92E8
+      },
+      {
+        "ID": 15,
+        "BILL": "Other current revenue",
+        "VALUE": 1.564E9
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed Assets",
+        "VALUE": 3.3E8
+      },
+      {
+        "ID": 43,
+        "BILL": "Debt Securities",
+        "VALUE": 5.5E8
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 2.063E9
+      },
+      {
+        "ID": 52,
+        "BILL": "Currency and deposits liabilities",
+        "VALUE": 1.9E7
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt Securities (liabilities)",
+        "VALUE": 2.2761145E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 6.0E11
+      }
+    ],
+    "eksoda": [
+      {
+        "ID": 21,
+        "BILL": "Employee benefits",
+        "VALUE": 1.3403404E10
+      },
+      {
+        "ID": 22,
+        "BILL": "Social benefits",
+        "VALUE": 1.34422E8
+      },
+      {
+        "ID": 23,
+        "BILL": "Transfers",
+        "VALUE": 2.7824312E10
+      },
+      {
+        "ID": 24,
+        "BILL": "Purchases of goods and services",
+        "VALUE": 1.145289E9
+      },
+      {
+        "ID": 25,
+        "BILL": "Subsidies",
+        "VALUE": 8.906E7
+      },
+      {
+        "ID": 26,
+        "BILL": "Interest",
+        "VALUE": 4.5001E9
+      },
+      {
+        "ID": 27,
+        "BILL": "Other expenses",
+        "VALUE": 7.1388E7
+      },
+      {
+        "ID": 29,
+        "BILL": "Credits under allocation",
+        "VALUE": 8.245362E9
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed assets",
+        "VALUE": 6.23188E8
+      },
+      {
+        "ID": 33,
+        "BILL": "Compensation",
+        "VALUE": 10000.0
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 5.6248E8
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt securities (liabilities)",
+        "VALUE": 1.9367E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 6.0152813E11
+      },
+      {
+        "ID": 57,
+        "BILL": "Financial derivatives",
+        "VALUE": 1.65E9
+      }
+    ]
+  },
+  "2019": {
+    "esoda": [
+      {
+        "ID": 11,
+        "BILL": "Taxes",
+        "VALUE": 4.6423E10
+      },
+      {
+        "ID": 12,
+        "BILL": "Social Contributions",
+        "VALUE": 5.7E7
+      },
+      {
+        "ID": 13,
+        "BILL": "Transfers",
+        "VALUE": 4.049E9
+      },
+      {
+        "ID": 14,
+        "BILL": "Sales of goods and services",
+        "VALUE": 7.65E8
+      },
+      {
+        "ID": 15,
+        "BILL": "Other current revenue",
+        "VALUE": 1.393E9
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed Assets",
+        "VALUE": 3.35E8
+      },
+      {
+        "ID": 43,
+        "BILL": "Debt Securities",
+        "VALUE": 2.85E8
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 1.124E9
+      },
+      {
+        "ID": 52,
+        "BILL": "Currency and deposits liabilities",
+        "VALUE": 1.2E7
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt Securities (liabilities)",
+        "VALUE": 3.38E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 6.0E11
+      },
+      {
+        "ID": 0,
+        "BILL": "change in cash available",
+        "VALUE": 1.6633218E10
+      }
+    ],
+    "eksoda": [
+      {
+        "ID": 21,
+        "BILL": "Employee benefits",
+        "VALUE": 1.3016364E10
+      },
+      {
+        "ID": 22,
+        "BILL": "Social benefits",
+        "VALUE": 2.46205E8
+      },
+      {
+        "ID": 23,
+        "BILL": "Transfers",
+        "VALUE": 2.61036115E10
+      },
+      {
+        "ID": 24,
+        "BILL": "Purchases of goods and services",
+        "VALUE": 1.32412299E9
+      },
+      {
+        "ID": 25,
+        "BILL": "Subsidies",
+        "VALUE": 1.5036E8
+      },
+      {
+        "ID": 26,
+        "BILL": "Interest",
+        "VALUE": 5.6001E9
+      },
+      {
+        "ID": 27,
+        "BILL": "Other expenses",
+        "VALUE": 5.1419E7
+      },
+      {
+        "ID": 29,
+        "BILL": "Credits under allocation",
+        "VALUE": 9.6868165E9
+      },
+      {
+        "ID": 31,
+        "BILL": "Fixed assets",
+        "VALUE": 6.1728501E8
+      },
+      {
+        "ID": 33,
+        "BILL": "Compensation",
+        "VALUE": 59000.0
+      },
+      {
+        "ID": 45,
+        "BILL": "Equity securities and investment fund shares",
+        "VALUE": 3.3198E8
+      },
+      {
+        "ID": 52,
+        "BILL": "Currency and deposits liabilities",
+        "VALUE": 7765000.0
+      },
+      {
+        "ID": 53,
+        "BILL": "Debt securities (liabilities)",
+        "VALUE": 4.3749E10
+      },
+      {
+        "ID": 54,
+        "BILL": "Loans",
+        "VALUE": 6.0299113E11
+      },
+      {
+        "ID": 57,
+        "BILL": "Financial derivatives",
+        "VALUE": 1.0E9
       }
     ]
   }
