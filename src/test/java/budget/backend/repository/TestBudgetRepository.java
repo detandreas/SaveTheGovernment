@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -444,6 +446,48 @@ public class TestBudgetRepository {
         assertTrue(item.getMinistries().contains(Ministry.DEVELOPMENT));
         assertTrue(item.getMinistries().contains(Ministry.INTERIOR));
     }
+
+    @Test
+    void testLoadWhenBudgetFileNotFound(@TempDir Path emptyTempDir) throws IOException{
+        // Set a temp directory that doesn't have budget.json
+        // This will make the external file not exist
+        System.setProperty("budget.data.dir", emptyTempDir.toString());
+        Path resourceFile = Paths.get("target/classes/budget.json");
+        Path renamedFile = Paths.get("target/classes/budget-temp.json");
+        try {
+            if (Files.exists(resourceFile)) {
+                Files.move(resourceFile, renamedFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+            List<Budget> result = repository.load();
+            
+            assertNotNull(result, "Failure - load should not return null even when file not found");
+            assertTrue(result.isEmpty(), "Failure - should return empty list when file not found");
+        } finally {
+            // Always restore the file, even if test fails
+            if (Files.exists(renamedFile)) {
+                Files.move(renamedFile, resourceFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+    }
+
+    @Test
+    void testLoadWhenBudgetMapFileNotFound(@TempDir Path emptyTempDir) throws IOException{
+        System.setProperty("budget.data.dir", emptyTempDir.toString());
+        Path resourceFile = Paths.get("target/classes/bill-ministry-map.json");
+    Path renamedFile = Paths.get("target/classes/bill-ministry-map-temp.json");
+        try {
+            
+            if (Files.exists(resourceFile)) {
+                Files.move(resourceFile, renamedFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+            
+            List<Budget> result = repository.load();
+
+            assertTrue(result.isEmpty(), "Failure - should return empty list when file not found");
+        } finally {
+            if (Files.exists(renamedFile)) {
+                Files.move(renamedFile, resourceFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+    }
 }
-
-

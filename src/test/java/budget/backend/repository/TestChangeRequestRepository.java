@@ -3,6 +3,8 @@ package budget.backend.repository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -303,5 +305,41 @@ public class TestChangeRequestRepository {
         changes = repository.load();
         assertEquals(0, changes.size(),
         "Failure - multiple changes not deleted correctly");
+    }
+
+    @Test
+    void testGenerateIdWithExistingChanges() {
+        PendingChange change1 = createTestChange(1, 1, "User1", 100.0, 150.0);
+        PendingChange change2 = createTestChange(2, 2, "User2", 200.0, 250.0);
+        PendingChange change3 = createTestChange(3, 3, "User3", 300.0, 350.0);
+        
+        repository.save(change1);
+        repository.save(change2);
+        repository.save(change3);
+        
+        int newId = repository.generateId();
+        
+        assertEquals(4, newId, "Failure - should return max id + 1");
+    }
+
+    @Test
+    void testLoadWhenFileNotFound(@TempDir Path emptyTempDir) throws IOException{
+        System.setProperty("budget.data.dir", emptyTempDir.toString());
+        Path resourceFile = Paths.get("target/classes/pending-changes.json");
+    Path renamedFile = Paths.get("target/classes/pending-changes-temp.json");
+        try {
+            
+            if (Files.exists(resourceFile)) {
+                Files.move(resourceFile, renamedFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+            
+            List<PendingChange> result = repository.load();
+
+            assertTrue(result.isEmpty(), "Failure - should return empty list when file not found");
+        } finally {
+            if (Files.exists(renamedFile)) {
+                Files.move(renamedFile, resourceFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
     }
 }

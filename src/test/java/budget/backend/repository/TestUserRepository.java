@@ -5,6 +5,8 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 
@@ -312,6 +314,27 @@ class TestUserRepository {
     private void writeJson(JsonObject json) throws IOException {
         try (Writer w = Files.newBufferedWriter(usersFile, StandardCharsets.UTF_8)) {
             GSON.toJson(json, w);
+        }
+    }
+
+    @Test
+    void testLoadWhenFileNotFound(@TempDir Path emptyTempDir) throws IOException{
+        System.setProperty("budget.data.dir", emptyTempDir.toString());
+        Path resourceFile = Paths.get("target/classes/users.json");
+        Path renamedFile = Paths.get("target/classes/users-temp.json");
+        try {
+            
+            if (Files.exists(resourceFile)) {
+                Files.move(resourceFile, renamedFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+            
+            List<User> result = repository.load();
+
+            assertTrue(result.isEmpty(), "Failure - should return empty list when file not found");
+        } finally {
+            if (Files.exists(renamedFile)) {
+                Files.move(renamedFile, resourceFile, StandardCopyOption.REPLACE_EXISTING);
+            }
         }
     }
 }

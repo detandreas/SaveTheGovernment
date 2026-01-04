@@ -3,6 +3,8 @@ package budget.backend.repository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,40 +28,43 @@ import com.google.gson.GsonBuilder;
 import budget.backend.model.domain.ChangeLog;
 
 public class TestChangeLogRepository {
+    
     private ChangeLogRepository repository;
-
-    @TempDir
-    Path tempDir;
-
-    private Path testFilePath;
-
+    private String originalDataDir;
+    
     private ChangeLog testLog1;
     private ChangeLog testLog2;
     private ChangeLog testLog3;
-
+    
     private Gson gson;
-
+    
     private UUID userId1;
     private UUID userId2;
-
+    
     private static final DateTimeFormatter DATE_FORMATTER =
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    
     @BeforeEach
-    void setUp() throws IOException {
-        repository = new TestableChangeLogRepository();
-        testFilePath = tempDir.resolve("budget-changes.json");
-
+    void setUp(@TempDir Path tempDir) throws IOException {
+        // Backup and set data dir so PathsUtil resolves files from tempDir
+        originalDataDir = System.getProperty("budget.data.dir");
+        System.setProperty("budget.data.dir", tempDir.toString());
+        
+        Path testFilePath = tempDir.resolve("budget-changes.json");
+        Files.writeString(testFilePath, "[]");
+        
+        repository = new ChangeLogRepository();
+        
         gson = new GsonBuilder().setPrettyPrinting().create();
-
+        
         // Create test data
         userId1 = UUID.randomUUID();
         userId2 = UUID.randomUUID();
-
+        
         String date1 = LocalDateTime.now().minusDays(2).format(DATE_FORMATTER);
         String date2 = LocalDateTime.now().minusDays(1).format(DATE_FORMATTER);
         String date3 = LocalDateTime.now().format(DATE_FORMATTER);
-
+        
         testLog1 = new ChangeLog(
             1,
             100,
@@ -68,7 +74,7 @@ public class TestChangeLogRepository {
             "John Doe",
             userId1
         );
-
+        
         testLog2 = new ChangeLog(
             2,
             100,
@@ -78,7 +84,7 @@ public class TestChangeLogRepository {
             "Jane Smith",
             userId2
         );
-
+        
         testLog3 = new ChangeLog(
             3,
             200,
@@ -88,107 +94,106 @@ public class TestChangeLogRepository {
             "John Doe",
             userId1
         );
-
-        // Initialize with empty file
-        Files.writeString(testFilePath, "[]");
     }
-
+    
     @AfterEach
-    void tearDown() throws IOException {
-        if (Files.exists(testFilePath)) {
-            Files.delete(testFilePath);
+    void tearDown() {
+        if (originalDataDir == null) {
+            System.clearProperty("budget.data.dir");
+        } else {
+            System.setProperty("budget.data.dir", originalDataDir);
         }
     }
-
+    
+    // load() Tests
+    
     @Test
-    void testLoad_EmptyFile_ReturnsEmptyList() throws IOException {
-        Files.writeString(testFilePath, "[]");
-
+    void testLoadEmptyFile() {
         List<ChangeLog> result = repository.load();
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+        
+        assertNotNull(result, "Failure - load should not return null");
+        assertTrue(result.isEmpty(), "Failure - should return empty list");
     }
-
+    
     @Test
-    void testLoad_ValidJsonFile_ReturnsChangeLogList() throws IOException {
-        ChangeLog[] logs = {testLog1};
-        String json = gson.toJson(logs);
-        Files.writeString(testFilePath, json);
-
-        List<ChangeLog> result = repository.load();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(1, result.get(0).id());
-        assertEquals(100, result.get(0).budgetItemId());
-        assertEquals(0.0, result.get(0).oldValue());
-        assertEquals(1000.0, result.get(0).newValue());
-    }
-
-    @Test
-    void testLoad_MultipleRecords_ReturnsAllRecords() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2, testLog3};
-        String json = gson.toJson(logs);
-        Files.writeString(testFilePath, json);
-
-        List<ChangeLog> result = repository.load();
-
-        assertNotNull(result);
-        assertEquals(3, result.size());
-    }
-
-    @Test
-    void testLoad_InvalidJson_ReturnsEmptyList() throws IOException {
-        Files.writeString(testFilePath, "{ invalid json }");
-
-        List<ChangeLog> result = repository.load();
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void testLoad_NullJson_ReturnsEmptyList() throws IOException {
-        Files.writeString(testFilePath, "null");
-
-        List<ChangeLog> result = repository.load();
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void testSave_NewEntity_AddsToList() throws IOException {
-        Files.writeString(testFilePath, "[]");
-
+    void testLoadValidJsonFile() {
         repository.save(testLog1);
-
+        
         List<ChangeLog> result = repository.load();
-        assertEquals(1, result.size());
-        assertEquals(testLog1.id(), result.get(0).id());
-        assertEquals(testLog1.actorName(), result.get(0).actorName());
-        assertEquals(testLog1.oldValue(), result.get(0).oldValue());
-        assertEquals(testLog1.newValue(), result.get(0).newValue());
+        
+        assertNotNull(result, "Failure - load should not return null");
+        assertEquals(1, result.size(), "Failure - should return 1 log");
+        assertEquals(1, result.get(0).id(), "Failure - id should match");
+        assertEquals(100, result.get(0).budgetItemId(), "Failure - budgetItemId should match");
+        assertEquals(0.0, result.get(0).oldValue(), "Failure - oldValue should match");
+        assertEquals(1000.0, result.get(0).newValue(), "Failure - newValue should match");
     }
-
+    
     @Test
-    void testSave_MultipleNewEntities_AddsAllToList() throws IOException {
-        Files.writeString(testFilePath, "[]");
-
+    void testLoadMultipleRecords() {
         repository.save(testLog1);
         repository.save(testLog2);
         repository.save(testLog3);
-
+        
         List<ChangeLog> result = repository.load();
-        assertEquals(3, result.size());
+        
+        assertNotNull(result, "Failure - load should not return null");
+        assertEquals(3, result.size(), "Failure - should return 3 logs");
     }
-
+    
     @Test
-    void testSave_ExistingEntity_UpdatesInList() throws IOException {
-        ChangeLog[] initialLogs = {testLog1};
-        Files.writeString(testFilePath, gson.toJson(initialLogs));
-
+    void testLoadInvalidJson(@TempDir Path tempDir) throws IOException {
+        System.setProperty("budget.data.dir", tempDir.toString());
+        Path testFile = tempDir.resolve("budget-changes.json");
+        Files.writeString(testFile, "{ invalid json }");
+        
+        assertDoesNotThrow(() -> repository.load(), "Failure - load shouldn't throw");
+        List<ChangeLog> result = repository.load();
+        
+        assertNotNull(result, "Failure - load should not return null");
+        assertTrue(result.isEmpty(), "Failure - should return empty list on invalid JSON");
+    }
+    
+    @Test
+    void testLoadNullJson(@TempDir Path tempDir) throws IOException {
+        System.setProperty("budget.data.dir", tempDir.toString());
+        Path testFile = tempDir.resolve("budget-changes.json");
+        Files.writeString(testFile, "null");
+        
+        List<ChangeLog> result = repository.load();
+        
+        assertNotNull(result, "Failure - load should not return null");
+        assertTrue(result.isEmpty(), "Failure - should return empty list for null JSON");
+    }
+    
+    // save() Tests
+    
+    @Test
+    void testSaveNewEntity() {
+        repository.save(testLog1);
+        
+        List<ChangeLog> result = repository.load();
+        assertEquals(1, result.size(), "Failure - should have 1 log");
+        assertEquals(testLog1.id(), result.get(0).id(), "Failure - id should match");
+        assertEquals(testLog1.actorName(), result.get(0).actorName(), "Failure - actorName should match");
+        assertEquals(testLog1.oldValue(), result.get(0).oldValue(), "Failure - oldValue should match");
+        assertEquals(testLog1.newValue(), result.get(0).newValue(), "Failure - newValue should match");
+    }
+    
+    @Test
+    void testSaveMultipleNewEntities() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        repository.save(testLog3);
+        
+        List<ChangeLog> result = repository.load();
+        assertEquals(3, result.size(), "Failure - should have 3 logs");
+    }
+    
+    @Test
+    void testSaveUpdateExistingEntity() {
+        repository.save(testLog1);
+        
         ChangeLog updatedLog = new ChangeLog(
             1,
             100,
@@ -198,182 +203,197 @@ public class TestChangeLogRepository {
             "John Doe Updated",
             testLog1.actorId()
         );
-
+        
         repository.save(updatedLog);
-
+        
         List<ChangeLog> result = repository.load();
-        assertEquals(1, result.size());
-        assertEquals(2000.0, result.get(0).newValue());
-        assertEquals("John Doe Updated", result.get(0).actorName());
+        assertEquals(1, result.size(), "Failure - should still have 1 log");
+        assertEquals(2000.0, result.get(0).newValue(), "Failure - newValue should be updated");
+        assertEquals("John Doe Updated", result.get(0).actorName(), "Failure - actorName should be updated");
     }
-
+    
     @Test
-    void testSave_NullEntity_DoesNothing() throws IOException {
-        Files.writeString(testFilePath, "[]");
-
-        repository.save(null);
-
+    void testSaveNull() {
+        assertDoesNotThrow(() -> repository.save(null), "Failure - saving null shouldn't throw");
+        
         List<ChangeLog> result = repository.load();
-        assertTrue(result.isEmpty());
+        assertTrue(result.isEmpty(), "Failure - should have 0 logs after saving null");
     }
-
+    
+    // existsById() Tests
+    
     @Test
-    void testExistsById_ExistingId_ReturnsTrue() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testExistsByIdTrue() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        
         boolean exists = repository.existsById(1);
-
-        assertTrue(exists);
+        
+        assertTrue(exists, "Failure - should return true for existing id");
     }
-
+    
     @Test
-    void testExistsById_NonExistingId_ReturnsFalse() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testExistsByIdFalse() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        
         boolean exists = repository.existsById(999);
-
-        assertFalse(exists);
+        
+        assertFalse(exists, "Failure - should return false for non-existing id");
     }
-
+    
     @Test
-    void testExistsById_NullId_ReturnsFalse() {
+    void testExistsByIdNull() {
         boolean exists = repository.existsById(null);
-        assertFalse(exists);
+        assertFalse(exists, "Failure - should return false for null id");
     }
-
+    
     @Test
-    void testExistsById_EmptyList_ReturnsFalse() throws IOException {
-        Files.writeString(testFilePath, "[]");
-
+    void testExistsByIdEmptyList() {
         boolean exists = repository.existsById(1);
-
-        assertFalse(exists);
+        
+        assertFalse(exists, "Failure - should return false for empty list");
     }
-
+    
+    // findById() Tests
+    
     @Test
-    void testFindById_ExistingId_ReturnsOptionalWithValue() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2, testLog3};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testFindByIdExisting() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        repository.save(testLog3);
+        
         Optional<ChangeLog> result = repository.findById(2);
-
-        assertTrue(result.isPresent());
-        assertEquals(2, result.get().id());
-        assertEquals(testLog2.actorName(), result.get().actorName());
-        assertEquals(testLog2.budgetItemId(), result.get().budgetItemId());
+        
+        assertTrue(result.isPresent(), "Failure - should find existing log");
+        assertEquals(2, result.get().id(), "Failure - id should match");
+        assertEquals(testLog2.actorName(), result.get().actorName(), "Failure - actorName should match");
+        assertEquals(testLog2.budgetItemId(), result.get().budgetItemId(), "Failure - budgetItemId should match");
     }
-
+    
     @Test
-    void testFindById_NonExistingId_ReturnsEmptyOptional() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testFindByIdNonExisting() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        
         Optional<ChangeLog> result = repository.findById(999);
-
-        assertTrue(result.isEmpty());
+        
+        assertTrue(result.isEmpty(), "Failure - should return empty for non-existing id");
     }
-
+    
     @Test
-    void testFindById_NullId_ReturnsEmptyOptional() {
+    void testFindByIdNull() {
         Optional<ChangeLog> result = repository.findById(null);
-        assertTrue(result.isEmpty());
+        assertTrue(result.isEmpty(), "Failure - should return empty for null id");
     }
-
+    
     @Test
-    void testFindById_EmptyList_ReturnsEmptyOptional() throws IOException {
-        Files.writeString(testFilePath, "[]");
-
+    void testFindByIdEmptyList() {
         Optional<ChangeLog> result = repository.findById(1);
-
-        assertTrue(result.isEmpty());
+        
+        assertTrue(result.isEmpty(), "Failure - should return empty for empty list");
     }
-
+    
+    // getLogsForItem() Tests
+    
     @Test
-    void testGetLogsForItem_ValidItemId_ReturnsFilteredLogs() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2, testLog3};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testGetLogsForItemValid() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        repository.save(testLog3);
+        
         List<ChangeLog> result = repository.getLogsForItem(100);
-
-        assertEquals(2, result.size());
-        assertTrue(result.stream().allMatch(log -> log.budgetItemId() == 100));
-        assertTrue(result.contains(testLog1));
-        assertTrue(result.contains(testLog2));
+        
+        assertEquals(2, result.size(), "Failure - should return 2 logs for item 100");
+        assertTrue(result.stream().allMatch(log -> log.budgetItemId() == 100), 
+            "Failure - all logs should have budgetItemId 100");
+        assertTrue(result.contains(testLog1), "Failure - should contain testLog1");
+        assertTrue(result.contains(testLog2), "Failure - should contain testLog2");
     }
-
+    
     @Test
-    void testGetLogsForItem_NoMatchingLogs_ReturnsEmptyList() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testGetLogsForItemNoMatching() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        
         List<ChangeLog> result = repository.getLogsForItem(999);
-
-        assertTrue(result.isEmpty());
+        
+        assertTrue(result.isEmpty(), "Failure - should return empty list for non-matching item");
     }
-
+    
     @Test
-    void testGetLogsForItem_NullItemId_ThrowsException() {
+    void testGetLogsForItemNull() {
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
-            () -> repository.getLogsForItem(null)
+            () -> repository.getLogsForItem(null),
+            "Failure - should throw for null itemId"
         );
-        assertEquals("Item ID cannot be null", exception.getMessage());
+        assertEquals("Item ID cannot be null", exception.getMessage(), 
+            "Failure - exception message should match");
     }
-
+    
+    // getLogsByUser() Tests
+    
     @Test
-    void testGetLogsByUser_ValidUserId_ReturnsFilteredLogs() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2, testLog3};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testGetLogsByUserValid() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        repository.save(testLog3);
+        
         List<ChangeLog> result = repository.getLogsByUser(userId1);
-
-        assertEquals(2, result.size());
-        assertTrue(result.stream().allMatch(log -> log.actorId().equals(userId1)));
-        assertTrue(result.contains(testLog1));
-        assertTrue(result.contains(testLog3));
+        
+        assertEquals(2, result.size(), "Failure - should return 2 logs for userId1");
+        assertTrue(result.stream().allMatch(log -> log.actorId().equals(userId1)), 
+            "Failure - all logs should have actorId userId1");
+        assertTrue(result.contains(testLog1), "Failure - should contain testLog1");
+        assertTrue(result.contains(testLog3), "Failure - should contain testLog3");
     }
-
+    
     @Test
-    void testGetLogsByUser_NoMatchingLogs_ReturnsEmptyList() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testGetLogsByUserNoMatching() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        
         UUID randomUserId = UUID.randomUUID();
         List<ChangeLog> result = repository.getLogsByUser(randomUserId);
-
-        assertTrue(result.isEmpty());
+        
+        assertTrue(result.isEmpty(), "Failure - should return empty list for non-matching user");
     }
-
+    
     @Test
-    void testGetLogsByUser_NullUserId_ThrowsException() {
+    void testGetLogsByUserNull() {
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
-            () -> repository.getLogsByUser(null)
+            () -> repository.getLogsByUser(null),
+            "Failure - should throw for null userId"
         );
-        assertEquals("User ID cannot be null", exception.getMessage());
+        assertEquals("User ID cannot be null", exception.getMessage(), 
+            "Failure - exception message should match");
     }
-
+    
+    // delete() Tests
+    
     @Test
-    void testDelete_ExistingEntity_RemovesFromList() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2, testLog3};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testDeleteExisting() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        repository.save(testLog3);
+        
         repository.delete(testLog1);
-
+        
         List<ChangeLog> result = repository.load();
-        assertEquals(2, result.size());
-        assertFalse(result.stream().anyMatch(log -> log.id() == testLog1.id()));
-        assertTrue(result.contains(testLog2));
-        assertTrue(result.contains(testLog3));
+        assertEquals(2, result.size(), "Failure - should have 2 logs after delete");
+        assertFalse(result.stream().anyMatch(log -> log.id() == testLog1.id()), 
+            "Failure - should not contain deleted log");
+        assertTrue(result.contains(testLog2), "Failure - should contain testLog2");
+        assertTrue(result.contains(testLog3), "Failure - should contain testLog3");
     }
-
+    
     @Test
-    void testDelete_NonExistingEntity_DoesNotChangeList() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testDeleteNonExisting() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        
         ChangeLog nonExistingLog = new ChangeLog(
             999,
             300,
@@ -383,75 +403,78 @@ public class TestChangeLogRepository {
             "Non Existing",
             UUID.randomUUID()
         );
-
-        repository.delete(nonExistingLog);
-
+        
+        assertDoesNotThrow(() -> repository.delete(nonExistingLog), 
+            "Failure - deleting non-existing log shouldn't throw");
+        
         List<ChangeLog> result = repository.load();
-        assertEquals(2, result.size());
+        assertEquals(2, result.size(), "Failure - should still have 2 logs");
     }
-
+    
     @Test
-    void testDelete_NullEntity_DoesNothing() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
-        repository.delete(null);
-
+    void testDeleteNull() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        
+        assertDoesNotThrow(() -> repository.delete(null), 
+            "Failure - deleting null shouldn't throw");
+        
         List<ChangeLog> result = repository.load();
-        assertEquals(2, result.size());
+        assertEquals(2, result.size(), "Failure - should still have 2 logs");
     }
-
+    
     @Test
-    void testDelete_LastEntity_LeavesEmptyList() throws IOException {
-        ChangeLog[] logs = {testLog1};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testDeleteLastEntity() {
+        repository.save(testLog1);
+        
         repository.delete(testLog1);
-
+        
         List<ChangeLog> result = repository.load();
-        assertTrue(result.isEmpty());
+        assertTrue(result.isEmpty(), "Failure - should have empty list after deleting last entity");
     }
-
+    
+    // generateId() Tests
+    
     @Test
-    void testGenerateId_EmptyList_ReturnsOne() throws IOException {
-        Files.writeString(testFilePath, "[]");
-
+    void testGenerateIdEmptyList() {
         int newId = repository.generateId();
-
-        assertEquals(1, newId);
+        
+        assertEquals(1, newId, "Failure - first id should be 1");
     }
-
+    
     @Test
-    void testGenerateId_WithExistingLogs_ReturnsMaxPlusOne() throws IOException {
-        ChangeLog[] logs = {testLog1, testLog2, testLog3};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+    void testGenerateIdWithExistingLogs() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        repository.save(testLog3);
+        
         int newId = repository.generateId();
-
-        assertEquals(4, newId);
+        
+        assertEquals(4, newId, "Failure - next id should be max + 1");
     }
-
+    
     @Test
-    void testGenerateId_WithNonSequentialIds_ReturnsMaxPlusOne() throws IOException {
+    void testGenerateIdWithNonSequentialIds() {
         ChangeLog log1 = new ChangeLog(1, 100, 0.0, 100.0,
             LocalDateTime.now().format(DATE_FORMATTER), "Actor 1", UUID.randomUUID());
         ChangeLog log2 = new ChangeLog(5, 100, 100.0, 200.0,
             LocalDateTime.now().format(DATE_FORMATTER), "Actor 2", UUID.randomUUID());
         ChangeLog log3 = new ChangeLog(3, 100, 200.0, 300.0,
             LocalDateTime.now().format(DATE_FORMATTER), "Actor 3", UUID.randomUUID());
-
-        ChangeLog[] logs = {log1, log2, log3};
-        Files.writeString(testFilePath, gson.toJson(logs));
-
+        
+        repository.save(log1);
+        repository.save(log2);
+        repository.save(log3);
+        
         int newId = repository.generateId();
-
-        assertEquals(6, newId);
+        
+        assertEquals(6, newId, "Failure - should return max id + 1");
     }
-
+    
+    // Other Tests
+    
     @Test
-    void testChangeLog_ValueTracking_RecordsOldAndNewValues() throws IOException {
-        Files.writeString(testFilePath, "[]");
-
+    void testValueTracking() {
         ChangeLog changeLog = new ChangeLog(
             1,
             100,
@@ -461,37 +484,32 @@ public class TestChangeLogRepository {
             "Budget Manager",
             UUID.randomUUID()
         );
-
+        
         repository.save(changeLog);
-
+        
         Optional<ChangeLog> result = repository.findById(1);
-        assertTrue(result.isPresent());
-        assertEquals(500.0, result.get().oldValue());
-        assertEquals(750.0, result.get().newValue());
+        assertTrue(result.isPresent(), "Failure - should find saved log");
+        assertEquals(500.0, result.get().oldValue(), "Failure - oldValue should match");
+        assertEquals(750.0, result.get().newValue(), "Failure - newValue should match");
     }
-
+    
     @Test
-    void testConcurrentOperations_SaveAndLoad_MaintainsDataIntegrity()
-            throws IOException, InterruptedException {
-        Files.writeString(testFilePath, "[]");
-
+    void testConcurrentOperations() throws InterruptedException {
         Thread thread1 = new Thread(() -> repository.save(testLog1));
         Thread thread2 = new Thread(() -> repository.save(testLog2));
-
+        
         thread1.start();
         thread2.start();
-
+        
         thread1.join();
         thread2.join();
-
+        
         List<ChangeLog> result = repository.load();
-        assertEquals(2, result.size());
+        assertEquals(2, result.size(), "Failure - concurrent saves should both succeed");
     }
-
+    
     @Test
-    void testChangeLog_DateFormat_IsStoredCorrectly() throws IOException {
-        Files.writeString(testFilePath, "[]");
-
+    void testDateFormat() {
         String expectedDate = "2024-12-15 14:30:00";
         ChangeLog changeLog = new ChangeLog(
             1,
@@ -502,91 +520,91 @@ public class TestChangeLogRepository {
             "Test Actor",
             UUID.randomUUID()
         );
-
+        
         repository.save(changeLog);
-
+        
         Optional<ChangeLog> result = repository.findById(1);
-        assertTrue(result.isPresent());
-        assertEquals(expectedDate, result.get().submittedDate());
+        assertTrue(result.isPresent(), "Failure - should find saved log");
+        assertEquals(expectedDate, result.get().submittedDate(), "Failure - date should match");
+    }
+    
+    @Test
+    void testFullCrudCycle() {
+        // Create
+        repository.save(testLog1);
+        assertTrue(repository.existsById(testLog1.id()), "Failure - save() not working properly");
+        
+        // Read
+        List<ChangeLog> logs = repository.load();
+        assertEquals(1, logs.size(), "Failure - load() not working properly");
+        Optional<ChangeLog> readLog = repository.findById(testLog1.id());
+        assertTrue(readLog.isPresent(), "Failure - findById() not working properly");
+        assertEquals(testLog1.actorName(), readLog.get().actorName(), 
+            "Failure - actorName should match");
+        
+        // Update
+        ChangeLog updatedLog = new ChangeLog(
+            testLog1.id(),
+            testLog1.budgetItemId(),
+            testLog1.oldValue(),
+            3000.0,
+            LocalDateTime.now().format(DATE_FORMATTER),
+            "Updated Actor",
+            testLog1.actorId()
+        );
+        repository.save(updatedLog);
+        Optional<ChangeLog> afterUpdate = repository.findById(testLog1.id());
+        assertTrue(afterUpdate.isPresent(), "Failure - findById() after update not working");
+        assertEquals(3000.0, afterUpdate.get().newValue(), 
+            "Failure - update() not working properly");
+        
+        // Delete
+        repository.delete(afterUpdate.get());
+        assertFalse(repository.existsById(testLog1.id()), 
+            "Failure - delete() not working properly");
+    }
+    
+    @Test
+    void testMultipleLogs() {
+        repository.save(testLog1);
+        repository.save(testLog2);
+        repository.save(testLog3);
+        
+        List<ChangeLog> logs = repository.load();
+        assertEquals(3, logs.size(), "Failure - should have 3 logs");
+        
+        repository.delete(testLog1);
+        assertTrue(repository.existsById(testLog2.id()), "Failure - testLog2 should exist");
+        assertTrue(repository.existsById(testLog3.id()), "Failure - testLog3 should exist");
+        
+        repository.delete(testLog2);
+        repository.delete(testLog3);
+        logs = repository.load();
+        assertEquals(0, logs.size(), "Failure - all logs should be deleted");
     }
 
-
-    /**
-     * Inner class that extends ChangeLogRepository to override file paths
-     * for testing purposes
-     */
-
-    private class TestableChangeLogRepository extends ChangeLogRepository {
-
-        @Override
-        public List<ChangeLog> load() {
-            try {
-                if (!Files.exists(testFilePath)) {
-                    return List.of();
-                }
-                String content = Files.readString(testFilePath);
-                ChangeLog[] logs = new GsonBuilder()
-                    .setPrettyPrinting()
-                    .create()
-                    .fromJson(content, ChangeLog[].class);
-                return logs != null ? List.of(logs) : List.of();
-            } catch (Exception e) {
-                return List.of();
+    @Test
+    void testLoadWhenFileNotFound(@TempDir Path emptyTempDir) throws IOException{
+        // Set a temp directory that doesn't have budget-changes.json
+        // This will make the external file not exist
+        // And since we're in test context, classpath resource won't exist either
+        System.setProperty("budget.data.dir", emptyTempDir.toString());
+        Path resourceFile = Paths.get("target/classes/budget-changes.json");
+        Path renamedFile = Paths.get("target/classes/budget-changes-temp.json");
+        try {
+            
+            if (Files.exists(resourceFile)) {
+                Files.move(resourceFile, renamedFile, StandardCopyOption.REPLACE_EXISTING);
             }
-        }
-
-        @Override
-        public void save(ChangeLog entity) {
-            if (entity == null) {
-                return;
-            }
-            synchronized (this) {
-                try {
-                    List<ChangeLog> logs = new java.util.ArrayList<>(load());
-                    java.util.OptionalInt index = java.util.stream.IntStream
-                        .range(0, logs.size())
-                        .filter(i -> logs.get(i).id() == entity.id())
-                        .findFirst();
-
-                    if (index.isPresent()) {
-                        logs.set(index.getAsInt(), entity);
-                    } else {
-                        logs.add(entity);
-                    }
-
-                    String json = new GsonBuilder()
-                        .setPrettyPrinting()
-                        .create()
-                        .toJson(logs);
-                    Files.writeString(testFilePath, json);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        @Override
-        public void delete(ChangeLog entity) {
-            if (entity == null) {
-                return;
-            }
-            synchronized (this) {
-                try {
-                    List<ChangeLog> logs = new java.util.ArrayList<>(load());
-                    logs.removeIf(log -> log.id() == entity.id());
-
-                    String json = new GsonBuilder()
-                        .setPrettyPrinting()
-                        .create()
-                        .toJson(logs);
-                    Files.writeString(testFilePath, json);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+            List<ChangeLog> result = repository.load();
+            
+            assertNotNull(result, "Failure - load should not return null even when file not found");
+            assertTrue(result.isEmpty(), "Failure - should return empty list when file not found");
+        } finally {
+            // Always restore the file, even if test fails
+            if (Files.exists(renamedFile)) {
+                Files.move(renamedFile, resourceFile, StandardCopyOption.REPLACE_EXISTING);
             }
         }
     }
 }
-
-
-
