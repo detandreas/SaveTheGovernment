@@ -36,6 +36,9 @@ public class ChangeRequestService {
     private final BudgetValidationService budgetValidationService;
     private final ChangeLogService changeLogService;
     private final BudgetService budgetService;
+    private static final DateTimeFormatter FORMATTER =
+    DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
     /**
      * Constructor for ChangeRequestService.
      * @param changeRequestRepository repository for change requests
@@ -218,23 +221,17 @@ public class ChangeRequestService {
      */
     private void validatePendingChange(PendingChange change)
     throws IllegalArgumentException {
-        if (change.getBudgetItemYear() < Limits.MIN_BUDGET_YEAR) {
-            throw new IllegalArgumentException(
-                "PendingChange has invalid year");
-        }
         if (!budgetRepository.existsByName(
                     change.getBudgetItemName(), change.getBudgetItemYear())) {
             throw new IllegalArgumentException(
                 "PendingChange has invalid BudgetItem name");
         }
+
         if (change.getRequestByName() == null) {
             throw new IllegalArgumentException(
                 "PendingChange has invalid requestor name");
         }
-        if (change.getRequestById() == null) {
-            throw new IllegalArgumentException(
-                "PendingChange has invalid requestor ID");
-        }
+
         if (change.getNewValue() <= Limits.SMALL_NUMBER) {
             throw new IllegalArgumentException(
                 "PendingChange has invalid new value");
@@ -310,6 +307,13 @@ public class ChangeRequestService {
                 "Budget not found for year " + year
             ));
     }
+
+    /**
+     * Finds and retrieves User.
+     * @param userId user id
+     * @return the User if exists
+     * @throws IllegalArgumentException if user doesn't exist
+     */
     private User findUser(UUID userId) {
         Optional<User> user = userRepository.findById(userId);
 
@@ -358,6 +362,7 @@ public class ChangeRequestService {
             // Rollback: restore old value and recalculate totals
             existingItem.get().setValue(oldValue);
             budgetService.recalculateBudgetTotals(budget);
+            budgetRepository.save(budget);
             throw new IllegalStateException(
                 "Failed to process approved change: " + e.getMessage(), e);
         }
@@ -387,8 +392,6 @@ public class ChangeRequestService {
             .findFirst();
     }
 
-    private static final DateTimeFormatter FORMATTER =
-        DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     /**
      * Retrieves all pending changes sorted by
      * submission date in descending order.
