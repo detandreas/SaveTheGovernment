@@ -8,7 +8,7 @@
     "requestById": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d",
     "oldValue": 1.0943E10,
     "newValue": 1.127129E10,
-    "status": "APPROVED",
+    "status": "PENDING",
     "submittedDate": "2026-01-04T13:37:46.375011"
   },
   {
@@ -20,7 +20,7 @@
     "requestById": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d",
     "oldValue": 1.568849E10,
     "newValue": 1.58453749E10,
-    "status": "APPROVED",
+    "status": "PENDING",
     "submittedDate": "2026-01-04T13:38:29.505807"
   },
   {
@@ -92,7 +92,7 @@
     "requestById": "5c2b5ce9-83af-4a20-917e-01e77aaa79ab",
     "oldValue": 6.0E7,
     "newValue": 6.18E7,
-    "status": "REJECTED",
+    "status": "PENDING",
     "submittedDate": "2026-01-04T14:08:24.094386"
   },
   {
@@ -116,7 +116,7 @@
     "requestById": "5c2b5ce9-83af-4a20-917e-01e77aaa79ab",
     "oldValue": 2.3875E10,
     "newValue": 2.363625E10,
-    "status": "APPROVED",
+    "status": "PENDING",
     "submittedDate": "2026-01-04T14:08:41.138897"
   },
   {
@@ -164,7 +164,7 @@
     "requestById": "0b103ceb-91ff-4800-bfa5-9c2c192f4450",
     "oldValue": 7.91742E9,
     "newValue": 7.8382458E9,
-    "status": "APPROVED",
+    "status": "PENDING",
     "submittedDate": "2026-01-04T14:10:34.974677"
   },
   {
@@ -176,55 +176,7 @@
     "requestById": "3fe20c3d-a6cb-40aa-ba68-c6e372d3c10c",
     "oldValue": 2.388349E9,
     "newValue": 2.36446551E9,
-    "status": "APPROVED",
+    "status": "PENDING",
     "submittedDate": "2026-01-04T14:13:14.511574"
-  },
-  {
-    "id": 16,
-    "budgetItemId": 14,
-    "budgetItemName": "Sales of goods and services",
-    "budgetItemYear": 2026,
-    "requestByName": "Panos Kammenos",
-    "requestById": "5c2b5ce9-83af-4a20-917e-01e77aaa79ab",
-    "oldValue": 1.201E9,
-    "newValue": 1.18899E9,
-    "status": "APPROVED",
-    "submittedDate": "2026-01-04T17:21:39.5438567"
-  },
-  {
-    "id": 17,
-    "budgetItemId": 23,
-    "budgetItemName": "Transfers",
-    "budgetItemYear": 2026,
-    "requestByName": "Eirini Palli",
-    "requestById": "b1531f0a-cc33-4844-9df8-405604a17993",
-    "oldValue": 3.697392339E10,
-    "newValue": 3.77134018578E10,
-    "status": "APPROVED",
-    "submittedDate": "2026-01-05T15:07:53.72755"
-  },
-  {
-    "id": 18,
-    "budgetItemId": 13,
-    "budgetItemName": "Transfers",
-    "budgetItemYear": 2026,
-    "requestByName": "Panos Kammenos",
-    "requestById": "5c2b5ce9-83af-4a20-917e-01e77aaa79ab",
-    "oldValue": 1.127129E10,
-    "newValue": 1.10458642E10,
-    "status": "APPROVED",
-    "submittedDate": "2026-01-05T23:42:03.5814945"
-  },
-  {
-    "id": 19,
-    "budgetItemId": 25,
-    "budgetItemName": "Subsidies",
-    "budgetItemYear": 2026,
-    "requestByName": "Nikolas Botsialas",
-    "requestById": "9422dd27-29bc-4d20-8579-3240c5c65b6d",
-    "oldValue": 8.033E7,
-    "newValue": 8.19366E7,
-    "status": "REJECTED",
-    "submittedDate": "2026-01-06T01:26:47.7757382"
   }
 ]
