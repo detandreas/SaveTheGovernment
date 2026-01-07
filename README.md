@@ -49,6 +49,18 @@
 
 > 📂 **Πηγαίος Κώδικας Διαγράμματος:** [Προβολή αρχείου PlantUML](diagram/classDigramCode.puml)
 
+### Αρχιτεκτονική Frontend Controllers (UML Diagram)
+
+Ακολουθεί το διάγραμμα κλάσεων για το πακέτο `budget.frontend.controller`.
+Το διάγραμμα αποτυπώνει:
+* Την **Ιεραρχία (Inheritance)** των Dashboards (`Citizen`, `GovernmentMember`, `PrimeMinister`) από τον βασικό `DashboardController`.
+* Τη **Ροή Πλοήγησης (Navigation Flow)** από το Login προς τις αντίστοιχες οθόνες.
+* Τις **Εξαρτήσεις (Dependencies)**, δηλαδή ποιοι controllers φορτώνονται δυναμικά μέσα στα κεντρικά Dashboards.
+
+![UML Diagram](diagram/controllersDiagram.svg)
+
+> 📂 **Πηγαίος Κώδικας Διαγράμματος:** [Προβολή αρχείου PlantUML](diagram/controllersDigramCode.puml)
+
 ## Απαιτήσεις Συστήματος
 
 - **Java**: Έκδοση 21 ή νεότερη
