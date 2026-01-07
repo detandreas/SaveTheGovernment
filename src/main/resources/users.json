@@ -34,6 +34,20 @@
       "fullName": "Cliche Wiche",
       "password": "414c9fd2e18fd3fc78041bdb942e4387442a5ef71398d49d2d872744048e3708",
       "userRole": "CITIZEN"
+    },
+    {
+      "id": "ca8b00c5-3c10-42f3-b774-cf2f12121fa2",
+      "userName": "alikipap",
+      "fullName": "Aliki Georgiou",
+      "password": "e687c51a02905c6e6b0bb24f0c1d4fb1ade48f3f615f6ad9de0a03997553ec64",
+      "userRole": "CITIZEN"
+    },
+    {
+      "id": "c0a6937c-f61e-4ecb-95c3-9ac066efeb15",
+      "userName": "mits",
+      "fullName": "Lila Poulou",
+      "password": "99416fba27ee10ca898c6c16877a54cc91c204810e19c519bd386e86e4434c2f",
+      "userRole": "CITIZEN"
     }
   ],
   "governmentMembers": [
@@ -107,6 +121,30 @@
       "userName": "tzoxatzopoulos",
       "fullName": "Akis Tzoxatzopoulos",
       "password": "29864e923a5a4efd8e378c9b5825644b89d8ca738c4c6b75694222c87ed91594",
+      "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "JUSTICE",
+      "id": "b1531f0a-cc33-4844-9df8-405604a17993",
+      "userName": "irenepalli",
+      "fullName": "Eirini Palli",
+      "password": "4b2e9069f27e60152c63768afcf56bbc549f178ff6cf320972a0aa56afbd8d5b",
+      "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "FINANCE",
+      "id": "2cbc13d4-d059-4efe-b79d-a9d8438ac854",
+      "userName": "emak282",
+      "fullName": "Eirini Makri",
+      "password": "ada2d7855e12c3aea5cf3edd1e5026c7c46179b49732f38665f9bd6d96600d8a",
+      "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "DEVELOPMENT",
+      "id": "9422dd27-29bc-4d20-8579-3240c5c65b6d",
+      "userName": "nik_mptls",
+      "fullName": "Nikolas Botsialas",
+      "password": "284e679834afc73384780274b9ba127d046833315cc8ca6eea62285fd71e794b",
       "userRole": "GOVERNMENT_MEMBER"
     }
   ],
