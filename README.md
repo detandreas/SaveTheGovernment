@@ -1,53 +1,53 @@
 # SaveTheGovernment
 
-Σύστημα διαχείρισης προϋπολογισμού κυβέρνησης που επιτρέπει σε διαφορετικούς τύπους χρηστών να προβάλλουν, να διαχειρίζονται και να εγκρίνουν αλλαγές στον κρατικό προϋπολογισμό.
+Government budget management system that allows different types of users to view, manage, and approve changes to the national budget.
 
-## Περιγραφή Εφαρμογής
+## Application Description
 
-Η **SaveTheGovernment** είναι μια γραφική εφαρμογή που διαχειρίζεται τον κρατικό προϋπολογισμό. Η εφαρμογή υποστηρίζει πολλαπλούς τύπους χρηστών με διαφορετικά δικαιώματα και επιτρέπει:
+**SaveTheGovernment is a graphical application that manages the government budget. The application supports multiple user types with different access rights and allows:
 
-- Προβολή του συνολικού προϋπολογισμού
-- Προβολή ιστορικού αλλαγών
-- Προβολή στατιστικών
-- Διαχείριση στοιχείων προϋπολογισμού
-- Υποβολή αιτημάτων αλλαγών
-- Έγκριση/απόρριψη αιτημάτων αλλαγών
-- Καταγραφή όλων των αλλαγών σε change log
+- Viewing the overall budget
+- Viewing the change history
+- Viewing statistics
+- Managing budget items
+- Submitting change requests
+- Approving or rejecting change requests
+- Recording all changes in a change log
 
-## Ρόλοι Χρηστών
+## User Roles
 
-Η εφαρμογή υποστηρίζει **4 τύπους χρηστών** με διαφορετικά δικαιώματα:
+The application supports four types of users with different access rights:
 
-### 1. Πολίτης (Citizen)
-- Προβολή συνολικού προϋπολογισμού
-- Προβολή ιστορικού αλλαγών
-- Προβολή στατιστικών
-- Ενημέρωση προσωπικών στοιχείων (username, password, όνομα)
+### 1. Citizen
+- View the overall budget
+- View the change history
+- View statistics
+- Update personal information (username, password, name)
 
-### 2. Μέλος Κυβέρνησης (Government Member)
-Όλα τα δικαιώματα του Πολίτη, συν:
-- Αίτηση επεξεργασίας κονδυλίων
-- Προβολή ιστορικού αιτημάτων αλλαγών
+### 2. Government Member
+Includes all Citizen permissions, plus:
+- Submit requests for budget fund modifications
+- View the history of change requests
 
-### 3. Μέλος Υπουργείου Οικονομικών (Finance Member)
-Όλα τα δικαιώματα του Μέλους Κυβέρνησης, συν:
-- Αμεση διαχείριση στοιχείων προϋπολογισμού
+### 3. Finance Ministry Member
+Includes all Government Member permissions, plus:
+-Directly manage budget items
 
-### 4. Πρωθυπουργός (Prime Minister)
-- Προβολή συνολικού προϋπολογισμού
-- Προβολή ιστορικού αλλαγών
-- Προβολή στατιστικών
-- Έγκριση/απόρριψη εκκρεμών αιτημάτων αλλαγών
+### 4. Prime Minister
+- View the overall budget
+-View the change history
+-View statistics
+-Approve or reject pending change requests
 
-**Σημείωση:** Μπορεί να υπάρχει μόνο ένας Πρωθυπουργός στο σύστημα (Singleton pattern).
+**Note**: Only one Prime Minister can exist in the system (Singleton pattern).
 
-## Αρχιτεκτονική Συστήματος (UML Diagram)
+## System Architecture (UML Diagram)
 
-Ακολουθεί το διάγραμμα κλάσεων που περιγράφει τη δομή του backend και την οργάνωση των πακέτων.
+Below is the class diagram that describes the structure of the backend and the organization of the packages.
 
 ![UML Diagram](diagram/classDiagram.svg)
 
-> 📂 **Πηγαίος Κώδικας Διαγράμματος:** [Προβολή αρχείου PlantUML](diagram/classDigramCode.puml)
+> 📂 **Diagram Source Code:** [File preview PlantUML](diagram/classDigramCode.puml)
 
 ### Αρχιτεκτονική Frontend Controllers (UML Diagram)
 
@@ -62,55 +62,56 @@
 > 📂 **Πηγαίος Κώδικας Διαγράμματος:** [Προβολή αρχείου PlantUML](diagram/controllersDigramCode.puml)
 
 ## Απαιτήσεις Συστήματος
+## System Requirements
 
-- **Java**: Έκδοση 21 ή νεότερη
-- **Maven**: Έκδοση 3.9.6 ή νεότερη
-- **Λειτουργικό Σύστημα**: Windows, macOS, ή Linux
+- **Java**: Version 21 ή latest
+- **Maven**: Version 3.9.6 ή latests
+- **Operating System**: Windows, macOS, ή Linux
 
-## Εγκατάσταση
+## Installation
 
-### 1. Κλώνος του Repository
+### 1.  Repository Clone
 
 ```bash
 git clone https://github.com/detandreas/SaveTheGoverment.git
 cd SaveTheGoverment
 ```
-### 2. Έλεγχος Απαιτήσεων
-Βεβαιωθείτε ότι έχετε εγκαταστήσει Java 21 και Maven:
+### 2. Requirements Check
+Make sure that you have installed Java 21 and Maven:
 ```bash
-java -version    # Πρέπει να εμφανίζει έκδοση 21
-mvn -version     # Πρέπει να εμφανίζει έκδοση 3.9.6 ή νεότερη
+java -version    # It should display the version 21
+mvn -version     #  It should display the version 3.9.6 or latest
 ```
-## Εκτέλεση της Εφαρμογής
+## Running the Application
 
-### Μέθοδος 1: Με Maven (Συνιστάται)
+### Method 1: With Maven (It is recommended)
 
 ```bash
-mvn compile javafx:run # Αν έχετε εγκαταστήσει το Maven στον υπολογιστή σας
+mvn compile javafx:run # If you have Maven installed on your computer
 ```
-### Μέθοδος 2: Με Maven Wrapper
+### Method 2: With Maven Wrapper
 
 ```bash
 ./mvnw compile javafx:run    # Linux/macOS
 mvnw.cmd compile javafx:run   # Windows
 ```
-### Μέθοδος 3: Με JAR αρχείο
+### Method 3: With JAR αρχείο
 ```bash
-# Πρώτα δημιουργήστε το JAR
+# First, create the JAR
 mvn clean package
 
-# Στη συνέχεια εκτελέστε το
+# Then, run it
 java -Dbudget.data.dir=/var/app/data \
      -jar savethegovernment-1.0-SNAPSHOT.jar
 ```
 ## Software Patterns
-- **Singleton pattern:** Χρησιμοποιείται για μοναδικότητα Prime Minister
-- **DI (Dependency Injection):** Χρησιμοποιείται κυρίως στην επικοινωνία των Services <-> Repositories
-- **Repository Design Pattern:** Για σαφή διαχωρισμό data απο business logic
-- **MVC Architecture (Model View Controller):** Για αποτελεσματική διαχείριση του GUI
+- **Singleton pattern:** It is used for uniqueness Prime Minister
+- **DI (Dependency Injection):** It is mainly used in the communication of the Services <-> Repositories
+- **Repository Design Pattern:**  For clear separation of data and business logic
+- **MVC Architecture (Model View Controller):** For efficient management of the GUI
 
-## Αλγόριθμοι
-- **SHA-256:** Για password hashing και ασφαλή καταχώρηση στα users.json αρχεία
+## Algorithms
+- **SHA-256:** For password hashing and secure storage in the users.json files
 
 ## API / Code Documentation (Javadoc)
 
@@ -129,6 +130,6 @@ To generate the API documentation, run:
 open target/site/apidocs/index.html 
 ```
 
-## Συμβολή
+## Contribution
 
-Αυτή η εφαρμογή αναπτύχθηκε ως εργασία για το μάθημα **ΠΡΟΓΡΑΜΜΑΤΙΣΜΟΣ ΙΙ**.
+This application was developed as an assignment for the course **PROGRAMMING II**.
