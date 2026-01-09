@@ -1,0 +1,178 @@
+@startuml
+package "main.budget.frontend.controller" {
+    class "**DashboardController**" as DashboardController {
+    .. Public Methods ..
+    + initialize() : void
+    + setCurrentUser(user : User) : void
+    + setUserInfo(username : String, role : String) : void
+    .. Protected Methods ..
+    # getCurrentUser() : User
+    # loadCenterView(fxmlPath : String) : void
+    # handleLogout(event : ActionEvent) : void
+    # getMainBorderPane() : BorderPane
+    }
+    
+    ' Οι Κλάσεις Παιδιά (Child Classes)
+    class "**CitizenDashboardController**" as CitizenDashboardController {
+        + initialize() : void
+        - handleTotalBudget() : void
+        - handleHistory() : void
+        - handleStatistics() : void
+    }
+    
+    class "**GovernmentMemberDashboardController**" as GovernmentMemberDashboardController {
+        + initialize() : void
+        + handlePendingChanges() : void
+        - handleTotalBudget() : void
+        - handleHistory() : void
+    }
+    
+    class "**PrimeMinisterDashboardController**" as PrimeMinisterDashboardController {
+        + initialize() : void
+        + handlePendingChanges() : void
+        - handleTotalBudget() : void
+        - handleStatistics() : void
+    }
+    
+    class "**AccountCreationController**" as AccountControllerCreation {
+        + initialize() : void
+        - handleShowPassword(event : MouseEvent) : void
+        - handleShowConfirmPassword(event : MouseEvent) : void
+        - handleHidePassword(event : MouseEvent) : void
+        - handleHideConfirmPassword(event : MouseEvent) : void
+        - handleCreateAccount() : void
+        - createUser(...) : User
+        - createAccount(...) : void
+        - handleCancel() : void
+        - handleBack() : void
+    }
+    
+    class "**ChangeLogController**" as ChangeLogController {
+        + initialize() : void
+        - setupTableColumns() : void
+        - loadData() : void
+    }
+    
+    class "**CreateChangeRequestController**" as CreateChangeRequestController {
+        + initialize() : void
+        + setBudgetItems(items : ObservableList<BudgetItem>) : void
+        + isSubmitClicked() : boolean
+        + getSelectedBudgetItem() : BudgetItem
+        + getNewValue() : Double
+        - handlePercentageClick(ActionEvent event) : void
+        - handleSubmitRequest() : void
+        - closeWindow() : void
+    }
+    
+    class "**EditBudgetController**" as EditBudgetController {
+        + initialize() : void
+        + setBudgetItem(item : BudgetItem) : void
+        + isSaveClicked() : boolean
+        - handleSave() : void
+        - showErrorEffect(message : String) : void
+    }
+    
+    class "**GovMemberPendingChangesController**" as GovMemberPendingChangesController {
+        + initialize() : void
+        - setupTableColumns() : void
+        - loadData() : void
+        - handleCreateNewRequest() : void
+        - openRequestWindow() : boolean
+        - refreshTable() : void
+        - handleMyRequests() : void
+    }
+    
+    class "**LoginController**" as LoginController {
+        + initialize() : void
+        - handleLogin() : void
+        - validateLoginInput(...) : boolean
+        - handleSuccessfulLogin() : void
+        - determineViewPathAndTitle(user : User) : ViewPathInfo
+        - determineGovernmentMemberView(GovernmentMember gm) : ViewPathInfo 
+        - navigateToDashboard(...) : void
+        - loadDashboardAndUserInfo(...) : void
+        - handleShowPassword(MouseEvent event) : void
+        - handleHidePassword(MouseEvent event) : void
+        - handleCancel() : void
+        - handleBack() : void
+    }
+    
+    class "**PendingChangesController**" as PendingChangesController {
+        + initialize() : void
+        + setPrimeMinister(pm : PrimeMinister) : void
+        - setupTableColumns() : void
+        - setupActionColumnButtons() : void
+        - loadData() : void
+        - handleApprove(change : PendingChange) : void
+        - handleReject(change : PendingChange) : void
+    }
+    
+    class "**StatisticsController**" as StatisticsController {
+        + initialize() : void
+        - loadSelectedType() : void
+        - loadBudgetCharts() : void
+        - loadChartsForAllCharts(selectedYear: int) : void
+        - setupRevenueComboBoxForBudgetResults() : void
+        - loadChartsForTopItems(selectedYear: int, isRevenue: boolean, selectedCategory: String) : void
+        - loadLoansRevenueSeries() : void
+        - loadTop5RevenueTrend(year: int) : void
+        - loadTop5ExpenseTrend(year: int) : void
+        - loadYearComparisonBarChart() : void
+        - loadLoansExpenseSeries() : void
+        - loadRevenueExpensePieChart(year: int) : void
+        - loadRevenueExpenseTrendChart() : void
+        - loadTop5ItemsTrend(...) : void
+        - updateTrendChart(isRevenue: boolean) : void
+        - loadSingleItemTrend(...) : void
+        - loadNetResultTrendChart() : void
+        - loadTopItemsBarChart(year: int) : void
+        - loadTop5Pie(...) : void
+    }
+    
+    class "**TotalBudgetController**" as TotalBudgetController {
+        + initialize() : void
+        - isFinanceMinister() : boolean
+        - setupTableColumns() : void
+        - handleDirectEdit(item : BudgetItem) : void
+        - loadData() :void
+        - updateLabels(budget : Budget) : void
+        - setUpComboBox() : void
+        - setupActionColumn() : void
+    }
+    
+    class "**WelcomeController**" as WelcomeController {
+        - handleLogin() : void
+        - handleAccountCreation() : void
+    }
+}
+' Κληρονομικότητα (Inheritance)
+DashboardController <|-- CitizenDashboardController
+DashboardController <|-- GovernmentMemberDashboardController
+DashboardController <|-- PrimeMinisterDashboardController
+
+' Πλοήγηση & Χρήση (Dependencies)
+WelcomeController ..> LoginController : opens
+WelcomeController ..> AccountControllerCreation : opens
+LoginController ..> DashboardController : navigates to
+
+
+' Ο Πολίτης βλέπει: Total Budget, History (ChangeLog), Statistics
+CitizenDashboardController ..> TotalBudgetController 
+CitizenDashboardController ..> ChangeLogController 
+CitizenDashboardController ..> StatisticsController 
+
+' Το Κυβερνητικό Μέλος βλέπει: Total Budget, History, Pending Changes (Gov Version)
+GovernmentMemberDashboardController ..> TotalBudgetController 
+GovernmentMemberDashboardController ..> ChangeLogController 
+GovernmentMemberDashboardController ..> GovMemberPendingChangesController 
+GovernmentMemberDashboardController ..> StatisticsController 
+
+' Ο Πρωθυπουργός βλέπει: Total Budget, Statistics, Pending Changes (PM Version)
+PrimeMinisterDashboardController ..> TotalBudgetController 
+PrimeMinisterDashboardController ..> StatisticsController 
+PrimeMinisterDashboardController ..> PendingChangesController 
+
+' 4. Ειδικές ενέργειες μέσα στα Views
+GovMemberPendingChangesController ..> CreateChangeRequestController : opens popup
+TotalBudgetController ..> EditBudgetController : opens popup
+@enduml
