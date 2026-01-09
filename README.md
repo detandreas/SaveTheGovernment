@@ -4,7 +4,7 @@ Government budget management system that allows different types of users to view
 
 ## Application Description
 
-**SaveTheGovernment is a graphical application that manages the government budget. The application supports multiple user types with different access rights and allows:
+**SaveTheGovernment** is a graphical application that manages the government budget. The application supports multiple user types with different access rights and allows:
 
 - Viewing the overall budget
 - Viewing the change history
