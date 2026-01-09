@@ -61,9 +61,9 @@ The following is the class diagram for the budget.frontend.controller package.
 
 ## System Requirements
 
-- **Java**: Version 21 ή latest
-- **Maven**: Version 3.9.6 ή latests
-- **Operating System**: Windows, macOS, ή Linux
+- **Java**: Version 21 or latest
+- **Maven**: Version 3.9.6 or latests
+- **Operating System**: Windows, macOS, or Linux
 
 ## Installation
 
