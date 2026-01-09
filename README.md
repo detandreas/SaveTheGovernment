@@ -59,7 +59,6 @@ The following is the class diagram for the budget.frontend.controller package.
 
 > 📂 **Diagram Source Code:** [View PlantUML file](diagram/controllersDigramCode.puml)
 
-## Απαιτήσεις Συστήματος
 ## System Requirements
 
 - **Java**: Version 21 ή latest
