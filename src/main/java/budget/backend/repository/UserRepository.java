@@ -44,6 +44,9 @@ implements GenericInterfaceRepository<User, UUID> {
     private static final Logger LOGGER =
                     Logger.getLogger(UserRepository.class.getName());
     private static final Object LOCK = new Object();
+    private static final String CITIZENS_KEY = "citizens";
+    private static final String GOVMEMBERS_KEY = "governmentMembers";
+    private static final String PRIMEMINISTER_KEY = "primeMinister";
 
     /**
      * Loads all users from the JSON resource.
@@ -84,8 +87,8 @@ implements GenericInterfaceRepository<User, UUID> {
     private List<Citizen> loadCitizens(JsonObject json) {
         List<Citizen> citizens = new ArrayList<>();
 
-        if (json.has("citizens") && json.get("citizens").isJsonArray()) {
-            JsonArray citizensArray = json.getAsJsonArray("citizens");
+        if (json.has(CITIZENS_KEY) && json.get(CITIZENS_KEY).isJsonArray()) {
+            JsonArray citizensArray = json.getAsJsonArray(CITIZENS_KEY);
             try {
                 for (JsonElement element : citizensArray) {
                     Citizen citizen = GSON.fromJson(element, Citizen.class);
@@ -110,10 +113,10 @@ implements GenericInterfaceRepository<User, UUID> {
     private List<GovernmentMember> loadGovernmentMembers(JsonObject json) {
         List<GovernmentMember> gms = new ArrayList<>();
 
-        if (json.has("governmentMembers")
-            && json.get("governmentMembers").isJsonArray()) {
+        if (json.has(GOVMEMBERS_KEY)
+            && json.get(GOVMEMBERS_KEY).isJsonArray()) {
             JsonArray govMembersArray = json
-                                        .getAsJsonArray("governmentMembers");
+                                        .getAsJsonArray(GOVMEMBERS_KEY);
             try {
                 for (JsonElement element : govMembersArray) {
                     GovernmentMember govMember =
@@ -138,10 +141,10 @@ implements GenericInterfaceRepository<User, UUID> {
     *         or null if not found or an error occurs
     */
     private PrimeMinister loadPrimeMinister(JsonObject json) {
-        if (json.has("primeMinister")
-                && json.get("primeMinister").isJsonObject()) {
+        if (json.has(PRIMEMINISTER_KEY)
+                && json.get(PRIMEMINISTER_KEY).isJsonObject()) {
             try {
-                JsonElement element = json.getAsJsonObject("primeMinister");
+                JsonElement element = json.getAsJsonObject(PRIMEMINISTER_KEY);
                 PrimeMinister pm = GSON.fromJson(element, PrimeMinister.class);
                 if (pm != null) {
                     try {
@@ -383,21 +386,21 @@ implements GenericInterfaceRepository<User, UUID> {
                 JsonArray citizensArray = GSON
                                             .toJsonTree(citizens)
                                             .getAsJsonArray();
-                rootObject.add("citizens", citizensArray);
+                rootObject.add(CITIZENS_KEY, citizensArray);
             }
 
             if (!governmentMembers.isEmpty()) {
                 JsonArray govMembersArray = GSON
                                                 .toJsonTree(governmentMembers)
                                                 .getAsJsonArray();
-                rootObject.add("governmentMembers", govMembersArray);
+                rootObject.add(GOVMEMBERS_KEY, govMembersArray);
             }
 
             if (primeMinister != null) {
                 JsonObject pmObject = GSON
                                         .toJsonTree(primeMinister)
                                         .getAsJsonObject();
-                rootObject.add("primeMinister", pmObject);
+                rootObject.add(PRIMEMINISTER_KEY, pmObject);
             }
 
             GSON.toJson(rootObject, writer);
