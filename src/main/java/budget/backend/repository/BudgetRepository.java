@@ -27,6 +27,7 @@ import budget.backend.model.domain.BudgetItem;
 import budget.backend.model.enums.Ministry;
 import budget.backend.util.PathsUtil;
 import budget.constants.Limits;
+import budget.constants.Message;
 
 /**
  * Repository class for managing budget data. Handles loading, saving, and
@@ -468,7 +469,7 @@ public class BudgetRepository
     public boolean existsByItemId(final int itemId, final int year) {
         synchronized (LOCK) {
             if (itemId <= 0) {
-                LOGGER.warning("Cannot search with a invalid item ID");
+                LOGGER.warning(Message.INVALID_ITEM_ID);
                 return false;
             }
             if (year < Limits.MIN_BUDGET_YEAR) {
@@ -501,7 +502,7 @@ public class BudgetRepository
     ) {
         synchronized (LOCK) {
             if (id <= 0) {
-                LOGGER.warning("Cannot search with a invalid item ID");
+                LOGGER.warning(Message.INVALID_ITEM_ID);
                 return Optional.empty();
             }
             if (year < Limits.MIN_BUDGET_YEAR) {
@@ -538,7 +539,7 @@ public class BudgetRepository
     ) {
         synchronized (LOCK) {
             if (id <= 0) {
-                LOGGER.warning("Cannot search with a invalid item ID");
+                LOGGER.warning(Message.INVALID_ITEM_ID);
                 return Optional.empty();
             }
             if (budget == null) {

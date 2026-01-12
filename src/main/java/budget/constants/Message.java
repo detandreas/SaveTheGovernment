@@ -175,4 +175,6 @@ public final class Message {
         + "Old Amount: %.2f€\n"
         + "New Amount: %.2f€\n"
         + "Submitted by: %s";
+    public static final String INVALID_ITEM_ID =
+                                "Cannot search with a invalid item ID";
 }
