@@ -43,8 +43,8 @@ public class BudgetRepository
     private static final Logger LOGGER =
                     Logger.getLogger(BudgetRepository.class.getName());
     private static final Object LOCK = new Object();
-    private static final String esodaKey = "esoda";
-    private static final String eksodaKey = "eksoda";
+    private static final String ESODA_KEY = "esoda";
+    private static final String EKSODA_KEY = "eksoda";
 
     /**
      * Loads all budgets from the budget.json File.
@@ -183,18 +183,18 @@ public class BudgetRepository
     ) {
         List<BudgetItem> items = new ArrayList<>();
 
-        if (yearData.has(esodaKey)) {
+        if (yearData.has(ESODA_KEY)) {
             items.addAll(parseRevenueItems(
-                yearData.getAsJsonArray(esodaKey),
+                yearData.getAsJsonArray(ESODA_KEY),
                 year,
                 byIdMap,
                 byNameMap
             ));
         }
 
-        if (yearData.has(eksodaKey)) {
+        if (yearData.has(EKSODA_KEY)) {
             items.addAll(parseExpenseItems(
-                yearData.getAsJsonArray(eksodaKey),
+                yearData.getAsJsonArray(EKSODA_KEY),
                 year,
                 byIdMap,
                 byNameMap
@@ -674,8 +674,8 @@ public class BudgetRepository
             }
         }
 
-        yearData.add(esodaKey, esodaArray);
-        yearData.add(eksodaKey, eksodaArray);
+        yearData.add(ESODA_KEY, esodaArray);
+        yearData.add(EKSODA_KEY, eksodaArray);
 
         return  yearData;
     }
