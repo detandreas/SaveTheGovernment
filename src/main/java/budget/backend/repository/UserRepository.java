@@ -365,14 +365,13 @@ implements GenericInterfaceRepository<User, UUID> {
                     continue;
                 }
 
-                if (user instanceof Citizen c) {
-                    citizens.add(c);
-                } else if (user instanceof GovernmentMember gm) {
-                    governmentMembers.add(gm);
-                } else if (user instanceof PrimeMinister pm) {
-                    primeMinister = pm;
-                } else {
-                    LOGGER.log(
+                switch (user) {
+                    case Citizen c -> citizens.add(c);
+                    case GovernmentMember gm -> governmentMembers.add(gm);
+                    case PrimeMinister pm -> {
+                        primeMinister = pm;
+                    }
+                    default -> LOGGER.log(
                         Level.WARNING,
                         "Unknown user type: {0}",
                         user.getClass()
