@@ -4,7 +4,7 @@ Government budget management system that allows different types of users to view
 
 ## Application Description
 
-**SaveTheGovernment is a graphical application that manages the government budget. The application supports multiple user types with different access rights and allows:
+**SaveTheGovernment** is a graphical application that manages the government budget. The application supports multiple user types with different access rights and allows:
 
 - Viewing the overall budget
 - Viewing the change history
@@ -49,24 +49,21 @@ Below is the class diagram that describes the structure of the backend and the o
 
 > 📂 **Diagram Source Code:** [File preview PlantUML](diagram/classDigramCode.puml)
 
-### Αρχιτεκτονική Frontend Controllers (UML Diagram)
+### FrontEnd Controllers Architecture (UML Diagram)
 
-Ακολουθεί το διάγραμμα κλάσεων για το πακέτο `budget.frontend.controller`.
-Το διάγραμμα αποτυπώνει:
-* Την **Ιεραρχία (Inheritance)** των Dashboards (`Citizen`, `GovernmentMember`, `PrimeMinister`) από τον βασικό `DashboardController`.
-* Τη **Ροή Πλοήγησης (Navigation Flow)** από το Login προς τις αντίστοιχες οθόνες.
-* Τις **Εξαρτήσεις (Dependencies)**, δηλαδή ποιοι controllers φορτώνονται δυναμικά μέσα στα κεντρικά Dashboards.
-
+The following is the class diagram for the budget.frontend.controller package.
+* The inheritance hierarchy of the Dashboards (Citizen, GovernmentMember, PrimeMinister) derived from the base DashboardController.
+* The **Navigation Flow** from the Login screen to the corresponding application screens.
+* The **Dependencies**, representing which controllers are dynamically loaded within the main Dashboards
 ![UML Diagram](diagram/controllersDiagram.svg)
 
-> 📂 **Πηγαίος Κώδικας Διαγράμματος:** [Προβολή αρχείου PlantUML](diagram/controllersDigramCode.puml)
+> 📂 **Diagram Source Code:** [View PlantUML file](diagram/controllersDigramCode.puml)
 
-## Απαιτήσεις Συστήματος
 ## System Requirements
 
-- **Java**: Version 21 ή latest
-- **Maven**: Version 3.9.6 ή latests
-- **Operating System**: Windows, macOS, ή Linux
+- **Java**: Version 21 or latest
+- **Maven**: Version 3.9.6 or latests
+- **Operating System**: Windows, macOS, or Linux
 
 ## Installation
 
