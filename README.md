@@ -200,6 +200,10 @@ mvnw.cmd javafx:run   # Windows
 - **DI (Dependency Injection):** It is mainly used in the communication of the Services <-> Repositories
 - **Repository Design Pattern:**  For clear separation of data and business logic
 - **MVC Architecture (Model View Controller):** For efficient management of the GUI
+- **Generic Programming:** Type-safe repository interface
+  - `GenericInterfaceRepository<T, ID>` allows flexible entity handling
+- **Type-Safe Enum Pattern:** Enums with additional properties
+  - `UserRole`, `Ministry`, `Status` enums with display names and descriptions
 
 ## Algorithms
 
