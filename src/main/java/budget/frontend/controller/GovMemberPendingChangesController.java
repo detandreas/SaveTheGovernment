@@ -1,5 +1,13 @@
 package budget.frontend.controller;
 
+import java.text.NumberFormat;
+import java.time.Year;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import budget.backend.exceptions.UserNotAuthorizedException;
 import budget.backend.model.domain.BudgetItem;
 import budget.backend.model.domain.PendingChange;
@@ -7,14 +15,14 @@ import budget.backend.model.domain.user.GovernmentMember;
 import budget.backend.model.domain.user.User;
 import budget.backend.model.enums.Ministry;
 import budget.backend.repository.BudgetRepository;
-import budget.backend.service.ChangeRequestService;
-import budget.backend.repository.ChangeRequestRepository;
-import budget.backend.service.BudgetService;
-import budget.backend.repository.UserRepository;
-import budget.backend.service.BudgetValidationService;
-import budget.backend.service.UserAuthorizationService;
-import budget.backend.service.ChangeLogService;
 import budget.backend.repository.ChangeLogRepository;
+import budget.backend.repository.ChangeRequestRepository;
+import budget.backend.repository.UserRepository;
+import budget.backend.service.BudgetService;
+import budget.backend.service.BudgetValidationService;
+import budget.backend.service.ChangeLogService;
+import budget.backend.service.ChangeRequestService;
+import budget.backend.service.UserAuthorizationService;
 import budget.frontend.constants.Constants;
 import budget.frontend.util.AlertUtils;
 import budget.frontend.util.DateUtils;
@@ -31,14 +39,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-
-import java.time.Year;
-import java.text.NumberFormat;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 /**
  * Controller class for managing the pending changes view.
  * It follows the same architecture as ChangeLogController for consistency.
@@ -211,15 +211,14 @@ public class GovMemberPendingChangesController {
     private boolean openRequestWindow() {
         try {
             int currentYear = Year.now().getValue();
-            ObservableList<BudgetItem> allItems =
+            ObservableList<BudgetItem> allBudgetItems =
                 budgetService.getBudgetItemsForTable(currentYear);
             ObservableList<BudgetItem> allowedItems;
 
-            if (currentUser instanceof GovernmentMember) {
-                GovernmentMember govMember = (GovernmentMember) currentUser;
-                Ministry myMinistry = govMember.getMinistry();
+            if (currentUser instanceof GovernmentMember gm) {
+                Ministry myMinistry = gm.getMinistry();
 
-                allowedItems = allItems.stream()
+                allowedItems = allBudgetItems.stream()
                     .filter(item -> item.getMinistries() != null
                             && item.getMinistries().contains(myMinistry))
                     .collect(
