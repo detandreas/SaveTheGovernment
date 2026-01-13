@@ -157,44 +157,6 @@ The following is the class diagram for the budget.frontend.controller package.
 - **Maven**: Version 3.9.6 or latests
 - **Operating System**: Windows, macOS, or Linux
 
-## Installation
-
-### 1.  Repository Clone
-
-```bash
-git clone https://github.com/detandreas/SaveTheGoverment.git
-cd SaveTheGoverment
-```
-### 2. Requirements Check
-Make sure that you have installed Java 21 and Maven:
-```bash
-java -version    # It should display the version 21
-mvn -version     #  It should display the version 3.9.6 or latest
-```
-## Running the Application
-
-### Compile the program.
-```bash
-mvn clean verify # Executes the full build lifecycle:
-                 # - Runs all unit tests
-                 # - Generates JaCoCo code coverage reports
-                 # - Runs Checkstyle code quality checks
-                 # - Generates project documentation
-                 # - Compiles source files
-./mvnw clean verify
-```
-
-### Method 1: With Maven (It is recommended)
-
-```bash
-mvn javafx:run # If you have Maven installed on your computer
-```
-### Method 2: With Maven Wrapper
-
-```bash
-./mvnw javafx:run    # Linux/macOS
-mvnw.cmd javafx:run   # Windows
-```
 ## Software Patterns
 - **Singleton pattern:** It is used for uniqueness Prime Minister
 - **DI (Dependency Injection):** It is mainly used in the communication of the Services <-> Repositories
@@ -237,10 +199,55 @@ mvnw.cmd javafx:run   # Windows
   - Implemented across service layer
 
 ### Data Structures
-- **JSON Parsing:** Efficient data serialization/deserialization using Gson
-  - Budget data, user credentials, pending changes
-  - Repository pattern for data persistence
+- **JSON Parsing:** Data serialization/deserialization with Gson library
+- **ArrayList/List<T>:** Sequential storage for entities (budgets, users, pending changes, logs)
+- **HashMap/Map<K,V>:** Key-value pairs for bill-ministry mappings
+- **ObservableList<T>:** JavaFX observable collections for auto-updating UI tables and charts
+- **FilteredList<T>:** Dynamic table filtering with predicates
+- **Optional<T>:** Null-safe wrappers for repository operations
+- **Stream<T> API:** Functional data processing pipelines for filtering, mapping, and aggregation
+- **XYChart.Series/Data:** Time-series structures for statistical charts and regression analysis
+- **PieChart.Data:** Sectional data for budget distribution visualization
+- **synchronized blocks:** Thread-safe access for concurrent file operations
 
+## Installation
+
+### 1.  Repository Clone
+
+```bash
+git clone https://github.com/detandreas/SaveTheGoverment.git
+cd SaveTheGoverment
+```
+### 2. Requirements Check
+Make sure that you have installed Java 21 and Maven:
+```bash
+java -version    # It should display the version 21
+mvn -version     #  It should display the version 3.9.6 or latest
+```
+## Running the Application
+
+### Compile the program.
+```bash
+mvn clean verify # Executes the full build lifecycle:
+                 # - Runs all unit tests
+                 # - Generates JaCoCo code coverage reports
+                 # - Runs Checkstyle code quality checks
+                 # - Generates project documentation
+                 # - Compiles source files
+./mvnw clean verify
+```
+
+### Method 1: With Maven (It is recommended)
+
+```bash
+mvn javafx:run # If you have Maven installed on your computer
+```
+### Method 2: With Maven Wrapper
+
+```bash
+./mvnw javafx:run    # Linux/macOS
+mvnw.cmd javafx:run   # Windows
+```
 ## API / Code Documentation (Javadoc)
 
 The project uses standard Javadoc comments for documenting
@@ -260,4 +267,10 @@ open target/site/apidocs/index.html
 
 ## Contribution
 
-This application was developed as an assignment for the course **PROGRAMMING II**.
+This application was developed as an assignment for the course **PROGRAMMING II** in the Department of Management Science and Technology in **AUEB**.
+
+## License
+
+This project is licensed under the Apache License 2.0.
+
+📄 See [LICENSE](./LICENSE) for full details or visit the [official Apache License page](https://www.apache.org/licenses/LICENSE-2.0).
