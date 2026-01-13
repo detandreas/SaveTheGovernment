@@ -88,8 +88,7 @@ public class TotalBudgetController {
         if (currentUser == null) {
             return false;
         }
-        if (currentUser instanceof GovernmentMember) {
-            GovernmentMember minister = (GovernmentMember) currentUser;
+        if (currentUser instanceof GovernmentMember minister) {
             return minister.getMinistry() == Ministry.FINANCE;
         }
 
