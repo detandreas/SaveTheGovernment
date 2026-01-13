@@ -1,20 +1,20 @@
 package budget.frontend.controller;
 
-import budget.backend.model.domain.BudgetItem;
-import budget.backend.service.BudgetValidationService;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import budget.backend.exceptions.ValidationException;
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
-import javafx.stage.Stage;
-
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import budget.backend.exceptions.ValidationException;
+import budget.backend.model.domain.BudgetItem;
+import budget.backend.service.BudgetValidationService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.stage.Stage;
 
 public class EditBudgetController {
 
@@ -32,11 +32,12 @@ public class EditBudgetController {
     private final NumberFormat currencyFormat =
         NumberFormat.getInstance(Locale.GERMANY);
     private static final double TOOLTIP_Y_OFFSET = 40.0;
+    private static final String ERROR_STYLE_CLASS = "error-field";
 
     @FXML
     private void initialize() {
         newValueTextField.setOnKeyPressed(e -> {
-            newValueTextField.getStyleClass().remove("error-field");
+            newValueTextField.getStyleClass().remove(ERROR_STYLE_CLASS);
             newValueTextField.setTooltip(null);
         });
         currencyFormat.setMinimumFractionDigits(2);
@@ -177,8 +178,8 @@ public class EditBudgetController {
     }
 
     private void showErrorEffect(String message) {
-        if (!newValueTextField.getStyleClass().contains("error-field")) {
-            newValueTextField.getStyleClass().add("error-field");
+        if (!newValueTextField.getStyleClass().contains(ERROR_STYLE_CLASS)) {
+            newValueTextField.getStyleClass().add(ERROR_STYLE_CLASS);
         }
 
         Tooltip tooltip = new Tooltip(message);

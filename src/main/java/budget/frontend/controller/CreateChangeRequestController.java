@@ -1,20 +1,21 @@
 package budget.frontend.controller;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import budget.backend.model.domain.BudgetItem;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import java.text.NumberFormat;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 /**
  * Controller class for creating change requests in the budget frontend.
  */
@@ -66,10 +67,9 @@ public class CreateChangeRequestController {
         // Αν ο χρήστης γράψει χειροκίνητα New Value, ξε-επιλέγουμε τα ποσοστά
         newValueTextField.textProperty()
             .addListener((obs, oldText, newText) -> {
-            if (newValueTextField.isFocused()) {
-                 if (percentGroup.getSelectedToggle() != null) {
-                    percentGroup.getSelectedToggle().setSelected(false);
-                }
+            if (newValueTextField.isFocused()
+                    && percentGroup.getSelectedToggle() != null) {
+                percentGroup.getSelectedToggle().setSelected(false);
             }
         });
     }
