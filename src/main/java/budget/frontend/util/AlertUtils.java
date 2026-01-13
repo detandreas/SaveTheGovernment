@@ -1,10 +1,13 @@
 package budget.frontend.util;
 
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.ButtonType;
-import java.util.Optional;
+import javafx.scene.control.DialogPane;
 
 /**
  * Utility class for displaying standardized alerts across the application.
@@ -13,6 +16,8 @@ import java.util.Optional;
 public final class AlertUtils {
 
     private static final String CSS_PATH = "/styles/dialog.css";
+    private static final Logger LOGGER =
+                                Logger.getLogger(AlertUtils.class.getName());
 
     private AlertUtils() { }
 
@@ -126,7 +131,11 @@ public final class AlertUtils {
             dialogPane.getStylesheets().add(css);
             dialogPane.getStyleClass().add(cssClass);
         } catch (Exception e) {
-            System.err.println("Could not load CSS for Alert: " + CSS_PATH);
+            LOGGER.log(
+                Level.WARNING,
+                "Could not load CSS for Alert: {0}",
+                CSS_PATH
+            );
         }
 
         return alert;
