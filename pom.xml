@@ -35,8 +35,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JavaFX - Θα χρησιμοποιηθούν αργότερα για GUI -->
-        <!-- Κρατάμε τα provided scope για τώρα ώστε να μην φορτώνονται -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
