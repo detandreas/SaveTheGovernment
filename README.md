@@ -31,15 +31,24 @@ Includes all Citizen permissions, plus:
 
 ### 3. Finance Ministry Member
 Includes all Government Member permissions, plus:
--Directly manage budget items
+- Directly manage budget items
 
 ### 4. Prime Minister
 - View the overall budget
--View the change history
--View statistics
--Approve or reject pending change requests
+- View the change history
+- View statistics
+- Approve or reject pending change requests
 
 **Note**: Only one Prime Minister can exist in the system (Singleton pattern).
+
+## Οδηγίες Χρήσης του Προγράμματος
+
+### Είσοδος στην εφαρμογή
+- Εγγραφείτε με τα στοιχεία σας και επιλέξτε τον ρόλο σας (Citizen, GovernmentMember, PrimeMinister).
+- Συνδεθείτε σε ήδη υπάρχων λογαριασμό. Για διευκόλυνση υπάρχουν ήδη έτοιμη οι εξής λογαριασμοί.
+     - **Citzen:** username: lakis, password: Lakis123!
+     - **GovMember (Finance Ministry):** username: kammenos, password: Kammenos123!
+     - **PrimeMinister:** username: mitsotakis, password: Mitsotakis123!
 
 ## System Architecture (UML Diagram)
 
@@ -109,6 +118,7 @@ java -Dbudget.data.dir=/var/app/data \
 
 ## Algorithms
 - **SHA-256:** For password hashing and secure storage in the users.json files
+- **Linear Regression:** Implemented via a custom Regression.java class
 
 ## API / Code Documentation (Javadoc)
 

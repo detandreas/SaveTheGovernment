@@ -15,13 +15,6 @@
       "userRole": "CITIZEN"
     },
     {
-      "id": "dd0317ee-576e-47ec-9e08-e0202e64ab69",
-      "userName": "lakis",
-      "fullName": "Lakis Gavalas",
-      "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
-      "userRole": "CITIZEN"
-    },
-    {
       "id": "aab28b53-051b-4d83-b51e-487edd35aafd",
       "userName": "maroik",
       "fullName": "Maria Ikonomopoulou",
@@ -33,6 +26,13 @@
       "userName": "clichewiche",
       "fullName": "Cliche Wiche",
       "password": "414c9fd2e18fd3fc78041bdb942e4387442a5ef71398d49d2d872744048e3708",
+      "userRole": "CITIZEN"
+    },
+    {
+      "id": "fb58a0f2-3caf-4eb7-8d58-470ebade9329",
+      "userName": "lakis",
+      "fullName": "Lakis Gavalas",
+      "password": "2d5ed4c9f1d44944a597bccf6ebdc819219adb16baa846888acba7ef10b22c8d",
       "userRole": "CITIZEN"
     }
   ],
@@ -87,14 +87,6 @@
     },
     {
       "ministry": "FINANCE",
-      "id": "5c2b5ce9-83af-4a20-917e-01e77aaa79ab",
-      "userName": "kammenos",
-      "fullName": "Panos Kammenos",
-      "password": "29864e923a5a4efd8e378c9b5825644b89d8ca738c4c6b75694222c87ed91594",
-      "userRole": "GOVERNMENT_MEMBER"
-    },
-    {
-      "ministry": "FINANCE",
       "id": "0b103ceb-91ff-4800-bfa5-9c2c192f4450",
       "userName": "varoufakis",
       "fullName": "Giannis Varoufakis",
@@ -108,13 +100,21 @@
       "fullName": "Akis Tzoxatzopoulos",
       "password": "29864e923a5a4efd8e378c9b5825644b89d8ca738c4c6b75694222c87ed91594",
       "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "FINANCE",
+      "id": "6a4ddd60-92d6-4438-b8f6-c13e00afe12f",
+      "userName": "kammenos",
+      "fullName": "Panos Kammenos",
+      "password": "1d86edc17e81d1ff53ffa8059dc593c3a915e9492834edf285fef82a487d2f9e",
+      "userRole": "GOVERNMENT_MEMBER"
     }
   ],
   "primeMinister": {
-    "id": "9bf8b42c-9a57-453c-bdbb-87358c101df8",
+    "id": "dad80aff-436e-4cd8-9eb4-a589fdeb25bf",
     "userName": "mitsotakis",
-    "fullName": "Kyriakos Mitsotakis",
-    "password": "29864e923a5a4efd8e378c9b5825644b89d8ca738c4c6b75694222c87ed91594",
+    "fullName": "Kuriakos Mitsotakis",
+    "password": "0573641bfa6eacc8bd37ab108942af4492d29488c26c29db9a4209385fbd3ee1",
     "userRole": "PRIME_MINISTER"
   }
 }
