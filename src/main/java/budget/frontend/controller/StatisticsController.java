@@ -249,7 +249,8 @@ public class StatisticsController {
      */
     private void setupRevenueComboBoxForBudgetResults() {
         ObservableList<String> revenueExpenseOptions =
-            FXCollections.observableArrayList(REVENUE_CATEGORY, EXPENSE_CATEGORY);
+            FXCollections.observableArrayList(REVENUE_CATEGORY,
+                                                EXPENSE_CATEGORY);
         revenueComboBox.setItems(revenueExpenseOptions);
         revenueComboBox.setValue(REVENUE_CATEGORY);
         revenueComboBox.setOnAction(e -> loadRevenueExpenseTrendChart());
