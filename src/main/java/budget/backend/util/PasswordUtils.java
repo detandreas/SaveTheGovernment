@@ -1,7 +1,10 @@
 package budget.backend.util;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import budget.backend.exceptions.PasswordHashingException;
 
 public final  class PasswordUtils {
     private PasswordUtils() {
@@ -26,7 +29,8 @@ public final  class PasswordUtils {
 
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error during hashing of password.", e);
+            throw new PasswordHashingException(
+                    "Error during hashing of password.", e);
         }
     }
 }
