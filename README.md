@@ -4,11 +4,11 @@ Government budget management system that allows different types of users to view
 
 ## Application Description
 
-**SaveTheGovernment** is a graphical application that manages the government budget. The application supports multiple user types with different access rights and allows:
+**SaveTheGovernment** is a graphical application that manages the government budget.Includes data for budgets from year 2019 till 2026. The application supports multiple user types with different access rights and allows:
 
 - Viewing the overall budget
 - Viewing the change history
-- Viewing statistics
+- Viewing statistics (distribution comparisons and time trend analysis, while estimating their future trajectory.)
 - Managing budget items
 - Submitting change requests
 - Approving or rejecting change requests
@@ -41,14 +41,55 @@ Includes all Government Member permissions, plus:
 
 **Note**: Only one Prime Minister can exist in the system (Singleton pattern).
 
-## Οδηγίες Χρήσης του Προγράμματος
+## App Usage Instructions
 
-### Είσοδος στην εφαρμογή
-- Εγγραφείτε με τα στοιχεία σας και επιλέξτε τον ρόλο σας (Citizen, GovernmentMember, PrimeMinister).
-- Συνδεθείτε σε ήδη υπάρχων λογαριασμό. Για διευκόλυνση υπάρχουν ήδη έτοιμη οι εξής λογαριασμοί.
-     - **Citzen:** username: lakis, password: Lakis123!
+### 1. Logging into the application:
+- Register with your credentials and select your role (Citizen, GovernmentMember, PrimeMinister).
+- Log in to an existing account. For convenience, the following accounts are already available:
+     - **Citizen:** username: lakis, password: Lakis123!
      - **GovMember (Finance Ministry):** username: kammenos, password: Kammenos123!
      - **PrimeMinister:** username: mitsotakis, password: Mitsotakis123!
+
+### 2. App navigation:
+- You can navigate the application using the **sidebar**.
+- Remember that the application's features update dynamically depending on the user role.
+
+### 3. View the State Budget:
+- Select **View Total budget** from the sidebar
+- Click on year and select a year to display the budget for that specific year. (default year: 2026)
+- Click the button that appears at the top right to filter the budget table in various ways.
+
+### 4. Editing a Budget Item:
+- After logging in exclusively as **Finance Minister**.
+- Select **View Total budget** from the sidebar.
+- Click **edit** on the budget item of your choice.
+- Enter the new amount and click **save** to confirm your change.
+
+### 5. View Pending Changes:
+- After logging in as a **Government Member**.
+- Select **View Pending Changes** from the sidebar.
+- Select **Create New Request** to request an amount change for a budget item in your ministry.
+- Select **My Requests** to view only your own pending requests.
+- Table filtering capability for pending changes is supported.
+
+### 6. View Statistics:
+- Select **View Statistics** from the sidebar.
+- Select the year for which you want to view statistics. Years 2019 - 2026 are supported with 2026 as default.
+- Select the **Budget Results** category to view charts related to the overall budget picture. This category includes 4 charts.
+- Select the **Top Items** category to view charts related to the most significant budget items. This category includes 6 charts.
+- Select the buttons that appear in the corners of the charts to **interact** with them.
+
+### 7. View Change Log History:
+- Select **View Change History** to view the budget change log history.
+- Filtering is supported for Change Log table.
+
+### 8. Managing Pending Changes:
+- After logging in exclusively as Prime Minister.
+- Select **Manage Pending Changes** 
+- Click the **Approve** button to approve the specific change. Click **OK** to confirm your selection.
+- Click the **Reject** button to reject the specific change. Click **OK** to confirm your selection.
+- Filtering is supported for Pending Changes table.
+
 
 ## System Architecture (UML Diagram)
 
