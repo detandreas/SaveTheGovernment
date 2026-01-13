@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import budget.backend.exceptions.UserNotAuthorizedException;
 import budget.backend.exceptions.ValidationException;
-import budget.backend.model.domain.user.GovernmentMember;
 import budget.backend.model.domain.user.User;
 import budget.backend.repository.UserRepository;
 import budget.backend.service.UserAuthenticationService;
@@ -205,8 +204,10 @@ public class LoginController {
                     Level.INFO,
                     "--- [5] Μπήκαμε στο Case GOVERNMENT_MEMBER"
                 );
-                    yield determineGovernmentMemberView(
-                                                    (GovernmentMember) user);
+                yield new ViewPathInfo(
+                    Constants.GOV_VIEW,
+                    "Government Member Dashboard"
+                );
             }
             case CITIZEN -> {
                 LOGGER.log(
@@ -288,17 +289,6 @@ public class LoginController {
         controller.setCurrentUser(user);
         controller.setUserInfo(user.getFullName(),
                                 user.getUserRole().toString());
-    }
-    /**
-     * Determines the view path for government members based on their ministry.
-     * @param gm the government member
-     * @return ViewPathInfo for the government member
-     */
-    private ViewPathInfo determineGovernmentMemberView(GovernmentMember gm) {
-            return new ViewPathInfo(
-                Constants.GOV_VIEW,
-                "Government Member Dashboard"
-            );
     }
     /**
      * Handles showing the password in plain text when the eye icon is clicked.

@@ -178,5 +178,17 @@
     "newValue": 2.36446551E9,
     "status": "PENDING",
     "submittedDate": "2026-01-04T14:13:14.511574"
+  },
+  {
+    "id": 16,
+    "budgetItemId": 54,
+    "budgetItemName": "Loans",
+    "budgetItemYear": 2026,
+    "requestByName": "Panos Kammenos",
+    "requestById": "5c2b5ce9-83af-4a20-917e-01e77aaa79ab",
+    "oldValue": 1.659113701E12,
+    "newValue": 1.60934028997E12,
+    "status": "PENDING",
+    "submittedDate": "2026-01-13T12:30:52.844453"
   }
 ]
