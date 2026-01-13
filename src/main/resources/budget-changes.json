@@ -1,56 +1,83 @@
 [
   {
-    "id": 1,
-    "budgetItemId": 101,
-    "oldValue": 1000.0,
-    "newValue": 1500.0,
-    "submittedDate": "2024-01-15T10:30:00",
-    "actorName": "pmuser",
-    "actorId": "550e8400-e29b-41d4-a716-446655440002"
+    "id": 10,
+    "budgetItemId": 45,
+    "oldValue": 2.28E8,
+    "newValue": 2.3028E8,
+    "submittedDate": "2026-01-13T17:47:52.257911",
+    "actorName": "Giannis Varoufakis",
+    "actorId": "0b103ceb-91ff-4800-bfa5-9c2c192f4450"
   },
   {
-    "id": 3,
-    "budgetItemId": 103,
-    "oldValue": 500.0,
-    "newValue": 750.25,
-    "submittedDate": "2024-01-13T09:15:30",
-    "actorName": "govuser2",
-    "actorId": "550e8400-e29b-41d4-a716-446655440003"
+    "id": 11,
+    "budgetItemId": 26,
+    "oldValue": 7.91742E9,
+    "newValue": 7.8382458E9,
+    "submittedDate": "2026-01-13T17:47:54.232464",
+    "actorName": "Giannis Varoufakis",
+    "actorId": "0b103ceb-91ff-4800-bfa5-9c2c192f4450"
   },
   {
-    "id": 6,
-    "budgetItemId": 106,
-    "oldValue": 5000.0,
-    "newValue": 4500.0,
-    "submittedDate": "2024-01-12T08:30:00",
-    "actorName": "pmuser",
-    "actorId": "550e8400-e29b-41d4-a716-446655440002"
+    "id": 12,
+    "budgetItemId": 21,
+    "oldValue": 1.568849E10,
+    "newValue": 1.61591447E10,
+    "submittedDate": "2026-01-13T17:47:56.618243",
+    "actorName": "Adonis Georgiadis",
+    "actorId": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d"
   },
   {
-    "id": 7,
-    "budgetItemId": 107,
-    "oldValue": 2000.0,
-    "newValue": 2500.0,
-    "submittedDate": "2024-06-18T13:00:00",
-    "actorName": "yourusername",
-    "actorId": "b3527da4-3765-471f-a4aa-032aaa5a3ef6"
+    "id": 13,
+    "budgetItemId": 23,
+    "oldValue": 3.5897013E10,
+    "newValue": 3.697392339E10,
+    "submittedDate": "2026-01-13T17:47:58.67533",
+    "actorName": "Adonis Georgiadis",
+    "actorId": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d"
   },
   {
-    "id": 8,
-    "budgetItemId": 57,
-    "oldValue": 12000.0,
-    "newValue": 15000.0,
-    "submittedDate": "2025-12-26T22:52:14.5803887",
-    "actorName": "Andreas Papathanasiou",
-    "actorId": "550e8400-e29b-41d4-a716-446655440000"
+    "id": 14,
+    "budgetItemId": 21,
+    "oldValue": 1.568849E10,
+    "newValue": 1.58453749E10,
+    "submittedDate": "2026-01-13T17:48:06.282542",
+    "actorName": "Adonis Georgiadis",
+    "actorId": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d"
   },
   {
-    "id": 9,
-    "budgetItemId": 57,
-    "oldValue": 12000.0,
-    "newValue": 15000.0,
-    "submittedDate": "2025-12-26T23:43:48.9913885",
-    "actorName": "Andreas Papathanasiou",
-    "actorId": "550e8400-e29b-41d4-a716-446655440000"
+    "id": 15,
+    "budgetItemId": 24,
+    "oldValue": 2.388349E9,
+    "newValue": 2.41223249E9,
+    "submittedDate": "2026-01-13T17:48:08.171192",
+    "actorName": "Adonis Georgiadis",
+    "actorId": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d"
+  },
+  {
+    "id": 16,
+    "budgetItemId": 31,
+    "oldValue": 5.1E7,
+    "newValue": 4.998E7,
+    "submittedDate": "2026-01-13T17:48:11.240539",
+    "actorName": "Adonis Georgiadis",
+    "actorId": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d"
+  },
+  {
+    "id": 17,
+    "budgetItemId": 13,
+    "oldValue": 1.0943E10,
+    "newValue": 1.127129E10,
+    "submittedDate": "2026-01-13T17:48:12.942892",
+    "actorName": "Adonis Georgiadis",
+    "actorId": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d"
+  },
+  {
+    "id": 18,
+    "budgetItemId": 31,
+    "oldValue": 5.1E7,
+    "newValue": 5.253E7,
+    "submittedDate": "2026-01-13T17:48:14.490401",
+    "actorName": "Adonis Georgiadis",
+    "actorId": "ee0d483c-2a0f-479c-86ba-b6d0809ac27d"
   }
 ]

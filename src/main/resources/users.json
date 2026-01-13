@@ -108,6 +108,14 @@
       "fullName": "Panos Kammenos",
       "password": "1d86edc17e81d1ff53ffa8059dc593c3a915e9492834edf285fef82a487d2f9e",
       "userRole": "GOVERNMENT_MEMBER"
+    },
+    {
+      "ministry": "DEVELOPMENT",
+      "id": "c4d94ee9-4dca-4ef7-bf41-ffa66abcb552",
+      "userName": "pier",
+      "fullName": "Kuriakos Pierrakakhs",
+      "password": "3a2df123c967d87785ff5ca84912f81dba0422bcf876432b7ddb7c6b14bda22c",
+      "userRole": "GOVERNMENT_MEMBER"
     }
   ],
   "primeMinister": {

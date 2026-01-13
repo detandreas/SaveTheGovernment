@@ -297,7 +297,7 @@ open target/site/apidocs/index.html
 
 ### Test Coverage
 - **Backend Coverage: 97%** 
-- **Overall Coverage: 52%**
+- **Test Classes: 30**
 - **tests run: 382**
 
 ### Github
