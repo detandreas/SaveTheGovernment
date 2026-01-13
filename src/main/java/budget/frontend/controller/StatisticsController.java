@@ -51,6 +51,8 @@ public class StatisticsController {
     private static final int CURRENT_YEAR = 2026;
     private static final int DEFAULT_START_YEAR = 2019;
     private static final int DEFAULT_END_YEAR = 2027;
+    private static final String REVENUE_CATEGORY = "Revenue";
+    private static final String EXPENSE_CATEGORY = "Expense";
 
     private PieChartViewModel pieChartVM;
     private TrendLineChartViewModel revenueExpenseLineChartVM;
@@ -97,7 +99,7 @@ public class StatisticsController {
      */
     private String getSelectedCategory() {
         String category = categoryComboBox.getValue();
-        return category != null ? category : "Revenue";
+        return category != null ? category : REVENUE_CATEGORY;
     }
 
     /**
@@ -124,11 +126,11 @@ public class StatisticsController {
 
         // Setup category combo box
         ObservableList<String> categories = FXCollections.observableArrayList(
-            "Revenue",
-            "Expense"
+            REVENUE_CATEGORY,
+            EXPENSE_CATEGORY
         );
         categoryComboBox.setItems(categories);
-        categoryComboBox.setValue("Revenue");
+        categoryComboBox.setValue(REVENUE_CATEGORY);
         categoryComboBox.setOnAction(e -> updateTop5PieChart());
 
         // Setup expense and revenue combo boxes
@@ -161,7 +163,7 @@ public class StatisticsController {
     private void updateTop5PieChart() {
         int selectedYear = getSelectedYear();
         String selectedCategory = getSelectedCategory();
-        boolean isRevenue = "Revenue".equals(selectedCategory);
+        boolean isRevenue = REVENUE_CATEGORY.equals(selectedCategory);
 
         try {
             loadTop5Pie(selectedYear, isRevenue, selectedCategory);
@@ -247,9 +249,9 @@ public class StatisticsController {
      */
     private void setupRevenueComboBoxForBudgetResults() {
         ObservableList<String> revenueExpenseOptions =
-            FXCollections.observableArrayList("Revenue", "Expense");
+            FXCollections.observableArrayList(REVENUE_CATEGORY, EXPENSE_CATEGORY);
         revenueComboBox.setItems(revenueExpenseOptions);
-        revenueComboBox.setValue("Revenue");
+        revenueComboBox.setValue(REVENUE_CATEGORY);
         revenueComboBox.setOnAction(e -> loadRevenueExpenseTrendChart());
     }
 
@@ -261,7 +263,7 @@ public class StatisticsController {
     private void loadTopItems() {
         int selectedYear = getSelectedYear();
         String selectedCategory = getSelectedCategory();
-        boolean isRevenue = "Revenue".equals(selectedCategory);
+        boolean isRevenue = REVENUE_CATEGORY.equals(selectedCategory);
 
         try {
             setupVisibilityForTopItems();
@@ -395,10 +397,10 @@ public class StatisticsController {
         try {
             String selected = revenueComboBox.getValue();
             if (selected == null) {
-                selected = "Revenue";
+                selected = REVENUE_CATEGORY;
             }
 
-            boolean isRevenue = "Revenue".equals(selected);
+            boolean isRevenue = REVENUE_CATEGORY.equals(selected);
             String title = isRevenue ? "Revenue Trend " : "Expense Trend ";
             revenueExpenseLineChartVM.setTitle(title);
 
