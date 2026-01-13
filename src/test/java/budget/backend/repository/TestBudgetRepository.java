@@ -321,7 +321,7 @@ public class TestBudgetRepository {
         var opt1 = repository.findItemById(-1, new Budget(List.of(), 2025, 0, 0, 0), true);
         assertTrue(opt1.isEmpty(),"Failure - negative id should return empty optional");
         var opt2 = repository.findItemById(1,null, true);
-        assertTrue(opt1.isEmpty(), "Failure - null budget should return empty optional");
+        assertTrue(opt2.isEmpty(), "Failure - null budget should return empty optional");
     }
 
     @Test

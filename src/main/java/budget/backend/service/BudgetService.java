@@ -752,7 +752,7 @@ public class BudgetService {
      */
     public void updateItemValue(int itemId, int year,
                                 double newValue, boolean isRevenue
-    ) {
+    ) throws IllegalArgumentException {
         validateYear(year);
 
         Optional<Budget> budgetOpt = budgetRepository.findById(year);
