@@ -90,6 +90,48 @@ Includes all Government Member permissions, plus:
 - Click the **Reject** button to reject the specific change. Click **OK** to confirm your selection.
 - Filtering is supported for Pending Changes table.
 
+## Repository Structure
+
+### Main Directories
+
+- **`src/main/java/budget/`** - Main application source code
+  - **`backend/`** - Backend logic and business layer
+    - `model/` - Data models and entities
+    - `service/` - Business logic services
+    - `repository/` - Data access layer
+    - `exceptions/` - Custom exception classes
+    - `util/` - Backend utility classes (validation, password hashing, paths, Regression Analysis)
+  - **`frontend/`** - JavaFX GUI
+     - `controller/` - JavaFX controllers managing user interface interactions and screen navigation
+     - `util/` - Frontend helper classes (charts, alerts, tables, window management)
+  - **`constants/`** - Application constants and messages
+
+- **`src/test/java/budget/`** - Test suite
+  - **`backend/`** - Backend unit tests
+    - `model/` - Tests for domain models and enums
+    - `service/` - Tests for business logic services
+    - `repository/` - Tests for data access layer
+    - `util/` - Tests for utility classes
+  - **`frontend/`** - Frontend tests
+    - `util/` - Tests for UI helper classes
+  - **`constants/`** - Tests for application constants
+
+- **`src/main/resources/`** - Application resources
+  - `view/` - JavaFX layout files
+  - `images/` - Image assets
+  - `styles/` - CSS styles
+  - `users.json` - User data storage
+  - `bill-ministry-map.json` - Budget item to ministry mappings
+  - `budget-changes.json` - Approved changes history
+  - `budget.json` - State budget data (2019-2026)
+  - `pending-changes.json` - Pending change requests
+
+- **`diagram/`** - UML diagrams and documentation
+  - `classDiagram.svg` - Class diagram visualization
+  - `controllersDiagram.svg` - Controllers diagram
+
+- **`pom.xml`** - Maven project configuration
+
 
 ## System Architecture (UML Diagram)
 
