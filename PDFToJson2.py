@@ -1,3 +1,11 @@
+"""
+PDFToJson2.py - Budget PDF to JSON Converter
+Part of the SaveTheGovernment project
+
+This module converts Greek Government Budget PDF files into structured JSON format.
+It extracts revenue (έσοδα) and expenditure (έξοδα) data from official budget PDFs
+and stores them in a JSON file for use by the application.
+"""
 import pandas as pd
 import tabula
 import json
