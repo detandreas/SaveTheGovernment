@@ -21,17 +21,7 @@ public class WelcomeController {
     @FXML private Label welcomeLabel;
     @FXML private Button loginButton;
     @FXML private Button createAccountButton;
-//    /**
-//     * Initializes the welcome screen with application name
-//     *                                         and welcome message.
-//     */
-//    @FXML
-//    public void initialize() {
-//        nameLabel.setText(Message.APPLICATION_NAME);
-//        welcomeLabel.setText(Message.WELCOME_MESSAGE);
-//    }
-    //η initialize μεθοδο καλό είναι χρησιμοποιείται για την διαμόρφωση
-    // του controller πριν εμφανισθεί στο GUI
+
     /**
      * Handles the login button action to load the Login View.
      */
