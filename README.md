@@ -1,5 +1,20 @@
 # SaveTheGovernment
 
+## Table of Contents
+- [Application Description](#application-description)
+- [User Roles](#user-roles)
+- [App Usage Instructions](#app-usage-instructions)
+- [Repository Structure](#repository-structure)
+- [System Architecture](#system-architecture-uml-diagram)
+- [System Requirements](#system-requirements)
+- [Software Patterns](#software-patterns)
+- [Algorithms](#algorithms)
+- [Installation](#installation)
+- [Running the Application](#running-the-application)
+- [API Documentation](#api--code-documentation-javadoc)
+- [Contribution](#contribution)
+- [License](#license)
+
 Government budget management system that allows different types of users to view, manage, and approve changes to the national budget.
 
 ## Application Description
