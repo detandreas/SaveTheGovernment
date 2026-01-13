@@ -278,7 +278,8 @@ public class GovMemberPendingChangesController {
                     ) {
                         LOGGER.log(
                             Level.WARNING,
-                            "Submission denied: " + e.getMessage()
+                            "Submission denied: {0}",
+                            e.getMessage()
                         );
 
                         AlertUtils.showError(
