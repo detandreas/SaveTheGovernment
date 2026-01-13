@@ -24,6 +24,8 @@ public class StatisticsService {
     private static final int DEFAULT_START_YEAR = 2019;
     private static final int DEFAULT_END_YEAR = 2027;
     private static final int DEFAULT_TOP_N = 5;
+    private static final String REGRESSION_KEY = "regression";
+    private static final String DATA_KEY = "data";
 
     /**
      * Service constructor.
@@ -85,8 +87,8 @@ public class StatisticsService {
             budgetService.createRegressionSeries(dataSeries);
 
         return Map.of(
-            "data", dataSeries,
-            "regression", regressionSeries
+            DATA_KEY, dataSeries,
+            REGRESSION_KEY, regressionSeries
         );
     }
 
@@ -149,8 +151,8 @@ public class StatisticsService {
             budgetService.createRegressionSeries(selectedSeries);
 
         return Map.of(
-            "data", selectedSeries,
-            "regression", regressionSeries
+            DATA_KEY, selectedSeries,
+            REGRESSION_KEY, regressionSeries
         );
     }
 
@@ -173,8 +175,8 @@ public class StatisticsService {
             budgetService.createRegressionSeries(dataSeries);
 
         return Map.of(
-            "data", dataSeries,
-            "regression", regressionSeries
+            DATA_KEY, dataSeries,
+            REGRESSION_KEY, regressionSeries
         );
     }
 
@@ -193,8 +195,8 @@ public class StatisticsService {
             budgetService.createRegressionSeries(netSeries);
 
             return Map.of(
-                "data", netSeries,
-                "regression", regressionSeries
+                DATA_KEY, netSeries,
+                REGRESSION_KEY, regressionSeries
             );
     }
 
