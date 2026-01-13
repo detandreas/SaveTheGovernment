@@ -173,25 +173,27 @@ mvn -version     #  It should display the version 3.9.6 or latest
 ```
 ## Running the Application
 
+### Compile the program.
+```bash
+mvn clean verify # Executes the full build lifecycle:
+                 # - Runs all unit tests
+                 # - Generates JaCoCo code coverage reports
+                 # - Runs Checkstyle code quality checks
+                 # - Generates project documentation
+                 # - Compiles source files
+./mvnw clean verify
+```
+
 ### Method 1: With Maven (It is recommended)
 
 ```bash
-mvn compile javafx:run # If you have Maven installed on your computer
+mvn javafx:run # If you have Maven installed on your computer
 ```
 ### Method 2: With Maven Wrapper
 
 ```bash
-./mvnw compile javafx:run    # Linux/macOS
-mvnw.cmd compile javafx:run   # Windows
-```
-### Method 3: With JAR αρχείο
-```bash
-# First, create the JAR
-mvn clean package
-
-# Then, run it
-java -Dbudget.data.dir=/var/app/data \
-     -jar savethegovernment-1.0-SNAPSHOT.jar
+./mvnw javafx:run    # Linux/macOS
+mvnw.cmd javafx:run   # Windows
 ```
 ## Software Patterns
 - **Singleton pattern:** It is used for uniqueness Prime Minister
@@ -200,8 +202,40 @@ java -Dbudget.data.dir=/var/app/data \
 - **MVC Architecture (Model View Controller):** For efficient management of the GUI
 
 ## Algorithms
-- **SHA-256:** For password hashing and secure storage in the users.json files
-- **Linear Regression:** Implemented via a custom Regression.java class
+
+### Security
+- **SHA-256:** Cryptographic hashing algorithm for secure password storage in users.json
+  - Implemented in `PasswordUtils.java`
+  - Provides one-way encryption for user authentication
+
+### Data Analysis & Statistics
+- **Linear Regression:** Custom implementation for trend forecasting and budget prediction
+  - Implemented in `Regression.java`
+  - Calculates slope and intercept using least squares method
+  - Used for predicting future budget trends in statistics charts
+
+### Input Validation
+- **Regular Expressions (Regex):** Pattern matching for input validation
+  - Username validation: Alphanumeric characters and underscores
+  - Password strength: Minimum 8 characters, uppercase, lowercase, digits, special characters
+  - Full name validation: Latin characters, proper capitalization
+  - UUID format validation
+  - Implemented in `InputValidator.java`
+
+### Data Operations
+- **Filtering & Sorting:** Dynamic table data manipulation
+  - Used in budget tables, pending changes, and change history views
+  - Supports multi-criteria filtering
+  
+- **Stream Processing:** Java 8 Streams for efficient data aggregation
+  - Statistical calculations (sum, average, min, max)
+  - Budget item grouping by ministry
+  - Implemented across service layer
+
+### Data Structures
+- **JSON Parsing:** Efficient data serialization/deserialization using Gson
+  - Budget data, user credentials, pending changes
+  - Repository pattern for data persistence
 
 ## API / Code Documentation (Javadoc)
 
