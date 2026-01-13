@@ -12,6 +12,7 @@
 - [Installation](#installation)
 - [Running the Application](#running-the-application)
 - [API Documentation](#api--code-documentation-javadoc)
+- [Repository Statistics](#repository-statistics)
 - [Contribution](#contribution)
 - [License](#license)
 
@@ -252,6 +253,12 @@ mvn clean verify # Executes the full build lifecycle:
 ./mvnw clean verify
 ```
 
+### Run tests
+```bash
+mvn test
+./mvnw test
+```
+
 ### Method 1: With Maven (It is recommended)
 
 ```bash
@@ -279,6 +286,24 @@ To generate the API documentation, run:
 ```bash
 open target/site/apidocs/index.html 
 ```
+
+## Repository statistics
+
+### Code Metrics
+- **Total Lines:** 20,696
+- **Code Lines:** 14,874
+- **Pure Java:** 11,025 lines
+- **java classes** 92
+
+### Test Coverage
+- **Backend Coverage: 97%** 
+- **Overall Coverage: 52%**
+- **tests run: 382**
+
+### Github
+- **Commits: ~800**
+- **Contributors: 8**
+
 
 ## Contribution
 
