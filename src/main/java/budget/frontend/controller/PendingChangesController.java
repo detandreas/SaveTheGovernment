@@ -1,19 +1,25 @@
 package budget.frontend.controller;
 
+import java.text.NumberFormat;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import budget.backend.model.domain.PendingChange;
 import budget.backend.model.domain.user.PrimeMinister;
 import budget.backend.repository.BudgetRepository;
-import budget.backend.service.ChangeRequestService;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import budget.backend.repository.ChangeLogRepository;
 import budget.backend.repository.ChangeRequestRepository;
-import budget.backend.service.BudgetService;
 import budget.backend.repository.UserRepository;
+import budget.backend.service.BudgetService;
 import budget.backend.service.BudgetValidationService;
 import budget.backend.service.ChangeLogService;
-import budget.backend.repository.ChangeLogRepository;
+import budget.backend.service.ChangeRequestService;
 import budget.frontend.util.AlertUtils;
 import budget.frontend.util.DateUtils;
 import budget.frontend.util.TableUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -26,12 +32,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
-
-import java.text.NumberFormat;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 /**
  * Controller class for managing the pending changes view.
  * It follows the same architecture as ChangeLogController for consistency.
@@ -84,7 +84,7 @@ public class PendingChangesController {
     )
     public void setPrimeMinister(PrimeMinister pm) {
         this.currentUser = pm;
-        LOGGER.log(Level.INFO, "PrimeMinister set: " + pm.getFullName());
+        LOGGER.log(Level.INFO, "PrimeMinister set: {0}", pm.getFullName());
         loadData();
     }
     private void initServices() {
